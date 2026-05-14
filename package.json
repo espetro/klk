@@ -6,7 +6,8 @@
     "start": "expo start",
     "ios": "expo run:ios",
     "android": "expo run:android",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "test:e2e": "cd tests && gauge run specs/"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
