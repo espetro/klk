@@ -1,3 +1,4 @@
+import "react-native-get-random-values";
 import "../global.css";
 import { createContext, useEffect, useState } from "react";
 import { Stack } from "expo-router";

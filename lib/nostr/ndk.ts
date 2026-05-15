@@ -8,6 +8,7 @@ let _ndk: NDK | null = null;
 export function getNDK(): NDK {
   if (!_ndk) {
     const cacheAdapter = new NDKCacheAdapterSqlite("events-app");
+    cacheAdapter.initialize();
     _ndk = new NDK({
       explicitRelayUrls: RELAYS,
       cacheAdapter,
