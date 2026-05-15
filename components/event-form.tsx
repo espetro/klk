@@ -39,13 +39,17 @@ export function EventForm({ onSubmit, submitting, submitLabel = "Publish" }: Pro
   };
 
   return (
-    <ScrollView className="flex-1 p-4 bg-white">
+    <ScrollView className="flex-1 p-4 bg-white" keyboardShouldPersistTaps="handled">
       <Text className="text-sm font-medium text-gray-700 mb-1">Title *</Text>
       <TextInput
         className="border border-gray-200 rounded-lg p-3 mb-4 text-gray-900"
         value={title}
         onChangeText={setTitle}
         placeholder="Event title"
+        autoCorrect={false}
+        returnKeyType="done"
+        onSubmitEditing={() => {}}
+        blurOnSubmit={true}
       />
 
       <Text className="text-sm font-medium text-gray-700 mb-1">Start</Text>
