@@ -1,6 +1,7 @@
 import NDK, { NDKEvent, NDKPrivateKeySigner } from "@nostr-dev-kit/ndk-mobile";
 import * as Crypto from "expo-crypto";
-import { GroupRecord, getAllGroups, getGroup, saveGroup } from "../storage/groups-store";
+import { gcm } from "@noble/ciphers/aes";
+import { GroupRecord, getGroup, saveGroup } from "../storage/groups-store";
 import { PublicEventData } from "./events";
 
 function uint8ToHex(buf: Uint8Array): string {
@@ -79,32 +80,24 @@ export function processIncomingGiftWraps(ndk: NDK, myPubkey: string): void {
 }
 
 async function aesGcmEncrypt(key: Uint8Array, plaintext: string): Promise<string> {
-  const ivBytes = await Crypto.getRandomBytesAsync(12);
-  const textBytes = new TextEncoder().encode(plaintext);
-  const cryptoKey = await (globalThis as any).crypto.subtle.importKey(
-    "raw", key, { name: "AES-GCM" }, false, ["encrypt"]
-  );
-  const cipherBuf = await (globalThis as any).crypto.subtle.encrypt(
-    { name: "AES-GCM", iv: ivBytes }, cryptoKey, textBytes
-  );
-  const combined = new Uint8Array(ivBytes.length + cipherBuf.byteLength);
-  combined.set(ivBytes, 0);
-  combined.set(new Uint8Array(cipherBuf), ivBytes.length);
+  const iv = await Crypto.getRandomBytesAsync(12);
+  const plainBytes = new TextEncoder().encode(plaintext);
+  const cipher = gcm(key, iv);
+  const cipherBytes = cipher.encrypt(plainBytes);
+  const combined = new Uint8Array(iv.length + cipherBytes.length);
+  combined.set(iv, 0);
+  combined.set(cipherBytes, iv.length);
   return uint8ToHex(combined);
 }
 
 export async function aesGcmDecrypt(symKeyHex: string, cipherHex: string): Promise<string> {
   const combined = hexToUint8(cipherHex);
   const iv = combined.slice(0, 12);
-  const ciphertext = combined.slice(12);
+  const cipherBytes = combined.slice(12);
   const key = hexToUint8(symKeyHex);
-  const cryptoKey = await (globalThis as any).crypto.subtle.importKey(
-    "raw", key, { name: "AES-GCM" }, false, ["decrypt"]
-  );
-  const plainBuf = await (globalThis as any).crypto.subtle.decrypt(
-    { name: "AES-GCM", iv }, cryptoKey, ciphertext
-  );
-  return new TextDecoder().decode(plainBuf);
+  const cipher = gcm(key, iv);
+  const plainBytes = cipher.decrypt(cipherBytes);
+  return new TextDecoder().decode(plainBytes);
 }
 
 export async function publishPrivateEvent(
