@@ -20,5 +20,10 @@ expo-env.d.ts
 # @end expo-cli
 .osgrep
 
+# iOS build artifacts and dependencies
+ios/build/
+ios/Pods/
+ios/Podfile.lock
+
 # Private process docs (app store prep, etc.)
 tmp/
