@@ -1,73 +1,59 @@
-import { Step, BeforeSuite, AfterSuite } from "gauge-ts";
-import { execSync } from "child_process";
-import { mkdirSync } from "fs";
-import { join } from "path";
+const { Step, BeforeSuite, AfterSuite } = require("gauge-ts");
+const { execSync } = require("child_process");
+const { mkdirSync } = require("fs");
+const { join } = require("path");
 
-export default class StepImplementation {
-  private screenshotDir = join(process.cwd(), "screenshots");
+let screenshotDir;
 
-  @BeforeSuite()
-  public async beforeSuite() {
-    // Create screenshots directory if it doesn't exist
-    mkdirSync(this.screenshotDir, { recursive: true });
-    console.log("Screenshots will be saved to:", this.screenshotDir);
+class StepImplementation {
+  beforeSuite() {
+    screenshotDir = join(process.cwd(), "screenshots");
+    mkdirSync(screenshotDir, { recursive: true });
+    console.log("Screenshots will be saved to:", screenshotDir);
   }
 
-  @AfterSuite()
-  public async afterSuite() {
+  afterSuite() {
     try {
-      // Close agent-device session
       execSync("agent-device close", { stdio: "inherit" });
     } catch (e) {
-      // Session might already be closed
       console.log("Note: agent-device session was already closed or not open");
     }
   }
 
-  @Step("Launch the Events App on iOS simulator")
-  public async launchApp() {
+  launchApp() {
     try {
-      // Open an agent-device session with the Events App
       const output = execSync(
         "agent-device open 'Events App' --platform ios",
         { encoding: "utf-8", stdio: "pipe" }
       );
       console.log("App session opened:", output);
-    } catch (e: any) {
+    } catch (e) {
       throw new Error(
         `Failed to launch Events App: ${e.message}. Make sure the iOS simulator is running and the app is installed.`
       );
     }
   }
 
-  @Step("Take a screenshot named <name>")
-  public async takeScreenshot(name: string) {
+  takeScreenshot(name) {
     try {
-      const screenshotPath = join(this.screenshotDir, `${name}.png`);
+      const screenshotPath = join(screenshotDir, `${name}.png`);
       execSync(`agent-device screenshot "${screenshotPath}"`, {
         stdio: "inherit",
       });
       console.log(`Screenshot saved to: ${screenshotPath}`);
-    } catch (e: any) {
+    } catch (e) {
       throw new Error(`Failed to take screenshot: ${e.message}`);
     }
   }
 
-  @Step("The feed screen should be visible")
-  public async verifyFeedVisible() {
+  verifyFeedVisible() {
     try {
-      // Get the accessibility tree snapshot
       const snapshot = execSync("agent-device snapshot", {
         encoding: "utf-8",
         stdio: "pipe",
       });
 
-      // Check for key UI elements that indicate the feed is visible
-      const feedIndicators = [
-        '"Feed"', // Tab or screen title
-        '"calendar', // Events icon
-        '"Events"', // Common label
-      ];
+      const feedIndicators = ['"Feed"', '"calendar', '"Events"'];
 
       const hasUI = feedIndicators.some(
         (indicator) =>
@@ -83,8 +69,17 @@ export default class StepImplementation {
       }
 
       console.log("✓ Feed screen is visible");
-    } catch (e: any) {
+    } catch (e) {
       throw new Error(`Failed to verify feed: ${e.message}`);
     }
   }
 }
+
+// Apply decorators
+BeforeSuite()(StepImplementation.prototype, 'beforeSuite');
+AfterSuite()(StepImplementation.prototype, 'afterSuite');
+Step("Launch the Events App on iOS simulator")(StepImplementation.prototype, 'launchApp');
+Step("Take a screenshot named <name>")(StepImplementation.prototype, 'takeScreenshot');
+Step("The feed screen should be visible")(StepImplementation.prototype, 'verifyFeedVisible');
+
+module.exports = StepImplementation;
