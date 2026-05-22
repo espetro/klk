@@ -21,10 +21,10 @@ expo-env.d.ts
 .osgrep
 
 # iOS build artifacts and dependencies
-ios/build/
-ios/Pods/
+apps/events/ios/build/
+apps/events/ios/Pods/
 
 # Private process docs (app store prep, etc.)
-tmp/
-tests/screenshots
+apps/events/tmp/
+apps/events/tests/screenshots
 .claude/settings.local.json
