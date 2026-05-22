@@ -1,9 +1,11 @@
 import { useContext } from "react";
 import { Alert, Clipboard, Pressable, ScrollView, Text, View } from "react-native";
+import { router } from "expo-router";
 import { NDKContext } from "@/app/_layout";
 import { useCityContext } from "@/lib/context/city-context";
 import { CityPicker } from "@/components/city-picker";
 import { wipeIdentity } from "@/lib/nostr/identity";
+import { resetOnboarding } from "@/lib/auth/reset-onboarding";
 import { RELAY_URL } from "@/lib/nostr/ndk";
 
 export default function ProfileScreen() {
@@ -25,6 +27,20 @@ export default function ProfileScreen() {
         onPress: async () => {
           await wipeIdentity();
           Alert.alert("Done", "Restart the app to generate a new identity.");
+        },
+      },
+    ]);
+  };
+
+  const handleResetOnboarding = () => {
+    Alert.alert("Reset Onboarding", "Start the onboarding flow from the beginning?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Reset",
+        style: "destructive",
+        onPress: async () => {
+          await resetOnboarding();
+          router.replace("/");
         },
       },
     ]);
@@ -53,10 +69,17 @@ export default function ProfileScreen() {
       </View>
 
       <Pressable
-        className="bg-red-50 border border-red-200 rounded-xl p-4 items-center"
+        className="bg-red-50 border border-red-200 rounded-xl p-4 items-center mb-4"
         onPress={handleWipe}
       >
         <Text className="text-red-600 font-medium">Wipe Identity (Dev Only)</Text>
+      </Pressable>
+
+      <Pressable
+        className="bg-orange-50 border border-orange-200 rounded-xl p-4 items-center"
+        onPress={handleResetOnboarding}
+      >
+        <Text className="text-orange-600 font-medium">Reset Onboarding</Text>
       </Pressable>
     </ScrollView>
   );
