@@ -8,7 +8,7 @@ import { usePublicEvents } from "@/lib/hooks/use-public-events";
 
 export default function FeedScreen() {
   const { city, setCity } = useContext(NDKContext);
-  const events = usePublicEvents();
+  const { events } = usePublicEvents();
   const router = useRouter();
 
   return (

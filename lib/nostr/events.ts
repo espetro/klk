@@ -1,5 +1,6 @@
 import NDK, { NDKEvent } from "@nostr-dev-kit/ndk-mobile";
 import { cityTag } from "./tags";
+import { KlkKind } from "./kinds";
 
 export interface PublicEventData {
   title: string;
@@ -16,7 +17,7 @@ export async function publishPublicEvent(
   data: PublicEventData
 ): Promise<NDKEvent> {
   const event = new NDKEvent(ndk);
-  event.kind = 31923;
+  event.kind = KlkKind.PublicEvent;
   event.content = data.summary;
   event.tags = [
     ["d", `${Date.now()}`],
