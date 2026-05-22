@@ -22,7 +22,7 @@ export default function GroupDetailScreen() {
   useFocusEffect(
     useCallback(() => {
       if (id) getGroup(id).then(setGroup);
-    }, [id])
+    }, [id]),
   );
 
   const handlePublishPrivateEvent = async (values: EventFormValues) => {

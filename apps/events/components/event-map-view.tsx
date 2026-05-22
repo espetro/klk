@@ -1,10 +1,5 @@
 import { View, type ViewStyle } from "react-native";
-import {
-  Map,
-  Camera,
-  Marker,
-  type MapRef,
-} from "@maplibre/maplibre-react-native";
+import { Map, Camera, Marker, type MapRef } from "@maplibre/maplibre-react-native";
 import { PublicEventData } from "@/lib/nostr/events";
 import { Coordinates } from "@/lib/nostr/geo";
 import { useRef, useCallback } from "react";
@@ -22,12 +17,7 @@ interface EventMapProps {
   style?: ViewStyle;
 }
 
-export function EventMapView({
-  events,
-  selectedCity,
-  onEventPress,
-  style,
-}: EventMapProps) {
+export function EventMapView({ events, selectedCity, onEventPress, style }: EventMapProps) {
   const mapRef = useRef<MapRef>(null);
   const center = selectedCity ?? DEFAULT_CENTER;
 
@@ -50,11 +40,10 @@ export function EventMapView({
         {events
           .filter((e) => e.location != null && e.location.includes(","))
           .map((event) => {
-            const parts = event.location
-              .split(",")
-              .map((s) => parseFloat(s.trim()));
+            const parts = event.location.split(",").map((s) => parseFloat(s.trim()));
             if (parts.length < 2 || parts.some(isNaN)) return null;
-            const [longitude, latitude] = parts;
+            const longitude = parts[0]!;
+            const latitude = parts[1]!;
             return (
               <Marker
                 key={event.id}

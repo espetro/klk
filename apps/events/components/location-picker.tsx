@@ -1,19 +1,8 @@
-import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  ScrollView,
-  Alert,
-} from "react-native";
+import { View, Text, TextInput, Pressable, ScrollView, Alert } from "react-native";
 import { useState, useCallback } from "react";
 import * as Location from "expo-location";
 import { CITIES } from "@/lib/nostr/tags";
-import {
-  DistanceRange,
-  DISTANCE_RANGES,
-  DEFAULT_DISTANCE_RANGE,
-} from "@/lib/nostr/geo";
+import { DistanceRange, DISTANCE_RANGES, DEFAULT_DISTANCE_RANGE } from "@/lib/nostr/geo";
 
 export interface LocationSelection {
   city: string;
@@ -43,7 +32,7 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
     ? CITIES.filter(
         (c) =>
           c.label.toLowerCase().includes(searchQuery.toLowerCase()) &&
-          c.label.toLowerCase() !== searchQuery.toLowerCase()
+          c.label.toLowerCase() !== searchQuery.toLowerCase(),
       ).slice(0, 5)
     : [];
 
@@ -59,7 +48,7 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
       });
       setSearchQuery(label);
     },
-    [onChange, value.distance]
+    [onChange, value.distance],
   );
 
   const handleDistanceChange = useCallback(
@@ -69,7 +58,7 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
         distance,
       });
     },
-    [onChange, value]
+    [onChange, value],
   );
 
   const handleUseCurrentLocation = useCallback(async () => {
@@ -77,10 +66,7 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        Alert.alert(
-          "Permission denied",
-          "Location permission is required to use this feature."
-        );
+        Alert.alert("Permission denied", "Location permission is required to use this feature.");
         return;
       }
 
@@ -105,9 +91,7 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
   return (
     <View className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
       <View className="mb-4">
-        <Text className="text-sm font-medium text-gray-700 mb-2">
-          Search city
-        </Text>
+        <Text className="text-sm font-medium text-gray-700 mb-2">Search city</Text>
         <TextInput
           className="bg-gray-50 rounded-lg px-4 py-3 text-gray-900 border border-gray-200"
           placeholder="Type a city name..."
@@ -142,14 +126,8 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
       </Pressable>
 
       <View className="mb-4">
-        <Text className="text-sm font-medium text-gray-700 mb-2">
-          Popular cities
-        </Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          className="flex-row"
-        >
+        <Text className="text-sm font-medium text-gray-700 mb-2">Popular cities</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
           {PRESET_CITIES.map((c) => (
             <Pressable
               key={c.slug}
@@ -158,13 +136,7 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
                 value.city === c.slug ? "bg-indigo-600" : "bg-gray-100"
               }`}
             >
-              <Text
-                className={
-                  value.city === c.slug
-                    ? "text-white font-medium"
-                    : "text-gray-700"
-                }
-              >
+              <Text className={value.city === c.slug ? "text-white font-medium" : "text-gray-700"}>
                 {c.label}
               </Text>
             </Pressable>
@@ -173,9 +145,7 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
       </View>
 
       <View>
-        <Text className="text-sm font-medium text-gray-700 mb-2">
-          Distance range
-        </Text>
+        <Text className="text-sm font-medium text-gray-700 mb-2">Distance range</Text>
         <View className="flex-row flex-wrap gap-2">
           {DISTANCE_RANGES.map((range) => (
             <Pressable
@@ -186,11 +156,7 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
               }`}
             >
               <Text
-                className={
-                  value.distance === range
-                    ? "text-white font-medium"
-                    : "text-gray-700"
-                }
+                className={value.distance === range ? "text-white font-medium" : "text-gray-700"}
               >
                 {range} km
               </Text>

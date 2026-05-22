@@ -13,7 +13,7 @@ export default function GroupsScreen() {
   useFocusEffect(
     useCallback(() => {
       getAllGroups().then(setGroups);
-    }, [])
+    }, []),
   );
 
   return (

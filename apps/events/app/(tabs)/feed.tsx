@@ -27,13 +27,21 @@ export default function FeedScreen() {
                 className={`rounded-md px-3 py-1.5 ${viewMode === "list" ? "bg-white" : ""}`}
                 onPress={() => setViewMode("list")}
               >
-                <Text className={`text-sm font-medium ${viewMode === "list" ? "text-indigo-600" : "text-gray-500"}`}>List</Text>
+                <Text
+                  className={`text-sm font-medium ${viewMode === "list" ? "text-indigo-600" : "text-gray-500"}`}
+                >
+                  List
+                </Text>
               </Pressable>
               <Pressable
                 className={`rounded-md px-3 py-1.5 ${viewMode === "map" ? "bg-white" : ""}`}
                 onPress={() => setViewMode("map")}
               >
-                <Text className={`text-sm font-medium ${viewMode === "map" ? "text-indigo-600" : "text-gray-500"}`}>Map</Text>
+                <Text
+                  className={`text-sm font-medium ${viewMode === "map" ? "text-indigo-600" : "text-gray-500"}`}
+                >
+                  Map
+                </Text>
               </Pressable>
             </View>
             <Pressable

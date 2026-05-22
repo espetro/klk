@@ -21,7 +21,9 @@ function formatDate(ts: number) {
 export default function EventDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { ndk, currentUser } = useContext(NDKContext);
-  const [event, setEvent] = useState<(PublicEventData & { id: string; pubkey: string }) | null>(null);
+  const [event, setEvent] = useState<(PublicEventData & { id: string; pubkey: string }) | null>(
+    null,
+  );
   const [coordinate, setCoordinate] = useState("");
   const [rsvping, setRsvping] = useState(false);
   const rsvps = useRsvps(coordinate);
@@ -68,56 +70,49 @@ export default function EventDetailScreen() {
           contentStyle: { backgroundColor: "transparent" },
         }}
       />
-      <ScrollView
-        className="flex-1 bg-gray-50"
-        contentInsetAdjustmentBehavior="automatic"
-      >
+      <ScrollView className="flex-1 bg-gray-50" contentInsetAdjustmentBehavior="automatic">
         <View className="bg-white p-5 mb-2">
-        <Text className="text-2xl font-bold text-gray-900">{event.title}</Text>
-        <Text className="text-indigo-600 mt-2">{formatDate(event.start)}</Text>
-        {event.end ? (
-          <Text className="text-gray-400 text-sm">– {formatDate(event.end)}</Text>
-        ) : null}
-        {event.location ? (
-          <Text className="text-gray-600 mt-2">{event.location}</Text>
-        ) : null}
-      </View>
-
-      {event.summary ? (
-        <View className="bg-white p-5 mb-2">
-          <Text className="text-sm font-medium text-gray-500 mb-2">About</Text>
-          <Text className="text-gray-700">{event.summary}</Text>
+          <Text className="text-2xl font-bold text-gray-900">{event.title}</Text>
+          <Text className="text-indigo-600 mt-2">{formatDate(event.start)}</Text>
+          {event.end ? (
+            <Text className="text-gray-400 text-sm">– {formatDate(event.end)}</Text>
+          ) : null}
+          {event.location ? <Text className="text-gray-600 mt-2">{event.location}</Text> : null}
         </View>
-      ) : null}
 
-      <View className="bg-white p-5 mb-2">
-        <Text className="text-sm font-medium text-gray-500 mb-2">
-          Attendees ({rsvps.length})
-        </Text>
-        {rsvps.length === 0 ? (
-          <Text className="text-gray-400 text-sm">No RSVPs yet</Text>
-        ) : (
-          rsvps.map((r) => (
-            <Text key={r.pubkey} className="text-xs text-gray-600 font-mono" numberOfLines={1}>
-              {r.pubkey.slice(0, 16)}…
+        {event.summary ? (
+          <View className="bg-white p-5 mb-2">
+            <Text className="text-sm font-medium text-gray-500 mb-2">About</Text>
+            <Text className="text-gray-700">{event.summary}</Text>
+          </View>
+        ) : null}
+
+        <View className="bg-white p-5 mb-2">
+          <Text className="text-sm font-medium text-gray-500 mb-2">Attendees ({rsvps.length})</Text>
+          {rsvps.length === 0 ? (
+            <Text className="text-gray-400 text-sm">No RSVPs yet</Text>
+          ) : (
+            rsvps.map((r) => (
+              <Text key={r.pubkey} className="text-xs text-gray-600 font-mono" numberOfLines={1}>
+                {r.pubkey.slice(0, 16)}…
+              </Text>
+            ))
+          )}
+        </View>
+
+        <View className="p-4">
+          <Pressable
+            className={`rounded-xl p-4 items-center ${
+              hasRsvpd || rsvping ? "bg-gray-200" : "bg-indigo-600"
+            }`}
+            onPress={handleRsvp}
+            disabled={hasRsvpd || rsvping}
+          >
+            <Text className={`font-semibold ${hasRsvpd ? "text-gray-500" : "text-white"}`}>
+              {hasRsvpd ? "You're going!" : rsvping ? "RSVP-ing…" : "RSVP"}
             </Text>
-          ))
-        )}
-      </View>
-
-      <View className="p-4">
-        <Pressable
-          className={`rounded-xl p-4 items-center ${
-            hasRsvpd || rsvping ? "bg-gray-200" : "bg-indigo-600"
-          }`}
-          onPress={handleRsvp}
-          disabled={hasRsvpd || rsvping}
-        >
-          <Text className={`font-semibold ${hasRsvpd ? "text-gray-500" : "text-white"}`}>
-            {hasRsvpd ? "You're going!" : rsvping ? "RSVP-ing…" : "RSVP"}
-          </Text>
-        </Pressable>
-      </View>
+          </Pressable>
+        </View>
       </ScrollView>
     </>
   );
