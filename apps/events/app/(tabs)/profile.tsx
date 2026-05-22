@@ -40,7 +40,7 @@ export default function ProfileScreen() {
         style: "destructive",
         onPress: async () => {
           await resetOnboarding();
-          router.replace("/");
+          router.replace("/onboarding/welcome");
         },
       },
     ]);

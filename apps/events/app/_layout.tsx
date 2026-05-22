@@ -17,7 +17,7 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
   const [ready, setReady] = useState(false);
   const [onboardingChecked, setOnboardingChecked] = useState(false);
-  const [onboardingComplete, setOnboardingComplete] = useState(true);
+  const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [ndk, setNdk] = useState<NDK | null>(null);
   const [signer, setSigner] = useState<NDKPrivateKeySigner | null>(null);
   const [currentUser, setCurrentUser] = useState<NDKUser | null>(null);
@@ -45,7 +45,8 @@ export default function RootLayout() {
         }
       } catch (e) {
         console.error("RootLayout init error:", e);
-        setOnboardingComplete(true);
+        // On error, show onboarding as fallback rather than silently skipping it
+        setOnboardingComplete(false);
       } finally {
         setReady(true);
         SplashScreen.hideAsync();
