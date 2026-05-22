@@ -4,7 +4,7 @@
 
 Thank you for your interest in contributing to Klk. This Contributor License Agreement ("CLA") clarifies the intellectual property rights granted with Contributions from any person or entity to the project. This CLA protects contributors, protects the project, and ensures everyone — including future users — can rely on the software.
 
-By signing this CLA (see *How to Sign* below), you accept the following terms.
+By signing this CLA (see _How to Sign_ below), you accept the following terms.
 
 ---
 
@@ -23,6 +23,7 @@ By signing this CLA (see *How to Sign* below), you accept the following terms.
 You hereby assign to Joaquin Terrasa all right, title, and interest in and to your Contributions, including all copyright and related rights worldwide, to the extent permitted by applicable law.
 
 This assignment allows the project to:
+
 - Distribute your Contribution under the current Apache 2.0 license.
 - Offer commercial licensing in the future without requiring your further consent.
 - Defend the project against intellectual property claims.
@@ -74,6 +75,7 @@ This CLA is accepted by adding your name to [CONTRIBUTORS.md](CONTRIBUTORS.md) i
 ```
 
 For entity contributors:
+
 ```
 | Your Name (Entity Name) | your@email.com | Entity | 2026-05-15 |
 ```

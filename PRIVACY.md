@@ -2,7 +2,7 @@
 
 **Klk** is a privacy-first application. This document explains what data exists, where it lives, and who can see it.
 
-*Last updated: 2026-05-15*
+_Last updated: 2026-05-15_
 
 ---
 
@@ -16,12 +16,12 @@ Klk is built on the Nostr protocol. Your identity is a cryptographic keypair gen
 
 ## What Lives on Your Device
 
-| Data | Storage | Who can access |
-|------|---------|----------------|
-| Your private key (nsec) | `expo-secure-store` (iOS Keychain / Android Keystore) | Only your app |
-| Private group symmetric keys | `expo-secure-store` | Only your app |
-| Cached public events | SQLite (app sandbox) | Only your app |
-| App settings (city, etc.) | SQLite (app sandbox) | Only your app |
+| Data                         | Storage                                               | Who can access |
+| ---------------------------- | ----------------------------------------------------- | -------------- |
+| Your private key (nsec)      | `expo-secure-store` (iOS Keychain / Android Keystore) | Only your app  |
+| Private group symmetric keys | `expo-secure-store`                                   | Only your app  |
+| Cached public events         | SQLite (app sandbox)                                  | Only your app  |
+| App settings (city, etc.)    | SQLite (app sandbox)                                  | Only your app  |
 
 Klk never transmits your private key or group symmetric keys over the network.
 
@@ -31,12 +31,12 @@ Klk never transmits your private key or group symmetric keys over the network.
 
 The default relay (`wss://relay.klk.app`) is a standard NIP-01 Nostr relay. It stores:
 
-| Event kind | Content | Visible to |
-|------------|---------|------------|
-| kind 31923 (public events) | Title, time, location, city tag | Anyone connected to the relay |
-| kind 31925 (RSVPs) | Your pubkey + event reference | Anyone connected to the relay |
-| kind 1059 (gift-wrapped invites) | Encrypted payload (NIP-44) | Only the addressed recipient (by pubkey) |
-| kind 30078 (private group events) | AES-GCM ciphertext | Anyone can see ciphertext; only group members can decrypt |
+| Event kind                        | Content                         | Visible to                                                |
+| --------------------------------- | ------------------------------- | --------------------------------------------------------- |
+| kind 31923 (public events)        | Title, time, location, city tag | Anyone connected to the relay                             |
+| kind 31925 (RSVPs)                | Your pubkey + event reference   | Anyone connected to the relay                             |
+| kind 1059 (gift-wrapped invites)  | Encrypted payload (NIP-44)      | Only the addressed recipient (by pubkey)                  |
+| kind 30078 (private group events) | AES-GCM ciphertext              | Anyone can see ciphertext; only group members can decrypt |
 
 **The relay operator can see**: event metadata (pubkeys, timestamps, tags), public event content.
 

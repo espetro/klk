@@ -82,14 +82,14 @@ The default relay URL lives in `lib/nostr/ndk.ts`. For custom relay work (self-h
 
 ## Issue Labels
 
-| Label | Meaning |
-|-------|---------|
-| `good first issue` | Isolated change, no Nostr protocol knowledge required |
-| `nostr-protocol` | Requires understanding of a specific NIP |
-| `crypto` | Touches encryption / key management — needs extra care |
-| `ios` | iOS-specific native issue |
-| `android` | Android-specific native issue |
-| `relay` | Related to relay configuration or self-hosting |
+| Label              | Meaning                                                |
+| ------------------ | ------------------------------------------------------ |
+| `good first issue` | Isolated change, no Nostr protocol knowledge required  |
+| `nostr-protocol`   | Requires understanding of a specific NIP               |
+| `crypto`           | Touches encryption / key management — needs extra care |
+| `ios`              | iOS-specific native issue                              |
+| `android`          | Android-specific native issue                          |
+| `relay`            | Related to relay configuration or self-hosting         |
 
 ## Questions
 

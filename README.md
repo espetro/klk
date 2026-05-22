@@ -6,7 +6,7 @@
 [![Built with Expo](https://img.shields.io/badge/built%20with-Expo%2055-000020.svg)](https://expo.dev)
 [![Nostr](https://img.shields.io/badge/protocol-Nostr-purple.svg)](https://nostr.com)
 
-Klk (*qué lo qué* — "what's up") is an open-source mobile app for discovering and creating local events, built on the [Nostr protocol](https://nostr.com). No accounts. No tracking. Your identity is a keypair that lives on your device.
+Klk (_qué lo qué_ — "what's up") is an open-source mobile app for discovering and creating local events, built on the [Nostr protocol](https://nostr.com). No accounts. No tracking. Your identity is a keypair that lives on your device.
 
 ---
 
@@ -25,21 +25,21 @@ This is not a for-profit social network. The goal is to make local community inf
 
 ## Features
 
-| Flow | What it does | Nostr primitive |
-|------|-------------|-----------------|
-| Join a city | Auto-generated keypair, pick your city | NIP-01 keypair |
-| Browse events | City-filtered public event feed | NIP-52 kind 31923 |
-| RSVP | One-tap RSVP, live guest count | NIP-52 kind 31925 |
-| Create event | Publish events with title, time, location | NIP-52 kind 31923 |
-| Private groups | Invite friends via encrypted DM | NIP-44 + NIP-59 |
-| Group events | Encrypted events only group members can read | kind 30078 + AES-GCM |
+| Flow           | What it does                                 | Nostr primitive      |
+| -------------- | -------------------------------------------- | -------------------- |
+| Join a city    | Auto-generated keypair, pick your city       | NIP-01 keypair       |
+| Browse events  | City-filtered public event feed              | NIP-52 kind 31923    |
+| RSVP           | One-tap RSVP, live guest count               | NIP-52 kind 31925    |
+| Create event   | Publish events with title, time, location    | NIP-52 kind 31923    |
+| Private groups | Invite friends via encrypted DM              | NIP-44 + NIP-59      |
+| Group events   | Encrypted events only group members can read | kind 30078 + AES-GCM |
 
 ---
 
 ## Getting the App
 
-- **iOS**: TestFlight — *coming soon*
-- **Android**: Google Play — *coming soon*
+- **iOS**: TestFlight — _coming soon_
+- **Android**: Google Play — _coming soon_
 - **Privacy-first / alternative markets**: F-Droid and [Obtainium](https://github.com/ImranR98/Obtainium) builds are planned for users who prefer not to use Apple or Google distribution channels.
 
 ---

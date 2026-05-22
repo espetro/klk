@@ -6,18 +6,18 @@ This document describes the technical architecture of Klk: how the client is str
 
 ## Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | Expo 55 / React Native 0.83.6 |
-| JS Engine | Hermes (New Architecture — Fabric + TurboModules) |
-| Routing | Expo Router 55 (file-based, tab + modal) |
-| UI | NativeWind v4 (Tailwind CSS for React Native) |
-| Nostr client | `@nostr-dev-kit/ndk-mobile` 0.8.x |
-| Relay cache | `expo-sqlite` via `NDKCacheAdapterSqlite` |
-| Key storage | `expo-secure-store` (iOS Keychain / Android Keystore) |
-| Encryption | `@noble/ciphers/aes` — AES-256-GCM |
-| RNG | `expo-crypto` + `react-native-get-random-values` polyfill |
-| Package manager | Bun |
+| Layer           | Technology                                                |
+| --------------- | --------------------------------------------------------- |
+| Framework       | Expo 55 / React Native 0.83.6                             |
+| JS Engine       | Hermes (New Architecture — Fabric + TurboModules)         |
+| Routing         | Expo Router 55 (file-based, tab + modal)                  |
+| UI              | NativeWind v4 (Tailwind CSS for React Native)             |
+| Nostr client    | `@nostr-dev-kit/ndk-mobile` 0.8.x                         |
+| Relay cache     | `expo-sqlite` via `NDKCacheAdapterSqlite`                 |
+| Key storage     | `expo-secure-store` (iOS Keychain / Android Keystore)     |
+| Encryption      | `@noble/ciphers/aes` — AES-256-GCM                        |
+| RNG             | `expo-crypto` + `react-native-get-random-values` polyfill |
+| Package manager | Bun                                                       |
 
 ---
 
@@ -56,6 +56,7 @@ tests/             Gauge E2E specs + step implementations
 2. Sets `explicitRelayUrls` to `[RELAY_URL]` (currently `ws://localhost:10547` for dev; production will use `wss://relay.klk.app`).
 
 The singleton is created in `app/_layout.tsx` inside the root `useEffect`, which also:
+
 - Calls `instance.connect()` to open the WebSocket.
 - Attaches the private key signer.
 - Starts the NIP-59 gift-wrap listener (`processIncomingGiftWraps`).
@@ -73,6 +74,7 @@ lib/nostr/identity.ts → getOrCreateIdentity()
 ```
 
 On first launch, `getOrCreateIdentity()`:
+
 1. Generates a 32-byte private key using `expo-crypto`.
 2. Creates an `NDKPrivateKeySigner` from it.
 3. Persists the hex-encoded private key in `expo-secure-store`.
@@ -93,15 +95,18 @@ lib/hooks/use-public-events.ts
 ```
 
 **Publishing (Flow 4)**: `publishEvent()` creates an `NDKEvent` with:
+
 - `kind: 31923`
 - `tags: [["d", unique-id], ["t", "city:<slug>"], ["name", title], ...]`
 - `content`: description/summary
 - Signs and publishes via NDK.
 
 **Subscribing (Flow 2)**: `usePublicEvents()` subscribes with filter:
+
 ```ts
 { kinds: [31923], "#t": ["city:barcelona"] }
 ```
+
 Results are surfaced as React state and rendered in the Feed tab.
 
 ---
@@ -132,9 +137,9 @@ lib/storage/groups-store.ts
 
 ```ts
 type GroupRecord = {
-  id: string;       // 16-byte hex
+  id: string; // 16-byte hex
   name: string;
-  symKey: string;   // 32-byte hex — never leaves the device unencrypted
+  symKey: string; // 32-byte hex — never leaves the device unencrypted
   members: string[]; // pubkeys
 };
 ```
@@ -160,6 +165,7 @@ lib/nostr/groups.ts → publishPrivateEvent() / aesGcmEncrypt() / aesGcmDecrypt(
 ```
 
 `publishPrivateEvent()`:
+
 1. Serialises `PublicEventData` as JSON.
 2. Generates a 12-byte IV via `expo-crypto.getRandomBytesAsync(12)`.
 3. Encrypts with `gcm(key, iv).encrypt(plaintext)` from `@noble/ciphers/aes`.
@@ -177,6 +183,7 @@ Decryption reverses the process: split the hex blob at byte 12 to recover IV and
 The relay URL is a module-level constant in `lib/nostr/ndk.ts`. All NDK operations (subscribe, publish) go through this single relay. Federation (multiple relays) is supported by expanding the `RELAYS` array — NDK handles multiplexing automatically.
 
 **Runtime relay switching** (letting users change the relay from the Profile screen without rebuilding) is planned. It requires:
+
 1. Persisting the relay URL in AsyncStorage.
 2. Re-initialising the NDK singleton when the URL changes (requires app restart or context re-mount).
 

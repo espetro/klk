@@ -6,11 +6,11 @@ This guide covers running your own Nostr relay and connecting Klk to it. Self-ho
 
 ## Why Self-Host?
 
-| Use case | What you get |
-|----------|-------------|
-| Enterprise / compliance | Events stay within your infrastructure |
-| Private community | Restrict write access to your members only |
-| Branded experience | Combine a custom relay with a forked Klk app |
+| Use case                 | What you get                                  |
+| ------------------------ | --------------------------------------------- |
+| Enterprise / compliance  | Events stay within your infrastructure        |
+| Private community        | Restrict write access to your members only    |
+| Branded experience       | Combine a custom relay with a forked Klk app  |
 | Privacy-first deployment | No third-party relay sees your event metadata |
 
 ---
@@ -139,10 +139,7 @@ Runtime relay switching (no rebuild required) is planned for a future release.
 ### Adding multiple relays (federation)
 
 ```ts
-export const RELAYS = [
-  "wss://relay.yourdomain.com",
-  "wss://relay.damus.io",
-];
+export const RELAYS = ["wss://relay.yourdomain.com", "wss://relay.damus.io"];
 ```
 
 NDK will subscribe to and publish on all listed relays automatically.
@@ -192,11 +189,13 @@ Your users' events never touch a third-party server. The app can enforce your de
 ## Privacy Notes for Relay Operators
 
 As a relay operator you can see:
+
 - Event pubkeys and timestamps
 - Public event content (kind 31923, kind 31925)
-- The *existence* of gift-wrapped invites (kind 1059) and private group events (kind 30078), but **not their content**
+- The _existence_ of gift-wrapped invites (kind 1059) and private group events (kind 30078), but **not their content**
 
 You cannot see:
+
 - Any user's private key
 - Group symmetric keys
 - Plaintext of encrypted events
