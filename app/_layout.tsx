@@ -1,7 +1,7 @@
 import "react-native-get-random-values";
 import "../global.css";
 import { useEffect, useState } from "react";
-import { Stack } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import NDK, { NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk-mobile";
 import { NDKContext } from "@/lib/context/ndk-context";
@@ -10,34 +10,57 @@ import { CityProvider } from "@/lib/context/city-context";
 import { connectNDK } from "@/lib/nostr/ndk";
 import { getOrCreateIdentity } from "@/lib/nostr/identity";
 import { processIncomingGiftWraps } from "@/lib/nostr/groups";
+import { isOnboardingComplete } from "@/lib/auth/complete-login";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [ready, setReady] = useState(false);
+  const [onboardingChecked, setOnboardingChecked] = useState(false);
+  const [onboardingComplete, setOnboardingComplete] = useState(true);
   const [ndk, setNdk] = useState<NDK | null>(null);
   const [signer, setSigner] = useState<NDKPrivateKeySigner | null>(null);
   const [currentUser, setCurrentUser] = useState<NDKUser | null>(null);
+  const router = useRouter();
+  const segments = useSegments();
 
   useEffect(() => {
     (async () => {
       try {
-        const s = await getOrCreateIdentity();
-        const instance = connectNDK(s);
-        await instance.connect();
+        const complete = await isOnboardingComplete();
+        setOnboardingComplete(complete);
+        setOnboardingChecked(true);
 
-        const user = await s.user();
-        setSigner(s);
-        setNdk(instance);
-        setCurrentUser(user);
+        if (complete) {
+          const s = await getOrCreateIdentity();
+          const instance = connectNDK(s);
+          await instance.connect();
 
-        processIncomingGiftWraps(instance, user.pubkey);
+          const user = await s.user();
+          setSigner(s);
+          setNdk(instance);
+          setCurrentUser(user);
+
+          processIncomingGiftWraps(instance, user.pubkey);
+        }
+      } catch (e) {
+        console.error("RootLayout init error:", e);
+        setOnboardingComplete(true);
       } finally {
         setReady(true);
         SplashScreen.hideAsync();
       }
     })();
   }, []);
+
+  useEffect(() => {
+    if (ready && onboardingChecked && !onboardingComplete) {
+      const isOnboardingRoute = segments[0] === "onboarding";
+      if (!isOnboardingRoute) {
+        router.replace("/onboarding/welcome");
+      }
+    }
+  }, [ready, onboardingChecked, onboardingComplete, segments, router]);
 
   if (!ready) return null;
 
@@ -50,6 +73,7 @@ export default function RootLayout() {
           <Stack.Screen name="event/new" options={{ title: "New Event" }} />
           <Stack.Screen name="group/[id]" options={{ title: "Group" }} />
           <Stack.Screen name="group/new" options={{ title: "New Group" }} />
+          <Stack.Screen name="onboarding" options={{ headerShown: false }} />
           <Stack.Screen name="legal/terms" options={{ title: "Terms of Service" }} />
           <Stack.Screen name="legal/privacy" options={{ title: "Privacy Policy" }} />
         </Stack>
