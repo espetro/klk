@@ -14,7 +14,10 @@ export default function LoginScreen() {
     setLoading(true);
     await getOrCreateIdentity();
     await completeOnboarding();
-    router.replace("/(tabs)/feed");
+    // Dismiss all onboarding screens and go to root
+    // Root layout will see onboarding is complete and render tabs
+    router.dismissAll();
+    router.replace("/");
   }
 
   return (
