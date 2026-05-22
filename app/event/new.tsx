@@ -2,11 +2,13 @@ import { useContext, useState } from "react";
 import { Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { NDKContext } from "@/app/_layout";
+import { useCity } from "@/lib/context/city-context";
 import { EventForm, EventFormValues } from "@/components/event-form";
 import { publishPublicEvent } from "@/lib/nostr/events";
 
 export default function NewEventScreen() {
-  const { ndk, city } = useContext(NDKContext);
+  const { ndk } = useContext(NDKContext);
+  const city = useCity();
   const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
 

@@ -1,12 +1,14 @@
 import { useContext } from "react";
 import { Alert, Clipboard, Pressable, ScrollView, Text, View } from "react-native";
 import { NDKContext } from "@/app/_layout";
+import { useCityContext } from "@/lib/context/city-context";
 import { CityPicker } from "@/components/city-picker";
 import { wipeIdentity } from "@/lib/nostr/identity";
 import { RELAY_URL } from "@/lib/nostr/ndk";
 
 export default function ProfileScreen() {
-  const { currentUser, city, setCity } = useContext(NDKContext);
+  const { currentUser } = useContext(NDKContext);
+  const { city, setCity } = useCityContext();
   const npub = currentUser?.npub ?? "Loading…";
 
   const copyNpub = () => {

@@ -6,10 +6,20 @@ export const CITIES = [
   { slug: "berlin", label: "Berlin" },
 ];
 
-export function cityTag(slug: string): [string, string] {
-  return ["t", `city:${slug}`];
+export function slugifyCity(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9\-]/g, "")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
-export function cityTagValue(slug: string): string {
-  return `city:${slug}`;
+export function cityTag(name: string): [string, string] {
+  return ["t", `city:${slugifyCity(name)}`];
+}
+
+export function cityTagValue(name: string): string {
+  return `city:${slugifyCity(name)}`;
 }

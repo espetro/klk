@@ -2,12 +2,13 @@ import { useContext } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { NDKContext } from "@/app/_layout";
+import { useCityContext } from "@/lib/context/city-context";
 import { CityPicker } from "@/components/city-picker";
 import { EventCard } from "@/components/event-card";
 import { usePublicEvents } from "@/lib/hooks/use-public-events";
 
 export default function FeedScreen() {
-  const { city, setCity } = useContext(NDKContext);
+  const { city, setCity } = useCityContext();
   const { events } = usePublicEvents();
   const router = useRouter();
 

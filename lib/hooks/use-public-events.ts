@@ -1,6 +1,7 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { NDKEvent } from "@nostr-dev-kit/ndk-mobile";
 import { NDKContext } from "@/app/_layout";
+import { useCity } from "@/lib/context/city-context";
 import { cityTagValue } from "../nostr/tags";
 import { parsePublicEvent, PublicEventData } from "../nostr/events";
 import { KlkKind } from "../nostr/kinds";
@@ -41,7 +42,8 @@ async function saveCachedEvents(city: string, events: PublicEvent[]): Promise<vo
 }
 
 export function usePublicEvents(): UsePublicEventsResult {
-  const { ndk, city } = useContext(NDKContext);
+  const { ndk } = useContext(NDKContext);
+  const city = useCity();
   const [events, setEvents] = useState<NDKEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
