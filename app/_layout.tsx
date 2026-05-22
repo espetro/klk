@@ -69,10 +69,35 @@ export default function RootLayout() {
       <CityProvider>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="event/[id]" options={{ title: "Event" }} />
-          <Stack.Screen name="event/new" options={{ title: "New Event" }} />
+          <Stack.Screen
+            name="event/[id]"
+            options={{
+              title: "Event",
+              presentation: "formSheet",
+              sheetGrabberVisible: true,
+              sheetAllowedDetents: [0.75, 1.0],
+              contentStyle: { backgroundColor: "transparent" },
+            }}
+          />
+          <Stack.Screen
+            name="event/new"
+            options={{
+              title: "New Event",
+              presentation: "formSheet",
+              sheetGrabberVisible: true,
+              contentStyle: { backgroundColor: "transparent" },
+            }}
+          />
           <Stack.Screen name="group/[id]" options={{ title: "Group" }} />
-          <Stack.Screen name="group/new" options={{ title: "New Group" }} />
+          <Stack.Screen
+            name="group/new"
+            options={{
+              title: "New Group",
+              presentation: "formSheet",
+              sheetGrabberVisible: true,
+              contentStyle: { backgroundColor: "transparent" },
+            }}
+          />
           <Stack.Screen name="onboarding" options={{ headerShown: false }} />
           <Stack.Screen name="legal/terms" options={{ title: "Terms of Service" }} />
           <Stack.Screen name="legal/privacy" options={{ title: "Privacy Policy" }} />

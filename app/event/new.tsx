@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { Alert } from "react-native";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { NDKContext } from "@/app/_layout";
 import { useCity } from "@/lib/context/city-context";
 import { EventForm, EventFormValues } from "@/components/event-form";
@@ -33,5 +33,16 @@ export default function NewEventScreen() {
     }
   };
 
-  return <EventForm onSubmit={handleSubmit} submitting={submitting} submitLabel="Publish Event" />;
+  return (
+    <>
+      <Stack.Screen
+        options={{
+          presentation: "formSheet",
+          sheetGrabberVisible: true,
+          contentStyle: { backgroundColor: "transparent" },
+        }}
+      />
+      <EventForm onSubmit={handleSubmit} submitting={submitting} submitLabel="Publish Event" />
+    </>
+  );
 }

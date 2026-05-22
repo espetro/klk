@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { Alert, Pressable, ScrollView, Text, View } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { NDKContext } from "@/app/_layout";
 import { parsePublicEvent, PublicEventData } from "@/lib/nostr/events";
 import { buildEventCoordinate, publishRsvp } from "@/lib/nostr/rsvp";
@@ -59,8 +59,20 @@ export default function EventDetailScreen() {
   }
 
   return (
-    <ScrollView className="flex-1 bg-gray-50">
-      <View className="bg-white p-5 mb-2">
+    <>
+      <Stack.Screen
+        options={{
+          presentation: "formSheet",
+          sheetGrabberVisible: true,
+          sheetAllowedDetents: [0.75, 1.0],
+          contentStyle: { backgroundColor: "transparent" },
+        }}
+      />
+      <ScrollView
+        className="flex-1 bg-gray-50"
+        contentInsetAdjustmentBehavior="automatic"
+      >
+        <View className="bg-white p-5 mb-2">
         <Text className="text-2xl font-bold text-gray-900">{event.title}</Text>
         <Text className="text-indigo-600 mt-2">{formatDate(event.start)}</Text>
         {event.end ? (
@@ -106,6 +118,7 @@ export default function EventDetailScreen() {
           </Text>
         </Pressable>
       </View>
-    </ScrollView>
+      </ScrollView>
+    </>
   );
 }
