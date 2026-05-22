@@ -26,3 +26,4 @@ ios/Pods/
 
 # Private process docs (app store prep, etc.)
 tmp/
+.claude/settings.local.json
