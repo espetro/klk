@@ -13,10 +13,7 @@ export default function EventsScreen() {
       <View className="absolute top-48 right-8 w-40 h-40 bg-violet-600/10 rounded-full" />
 
       <View className="flex-1 items-center justify-center">
-        <Animated.View
-          entering={FadeInUp.duration(800).delay(200)}
-          className="items-center mb-10"
-        >
+        <Animated.View entering={FadeInUp.duration(800).delay(200)} className="items-center mb-10">
           <View className="w-24 h-24 bg-indigo-500/15 rounded-3xl items-center justify-center mb-6 border border-indigo-500/20">
             <Ionicons name="compass-outline" size={48} color="#6366f1" />
           </View>
@@ -25,8 +22,8 @@ export default function EventsScreen() {
             Browse &{"\n"}Create Events
           </Text>
           <Text className="text-base text-slate-400 text-center leading-relaxed max-w-xs">
-            See what's happening around you. From meetups and concerts to workshops
-            and community gatherings.
+            See what's happening around you. From meetups and concerts to workshops and community
+            gatherings.
           </Text>
         </Animated.View>
 
@@ -39,12 +36,8 @@ export default function EventsScreen() {
               <Ionicons name="eye-outline" size={24} color="#10b981" />
             </View>
             <View className="flex-1">
-              <Text className="text-base font-semibold text-white mb-0.5">
-                Discover
-              </Text>
-              <Text className="text-sm text-slate-400">
-                Browse public events filtered by city
-              </Text>
+              <Text className="text-base font-semibold text-white mb-0.5">Discover</Text>
+              <Text className="text-sm text-slate-400">Browse public events filtered by city</Text>
             </View>
           </View>
 
@@ -53,9 +46,7 @@ export default function EventsScreen() {
               <Ionicons name="create-outline" size={24} color="#3b82f6" />
             </View>
             <View className="flex-1">
-              <Text className="text-base font-semibold text-white mb-0.5">
-                Create
-              </Text>
+              <Text className="text-base font-semibold text-white mb-0.5">Create</Text>
               <Text className="text-sm text-slate-400">
                 Publish events with time, location, and details
               </Text>
@@ -68,24 +59,17 @@ export default function EventsScreen() {
             </View>
             <View className="flex-1">
               <Text className="text-base font-semibold text-white mb-0.5">RSVP</Text>
-              <Text className="text-sm text-slate-400">
-                One-tap RSVP with live guest count
-              </Text>
+              <Text className="text-sm text-slate-400">One-tap RSVP with live guest count</Text>
             </View>
           </View>
         </Animated.View>
 
-        <Animated.View
-          entering={FadeIn.duration(800).delay(600)}
-          className="w-full max-w-sm"
-        >
+        <Animated.View entering={FadeIn.duration(800).delay(600)} className="w-full max-w-sm">
           <Pressable
             className="bg-indigo-500 rounded-2xl px-8 py-5 w-full active:opacity-90"
             onPress={() => router.push("/onboarding/location")}
           >
-            <Text className="text-white text-center text-lg font-semibold">
-              Next
-            </Text>
+            <Text className="text-white text-center text-lg font-semibold">Next</Text>
           </Pressable>
 
           <View className="flex-row justify-center mt-6 gap-2">

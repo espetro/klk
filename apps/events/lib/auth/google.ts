@@ -3,7 +3,7 @@ import { openAuthSessionAsync, maybeCompleteAuthSession } from "expo-web-browser
 
 export interface GoogleSignInResult {
   accessToken: string;
-  idToken?: string;
+  idToken?: string | undefined;
 }
 
 const GOOGLE_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID ?? "";

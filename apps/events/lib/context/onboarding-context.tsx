@@ -24,9 +24,7 @@ export function OnboardingProvider({
   }, []);
 
   return (
-    <OnboardingContext.Provider
-      value={{ onboardingComplete, setOnboardingComplete: setComplete }}
-    >
+    <OnboardingContext.Provider value={{ onboardingComplete, setOnboardingComplete: setComplete }}>
       {children}
     </OnboardingContext.Provider>
   );

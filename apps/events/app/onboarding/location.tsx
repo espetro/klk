@@ -23,10 +23,7 @@ export default function LocationScreen() {
       <View className="absolute top-44 left-8 w-40 h-40 bg-violet-600/10 rounded-full" />
 
       <View className="flex-1 items-center justify-center">
-        <Animated.View
-          entering={FadeInUp.duration(800).delay(200)}
-          className="items-center mb-10"
-        >
+        <Animated.View entering={FadeInUp.duration(800).delay(200)} className="items-center mb-10">
           <View className="w-24 h-24 bg-indigo-500/15 rounded-3xl items-center justify-center mb-6 border border-indigo-500/20">
             <Ionicons name="location-outline" size={48} color="#6366f1" />
           </View>
@@ -35,31 +32,21 @@ export default function LocationScreen() {
             Enable{"\n"}Location
           </Text>
           <Text className="text-base text-slate-400 text-center leading-relaxed max-w-xs">
-            Klk uses your location to show events near you and suggest your city.
-            Your location never leaves your device.
+            Klk uses your location to show events near you and suggest your city. Your location
+            never leaves your device.
           </Text>
         </Animated.View>
 
-        <Animated.View
-          entering={FadeIn.duration(800).delay(400)}
-          className="w-full max-w-sm"
-        >
+        <Animated.View entering={FadeIn.duration(800).delay(400)} className="w-full max-w-sm">
           <Pressable
             className={`rounded-2xl px-8 py-5 w-full mb-4 active:opacity-90 ${
-              granted
-                ? "bg-emerald-500/15 border border-emerald-500/25"
-                : "bg-indigo-500"
+              granted ? "bg-emerald-500/15 border border-emerald-500/25" : "bg-indigo-500"
             }`}
             onPress={requestPermission}
           >
             <View className="flex-row items-center justify-center">
               {granted && (
-                <Ionicons
-                  name="checkmark"
-                  size={20}
-                  color="#10b981"
-                  style={{ marginRight: 8 }}
-                />
+                <Ionicons name="checkmark" size={20} color="#10b981" style={{ marginRight: 8 }} />
               )}
               <Text
                 className={`text-center text-lg font-semibold ${
@@ -75,9 +62,7 @@ export default function LocationScreen() {
             className="bg-slate-800 rounded-2xl px-8 py-5 w-full active:opacity-90 border border-slate-700"
             onPress={() => router.push("/onboarding/login")}
           >
-            <Text className="text-white text-center text-lg font-semibold">
-              Next
-            </Text>
+            <Text className="text-white text-center text-lg font-semibold">Next</Text>
           </Pressable>
 
           <View className="flex-row justify-center mt-6 gap-2">

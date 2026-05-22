@@ -36,7 +36,7 @@ export async function signInWithApple(): Promise<AppleSignInResult> {
       throw new Error("Apple Sign-In was cancelled");
     }
     throw new Error(
-      `Apple Sign-In failed: ${error instanceof Error ? error.message : "Unknown error"}`
+      `Apple Sign-In failed: ${error instanceof Error ? error.message : "Unknown error"}`,
     );
   }
 }

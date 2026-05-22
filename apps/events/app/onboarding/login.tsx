@@ -28,10 +28,7 @@ export default function LoginScreen() {
       <View className="absolute top-48 right-8 w-40 h-40 bg-violet-600/10 rounded-full" />
 
       <View className="flex-1 items-center justify-center">
-        <Animated.View
-          entering={FadeInUp.duration(800).delay(200)}
-          className="items-center mb-10"
-        >
+        <Animated.View entering={FadeInUp.duration(800).delay(200)} className="items-center mb-10">
           <View className="w-24 h-24 bg-indigo-500/15 rounded-3xl items-center justify-center mb-6 border border-indigo-500/20">
             <Ionicons name="key-outline" size={48} color="#6366f1" />
           </View>
@@ -40,8 +37,7 @@ export default function LoginScreen() {
             Get Started
           </Text>
           <Text className="text-base text-slate-400 text-center leading-relaxed max-w-xs">
-            Sign in with an existing account or continue anonymously with a
-            Nostr keypair.
+            Sign in with an existing account or continue anonymously with a Nostr keypair.
           </Text>
         </Animated.View>
 
@@ -51,16 +47,12 @@ export default function LoginScreen() {
         >
           <Pressable className="flex-row items-center justify-center bg-white rounded-2xl px-6 py-5 active:opacity-90">
             <Ionicons name="logo-apple" size={22} color="#000" />
-            <Text className="text-slate-900 text-base font-semibold ml-3">
-              Continue with Apple
-            </Text>
+            <Text className="text-slate-900 text-base font-semibold ml-3">Continue with Apple</Text>
           </Pressable>
 
           <Pressable className="flex-row items-center justify-center bg-slate-900 rounded-2xl px-6 py-5 border border-slate-700 active:opacity-90">
             <Ionicons name="logo-google" size={22} color="#fff" />
-            <Text className="text-white text-base font-semibold ml-3">
-              Continue with Google
-            </Text>
+            <Text className="text-white text-base font-semibold ml-3">Continue with Google</Text>
           </Pressable>
         </Animated.View>
 
@@ -73,10 +65,7 @@ export default function LoginScreen() {
           <View className="flex-1 h-px bg-slate-800" />
         </Animated.View>
 
-        <Animated.View
-          entering={FadeInUp.duration(800).delay(600)}
-          className="w-full max-w-sm"
-        >
+        <Animated.View entering={FadeInUp.duration(800).delay(600)} className="w-full max-w-sm">
           <Pressable
             className="bg-indigo-500 rounded-2xl px-8 py-5 w-full mb-8 active:opacity-90"
             onPress={skipWithAnonymousKey}
