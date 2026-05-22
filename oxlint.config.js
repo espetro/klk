@@ -1,0 +1,66 @@
+// @ts-check
+import { defineConfig } from "oxlint";
+import native from "oxlint-config-universe/native";
+
+export default defineConfig({
+  extends: [native],
+  plugins: ["import", "typescript", "unicorn"],
+  categories: {
+    correctness: "error",
+    suspicious: "error",
+    perf: "error",
+    pedantic: "warn",
+  },
+  rules: {
+    "no-console": "off",
+    "no-debugger": "error",
+    "no-empty-pattern": "error",
+    "no-unused-vars": "error",
+    eqeqeq: "error",
+    "no-var": "error",
+    "prefer-const": "error",
+    "no-throw-literal": "error",
+    "no-return-await": "error",
+    "no-useless-return": "error",
+    "no-extend-native": "error",
+    "no-alert": "error",
+    "no-sync": "error",
+    "require-await": "error",
+    "max-params": ["warn", 3],
+    "max-lines": ["error", { max: 500, skipBlankLines: true }],
+    "no-fallthrough": "error",
+    "no-implicit-globals": "error",
+    "no-new-wrappers": "error",
+    "no-restricted-globals": [
+      "error",
+      { name: "fetch", message: "Use a timeout-wrapped fetch or the API client" },
+    ],
+    "react/jsx-no-leaked-render": "error",
+    "react/no-array-index-key": "warn",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "typescript/no-explicit-any": "warn",
+    "typescript/no-unused-vars": "error",
+    "unicorn/prefer-node-protocol": "error",
+    "import/no-duplicates": "error",
+    "import/no-named-default": "error",
+  },
+  env: {
+    browser: true,
+    node: true,
+    jest: true,
+  },
+  globals: {
+    React: "readonly",
+  },
+  ignorePatterns: [
+    "node_modules",
+    ".expo",
+    "dist",
+    "build",
+    "coverage",
+    "*.config.js",
+    "*.config.ts",
+    "metro.config.js",
+  ],
+});
