@@ -4,18 +4,19 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { getOrCreateIdentity } from "@/lib/nostr/identity";
 import { completeOnboarding } from "@/lib/auth/complete-login";
+import { useOnboarding } from "@/lib/context/onboarding-context";
 import Animated, { FadeInUp, FadeIn } from "react-native-reanimated";
 
 export default function LoginScreen() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const { setOnboardingComplete } = useOnboarding();
 
   async function skipWithAnonymousKey() {
     setLoading(true);
     await getOrCreateIdentity();
     await completeOnboarding();
-    // Dismiss all onboarding screens and go to root
-    // Root layout will see onboarding is complete and render tabs
+    setOnboardingComplete(true);
     router.dismissAll();
     router.replace("/");
   }

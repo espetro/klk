@@ -7,6 +7,7 @@ import NDK, { NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk-mobile";
 import { NDKContext } from "@/lib/context/ndk-context";
 export { NDKContext };
 import { CityProvider } from "@/lib/context/city-context";
+import { OnboardingProvider, useOnboarding } from "@/lib/context/onboarding-context";
 import { connectNDK } from "@/lib/nostr/ndk";
 import { getOrCreateIdentity } from "@/lib/nostr/identity";
 import { processIncomingGiftWraps } from "@/lib/nostr/groups";
@@ -14,10 +15,10 @@ import { isOnboardingComplete } from "@/lib/auth/complete-login";
 
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+function RootLayoutInner() {
   const [ready, setReady] = useState(false);
   const [onboardingChecked, setOnboardingChecked] = useState(false);
-  const [onboardingComplete, setOnboardingComplete] = useState(false);
+  const { onboardingComplete, setOnboardingComplete } = useOnboarding();
   const [ndk, setNdk] = useState<NDK | null>(null);
   const [signer, setSigner] = useState<NDKPrivateKeySigner | null>(null);
   const [currentUser, setCurrentUser] = useState<NDKUser | null>(null);
@@ -45,7 +46,6 @@ export default function RootLayout() {
         }
       } catch (e) {
         console.error("RootLayout init error:", e);
-        // On error, show onboarding as fallback rather than silently skipping it
         setOnboardingComplete(false);
       } finally {
         setReady(true);
@@ -105,5 +105,13 @@ export default function RootLayout() {
         </Stack>
       </CityProvider>
     </NDKContext.Provider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <OnboardingProvider>
+      <RootLayoutInner />
+    </OnboardingProvider>
   );
 }
