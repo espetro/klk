@@ -1,6 +1,6 @@
 import NDK, { NDKEvent, NDKPrivateKeySigner } from "@nostr-dev-kit/ndk-mobile";
 import * as Crypto from "expo-crypto";
-import { gcm } from "@noble/ciphers/aes";
+import { gcm } from "@noble/ciphers/aes.js";
 import { GroupRecord, getGroup, saveGroup } from "../storage/groups-store";
 import { PublicEventData } from "./events";
 

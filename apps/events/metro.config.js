@@ -14,9 +14,6 @@ const singletons = [
   "expo",
   "react",
   "react-native-reanimated",
-  "metro-runtime",
-  "metro-config",
-  "metro",
 ];
 
 // Force every require of a singleton to resolve from the app root regardless
@@ -34,5 +31,14 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   }
   return context.resolveRequest(context, moduleName, platform);
 };
+
+// Bun stores packages in .bun/node_modules/ with symlinks, but Metro doesn't
+// look there by default. Add it to the search paths so Metro can resolve
+// packages installed by Bun.
+const rootNodeModules = path.resolve(__dirname, "..", "..", "node_modules");
+config.resolver.nodeModulesPaths = [
+  ...(config.resolver.nodeModulesPaths || []),
+  path.join(rootNodeModules, ".bun", "node_modules"),
+];
 
 module.exports = withNativeWind(config, { input: "./global.css" });
