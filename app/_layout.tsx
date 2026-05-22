@@ -1,30 +1,16 @@
 import "react-native-get-random-values";
 import "../global.css";
-import { createContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import NDK, { NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk-mobile";
-import { getNDK } from "@/lib/nostr/ndk";
+import { NDKContext } from "@/lib/context/ndk-context";
+export { NDKContext };
+import { connectNDK } from "@/lib/nostr/ndk";
 import { getOrCreateIdentity } from "@/lib/nostr/identity";
 import { processIncomingGiftWraps } from "@/lib/nostr/groups";
 
 SplashScreen.preventAutoHideAsync();
-
-interface NDKContextValue {
-  ndk: NDK | null;
-  signer: NDKPrivateKeySigner | null;
-  currentUser: NDKUser | null;
-  city: string;
-  setCity: (city: string) => void;
-}
-
-export const NDKContext = createContext<NDKContextValue>({
-  ndk: null,
-  signer: null,
-  currentUser: null,
-  city: "barcelona",
-  setCity: () => {},
-});
 
 export default function RootLayout() {
   const [ready, setReady] = useState(false);
@@ -37,8 +23,7 @@ export default function RootLayout() {
     (async () => {
       try {
         const s = await getOrCreateIdentity();
-        const instance = getNDK();
-        instance.signer = s;
+        const instance = connectNDK(s);
         await instance.connect();
 
         const user = await s.user();
@@ -64,6 +49,8 @@ export default function RootLayout() {
         <Stack.Screen name="event/new" options={{ title: "New Event" }} />
         <Stack.Screen name="group/[id]" options={{ title: "Group" }} />
         <Stack.Screen name="group/new" options={{ title: "New Group" }} />
+        <Stack.Screen name="legal/terms" options={{ title: "Terms of Service" }} />
+        <Stack.Screen name="legal/privacy" options={{ title: "Privacy Policy" }} />
       </Stack>
     </NDKContext.Provider>
   );

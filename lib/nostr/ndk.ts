@@ -1,4 +1,4 @@
-import NDK, { NDKCacheAdapterSqlite } from "@nostr-dev-kit/ndk-mobile";
+import NDK, { NDKCacheAdapterSqlite, NDKSigner } from "@nostr-dev-kit/ndk-mobile";
 
 export const RELAY_URL = "ws://localhost:10547";
 export const RELAYS = [RELAY_URL];
@@ -15,4 +15,12 @@ export function getNDK(): NDK {
     });
   }
   return _ndk;
+}
+
+export function connectNDK(signer?: NDKSigner): NDK {
+  const ndk = getNDK();
+  if (signer) {
+    ndk.signer = signer;
+  }
+  return ndk;
 }
