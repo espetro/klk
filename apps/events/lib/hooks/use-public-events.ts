@@ -70,7 +70,7 @@ export function usePublicEvents(): UsePublicEventsResult {
 
         const sub = ndk.subscribe(
           { kinds: [KlkKind.PublicEvent as number], "#t": [cityTagValue(city)] },
-          { closeOnEose: false }
+          { closeOnEose: false },
         );
         sub.on("event", (e: NDKEvent) => {
           setEvents((prev) => {

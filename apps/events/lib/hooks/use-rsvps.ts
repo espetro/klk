@@ -11,7 +11,7 @@ export function useRsvps(eventCoordinate: string) {
     setRsvps([]);
     const sub = ndk.subscribe(
       { kinds: [31925 as any], "#a": [eventCoordinate] },
-      { closeOnEose: false }
+      { closeOnEose: false },
     );
     sub.on("event", (e: NDKEvent) => {
       setRsvps((prev) => {

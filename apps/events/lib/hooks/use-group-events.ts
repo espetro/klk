@@ -17,10 +17,7 @@ export function useGroupEvents(group: GroupRecord | null) {
   useEffect(() => {
     if (!ndk || !group) return;
     setEvents([]);
-    const sub = ndk.subscribe(
-      { kinds: [30078 as any], "#g": [group.id] },
-      { closeOnEose: false }
-    );
+    const sub = ndk.subscribe({ kinds: [30078 as any], "#g": [group.id] }, { closeOnEose: false });
     sub.on("event", async (e: NDKEvent) => {
       try {
         const plain = await aesGcmDecrypt(group.symKey, e.content);
