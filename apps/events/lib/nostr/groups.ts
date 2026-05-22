@@ -32,9 +32,14 @@ export async function inviteToGroup(
   ndk: NDK,
   signer: NDKPrivateKeySigner,
   group: GroupRecord,
-  recipientPubkey: string
+  recipientPubkey: string,
 ): Promise<void> {
-  const payload = JSON.stringify({ id: group.id, name: group.name, symKey: group.symKey, members: group.members });
+  const payload = JSON.stringify({
+    id: group.id,
+    name: group.name,
+    symKey: group.symKey,
+    members: group.members,
+  });
 
   const inner = new NDKEvent(ndk);
   inner.kind = 14;
@@ -45,7 +50,7 @@ export async function inviteToGroup(
   const sealed = await signer.encrypt(
     await ndk.getUser({ pubkey: recipientPubkey }),
     payload,
-    "nip44"
+    "nip44",
   );
 
   const wrap = new NDKEvent(ndk);
@@ -54,7 +59,10 @@ export async function inviteToGroup(
   wrap.tags = [["p", recipientPubkey]];
   await wrap.publish();
 
-  const updated: GroupRecord = { ...group, members: [...new Set([...group.members, recipientPubkey])] };
+  const updated: GroupRecord = {
+    ...group,
+    members: [...new Set([...group.members, recipientPubkey])],
+  };
   await saveGroup(updated);
 }
 
@@ -66,9 +74,14 @@ export function processIncomingGiftWraps(ndk: NDK, myPubkey: string): void {
       const decrypted = await (ndk.signer as NDKPrivateKeySigner).decrypt(
         await ndk.getUser({ pubkey: event.pubkey }),
         event.content,
-        "nip44"
+        "nip44",
       );
-      const parsed = JSON.parse(decrypted) as { id: string; name: string; symKey: string; members: string[] };
+      const parsed = JSON.parse(decrypted) as {
+        id: string;
+        name: string;
+        symKey: string;
+        members: string[];
+      };
       if (parsed.id && parsed.symKey) {
         const existing = await getGroup(parsed.id);
         if (!existing) {
@@ -103,7 +116,7 @@ export async function aesGcmDecrypt(symKeyHex: string, cipherHex: string): Promi
 export async function publishPrivateEvent(
   ndk: NDK,
   group: GroupRecord,
-  data: PublicEventData
+  data: PublicEventData,
 ): Promise<NDKEvent> {
   const payload = JSON.stringify(data);
   const symKey = hexToUint8(group.symKey);

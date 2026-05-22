@@ -1,9 +1,6 @@
 import NDK, { NDKEvent } from "@nostr-dev-kit/ndk-mobile";
 
-export async function publishRsvp(
-  ndk: NDK,
-  eventCoordinate: string
-): Promise<NDKEvent> {
+export async function publishRsvp(ndk: NDK, eventCoordinate: string): Promise<NDKEvent> {
   const rsvp = new NDKEvent(ndk);
   rsvp.kind = 31925;
   rsvp.content = "";

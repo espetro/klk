@@ -8,14 +8,11 @@ export interface PublicEventData {
   end: number;
   location: string;
   summary: string;
-  image?: string;
+  image?: string | undefined;
   city: string;
 }
 
-export async function publishPublicEvent(
-  ndk: NDK,
-  data: PublicEventData
-): Promise<NDKEvent> {
+export async function publishPublicEvent(ndk: NDK, data: PublicEventData): Promise<NDKEvent> {
   const event = new NDKEvent(ndk);
   event.kind = KlkKind.PublicEvent;
   event.content = data.summary;
@@ -35,7 +32,9 @@ export async function publishPublicEvent(
   return event;
 }
 
-export function parsePublicEvent(event: NDKEvent): PublicEventData & { id: string; pubkey: string } {
+export function parsePublicEvent(
+  event: NDKEvent,
+): PublicEventData & { id: string; pubkey: string } {
   const tag = (name: string) => event.tags.find(([t]) => t === name)?.[1] ?? "";
   const cityTag = event.tags.find(([t, v]) => t === "t" && v?.startsWith("city:"));
   return {

@@ -35,19 +35,15 @@ export function haversineDistance(a: Coordinates, b: Coordinates): number {
 
 // TODO (Wave 3): Replace stubs with expo-location implementations
 export async function resolveAddress(
-  _address: string
+  _address: string,
 ): Promise<{ lat: number; lon: number } | null> {
   throw new Error("resolveAddress requires expo-location (Wave 3)");
 }
 
-export async function reverseGeocodeCity(
-  _coords: Coordinates
-): Promise<string | null> {
+export async function reverseGeocodeCity(_coords: Coordinates): Promise<string | null> {
   throw new Error("reverseGeocodeCity requires expo-location (Wave 3)");
 }
 
-export async function geocodeCityName(
-  _cityName: string
-): Promise<Coordinates | null> {
+export async function geocodeCityName(_cityName: string): Promise<Coordinates | null> {
   throw new Error("geocodeCityName requires expo-location (Wave 3)");
 }
