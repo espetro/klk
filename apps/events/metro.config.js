@@ -9,12 +9,7 @@ const config = getDefaultConfig(__dirname);
 // redirect it to the app-level copy so there is only ever one instance in
 // the bundle, preventing a PlatformConstants TurboModule mismatch on New
 // Architecture.
-const singletons = [
-  "react-native",
-  "expo",
-  "react",
-  "react-native-reanimated",
-];
+const singletons = ["react-native", "expo", "react", "react-native-reanimated"];
 
 // Force every require of a singleton to resolve from the app root regardless
 // of which node_modules directory the requiring file lives in.  expo-nip55
@@ -26,7 +21,7 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     return context.resolveRequest(
       { ...context, originModulePath: path.resolve(__dirname, "package.json") },
       moduleName,
-      platform
+      platform,
     );
   }
   return context.resolveRequest(context, moduleName, platform);
