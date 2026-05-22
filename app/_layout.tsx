@@ -6,6 +6,7 @@ import * as SplashScreen from "expo-splash-screen";
 import NDK, { NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk-mobile";
 import { NDKContext } from "@/lib/context/ndk-context";
 export { NDKContext };
+import { CityProvider } from "@/lib/context/city-context";
 import { connectNDK } from "@/lib/nostr/ndk";
 import { getOrCreateIdentity } from "@/lib/nostr/identity";
 import { processIncomingGiftWraps } from "@/lib/nostr/groups";
@@ -17,7 +18,6 @@ export default function RootLayout() {
   const [ndk, setNdk] = useState<NDK | null>(null);
   const [signer, setSigner] = useState<NDKPrivateKeySigner | null>(null);
   const [currentUser, setCurrentUser] = useState<NDKUser | null>(null);
-  const [city, setCity] = useState("barcelona");
 
   useEffect(() => {
     (async () => {
@@ -42,16 +42,18 @@ export default function RootLayout() {
   if (!ready) return null;
 
   return (
-    <NDKContext.Provider value={{ ndk, signer, currentUser, city, setCity }}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="event/[id]" options={{ title: "Event" }} />
-        <Stack.Screen name="event/new" options={{ title: "New Event" }} />
-        <Stack.Screen name="group/[id]" options={{ title: "Group" }} />
-        <Stack.Screen name="group/new" options={{ title: "New Group" }} />
-        <Stack.Screen name="legal/terms" options={{ title: "Terms of Service" }} />
-        <Stack.Screen name="legal/privacy" options={{ title: "Privacy Policy" }} />
-      </Stack>
+    <NDKContext.Provider value={{ ndk, signer, currentUser }}>
+      <CityProvider>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="event/[id]" options={{ title: "Event" }} />
+          <Stack.Screen name="event/new" options={{ title: "New Event" }} />
+          <Stack.Screen name="group/[id]" options={{ title: "Group" }} />
+          <Stack.Screen name="group/new" options={{ title: "New Group" }} />
+          <Stack.Screen name="legal/terms" options={{ title: "Terms of Service" }} />
+          <Stack.Screen name="legal/privacy" options={{ title: "Privacy Policy" }} />
+        </Stack>
+      </CityProvider>
     </NDKContext.Provider>
   );
 }
