@@ -14,6 +14,7 @@
     "test:e2e": "cd tests && gauge run specs/"
   },
   "dependencies": {
+    "@expo/ui": "56.0.12",
     "@expo/vector-icons": "^15.0.2",
     "@maplibre/maplibre-react-native": "^11.2.1",
     "@nanostores/persistent": "^1.0.0",

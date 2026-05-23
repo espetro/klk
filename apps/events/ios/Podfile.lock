@@ -2021,6 +2021,28 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
+  - RNCPicker (2.11.4):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - RNDateTimePicker (9.1.0):
     - hermes-engine
     - RCTRequired
@@ -2319,7 +2341,7 @@ DEPENDENCIES:
   - "ExpoAppleAuthentication (from `../../../node_modules/.bun/expo-apple-authentication@56.0.4+e603a8e41fbe4518/node_modules/expo-apple-authentication/ios`)"
   - "ExpoAsset (from `../../../node_modules/.bun/expo-asset@56.0.13+56175f9acad0264d/node_modules/expo-asset/ios`)"
   - "ExpoCrypto (from `../../../node_modules/.bun/expo-crypto@56.0.3+e603a8e41fbe4518/node_modules/expo-crypto/ios`)"
-  - "ExpoDomWebView (from `../../../node_modules/.bun/@expo+dom-webview@56.0.5+00901c0556c830ae/node_modules/@expo/dom-webview/ios`)"
+  - "ExpoDomWebView (from `../../../node_modules/.bun/@expo+dom-webview@56.0.5+a904f2b19f32ba5d/node_modules/@expo/dom-webview/ios`)"
   - "ExpoFileSystem (from `../../../node_modules/.bun/expo-file-system@56.0.7+00901c0556c830ae/node_modules/expo-file-system/ios`)"
   - "ExpoFont (from `../../../node_modules/.bun/expo-font@56.0.5+e603a8e41fbe4518/node_modules/expo-font/ios`)"
   - "ExpoGlassEffect (from `../../../node_modules/.bun/expo-glass-effect@56.0.4+a904f2b19f32ba5d/node_modules/expo-glass-effect/ios`)"
@@ -2339,7 +2361,7 @@ DEPENDENCIES:
   - "ExpoSQLite (from `../../../node_modules/.bun/expo-sqlite@56.0.4+e603a8e41fbe4518/node_modules/expo-sqlite/ios`)"
   - "ExpoSymbols (from `../../../node_modules/.bun/expo-symbols@56.0.5+6499ff4b181ecb96/node_modules/expo-symbols/ios`)"
   - "ExpoSystemUI (from `../../../node_modules/.bun/expo-system-ui@56.0.5+e603a8e41fbe4518/node_modules/expo-system-ui/ios`)"
-  - "ExpoUI (from `../../../node_modules/.bun/@expo+ui@56.0.12+915140614755e42c/node_modules/@expo/ui/ios`)"
+  - "ExpoUI (from `../../../node_modules/.bun/@expo+ui@56.0.12+e603a8e41fbe4518/node_modules/@expo/ui/ios`)"
   - "ExpoWebBrowser (from `../../../node_modules/.bun/expo-web-browser@56.0.5+e603a8e41fbe4518/node_modules/expo-web-browser/ios`)"
   - "FBLazyVector (from `../../../node_modules/.bun/react-native@0.85.3+f46d15734089d3b6/node_modules/react-native/Libraries/FBLazyVector`)"
   - "hermes-engine (from `../../../node_modules/.bun/react-native@0.85.3+f46d15734089d3b6/node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)"
@@ -2419,6 +2441,7 @@ DEPENDENCIES:
   - "ReactCommon/turbomodule/core (from `../../../node_modules/.bun/react-native@0.85.3+f46d15734089d3b6/node_modules/react-native/ReactCommon`)"
   - "ReactNativeDependencies (from `../../../node_modules/.bun/react-native@0.85.3+f46d15734089d3b6/node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec`)"
   - "RNCMaskedView (from `../../../node_modules/.bun/@react-native-masked-view+masked-view@0.3.2+f46d15734089d3b6/node_modules/@react-native-masked-view/masked-view`)"
+  - "RNCPicker (from `../../../node_modules/.bun/@react-native-picker+picker@2.11.4+f46d15734089d3b6/node_modules/@react-native-picker/picker`)"
   - "RNDateTimePicker (from `../../../node_modules/.bun/@react-native-community+datetimepicker@9.1.0+e603a8e41fbe4518/node_modules/@react-native-community/datetimepicker`)"
   - "RNGestureHandler (from `../../../node_modules/.bun/react-native-gesture-handler@2.31.2+f46d15734089d3b6/node_modules/react-native-gesture-handler`)"
   - "RNReanimated (from `../../../node_modules/.bun/react-native-reanimated@4.3.1+ffe846210f44c60e/node_modules/react-native-reanimated`)"
@@ -2449,7 +2472,7 @@ EXTERNAL SOURCES:
   ExpoCrypto:
     :path: "../../../node_modules/.bun/expo-crypto@56.0.3+e603a8e41fbe4518/node_modules/expo-crypto/ios"
   ExpoDomWebView:
-    :path: "../../../node_modules/.bun/@expo+dom-webview@56.0.5+00901c0556c830ae/node_modules/@expo/dom-webview/ios"
+    :path: "../../../node_modules/.bun/@expo+dom-webview@56.0.5+a904f2b19f32ba5d/node_modules/@expo/dom-webview/ios"
   ExpoFileSystem:
     :path: "../../../node_modules/.bun/expo-file-system@56.0.7+00901c0556c830ae/node_modules/expo-file-system/ios"
   ExpoFont:
@@ -2489,7 +2512,7 @@ EXTERNAL SOURCES:
   ExpoSystemUI:
     :path: "../../../node_modules/.bun/expo-system-ui@56.0.5+e603a8e41fbe4518/node_modules/expo-system-ui/ios"
   ExpoUI:
-    :path: "../../../node_modules/.bun/@expo+ui@56.0.12+915140614755e42c/node_modules/@expo/ui/ios"
+    :path: "../../../node_modules/.bun/@expo+ui@56.0.12+e603a8e41fbe4518/node_modules/@expo/ui/ios"
   ExpoWebBrowser:
     :path: "../../../node_modules/.bun/expo-web-browser@56.0.5+e603a8e41fbe4518/node_modules/expo-web-browser/ios"
   FBLazyVector:
@@ -2647,6 +2670,8 @@ EXTERNAL SOURCES:
     :podspec: "../../../node_modules/.bun/react-native@0.85.3+f46d15734089d3b6/node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec"
   RNCMaskedView:
     :path: "../../../node_modules/.bun/@react-native-masked-view+masked-view@0.3.2+f46d15734089d3b6/node_modules/@react-native-masked-view/masked-view"
+  RNCPicker:
+    :path: "../../../node_modules/.bun/@react-native-picker+picker@2.11.4+f46d15734089d3b6/node_modules/@react-native-picker/picker"
   RNDateTimePicker:
     :path: "../../../node_modules/.bun/@react-native-community+datetimepicker@9.1.0+e603a8e41fbe4518/node_modules/@react-native-community/datetimepicker"
   RNGestureHandler:
@@ -2770,6 +2795,7 @@ SPEC CHECKSUMS:
   ReactCommon: 7dfc3250793bf36cf221096ff59e1179e13eef7f
   ReactNativeDependencies: c7f6dc6d22e10b1b085ca04859a6a8817a63fc00
   RNCMaskedView: eb2b2e538afa907f05a5848a1a1ac26092e6fec9
+  RNCPicker: d74667bdfc08ed389a2a277d95b8faf2349290a9
   RNDateTimePicker: 7b2738f1e595f83c14580a11c476872755c5befc
   RNGestureHandler: 2ff61eac036eaf89f6818bf4ed9c39771a17d134
   RNReanimated: 13a56f9d7866bd7a4db278560a3b085c0ca4a508

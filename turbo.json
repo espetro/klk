@@ -4,7 +4,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".expo/**", "nativewind-env.d.ts"],
+      "inputs": ["$TURBO_DEFAULT$", ".expo/**"],
       "outputs": [".expo/**", ".turbo/**"]
     },
     "dev": {
