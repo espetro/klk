@@ -2,10 +2,14 @@ import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { NDKEvent } from "@nostr-dev-kit/ndk-mobile";
 import { NDKContext } from "@/app/_layout";
 import { useCity } from "@/features";
-import { cityTagValue } from "@klk/infrastructure";
-import { parsePublicEvent, PublicEventData } from "@klk/infrastructure";
-import { KlkKind } from "@klk/infrastructure";
-import { getSecure, setSecure } from "@klk/infrastructure";
+import {
+  cityTagValue,
+  parsePublicEvent,
+  PublicEventData,
+  KlkKind,
+  getSecure,
+  setSecure,
+} from "@klk/infrastructure";
 
 export interface PublicEvent extends PublicEventData {
   id: string;
@@ -22,7 +26,7 @@ export interface UsePublicEventsResult {
 const MAX_RETRIES = 3;
 const BASE_DELAY_MS = 1000;
 
-async function sleep(ms: number): Promise<void> {
+function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
@@ -47,7 +51,7 @@ export function usePublicEvents(): UsePublicEventsResult {
   const [events, setEvents] = useState<NDKEvent[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [attemptCount, setAttemptCount] = useState(0);
+  const [_attemptCount, setAttemptCount] = useState(0);
 
   const startSubscription = useCallback(async () => {
     if (!ndk || !city) return;
@@ -57,6 +61,7 @@ export function usePublicEvents(): UsePublicEventsResult {
     let lastError: Error | null = null;
     for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
       try {
+        // eslint-disable-next-line no-await-in-loop
         const cached = await loadCachedEvents(city);
         if (cached.length > 0) {
           setEvents([]);
@@ -86,7 +91,8 @@ export function usePublicEvents(): UsePublicEventsResult {
       } catch (err) {
         lastError = err instanceof Error ? err : new Error(String(err));
         if (attempt < MAX_RETRIES) {
-          await sleep(BASE_DELAY_MS * Math.pow(2, attempt));
+          // eslint-disable-next-line no-void
+          void sleep(BASE_DELAY_MS * Math.pow(2, attempt));
         }
       }
     }
@@ -96,21 +102,17 @@ export function usePublicEvents(): UsePublicEventsResult {
   }, [ndk, city]);
 
   useEffect(() => {
-    let cancelled = false;
     const run = async () => {
       await startSubscription();
     };
     run();
-    return () => {
-      cancelled = true;
-    };
   }, [ndk, city, startSubscription]);
 
   const parsed: PublicEvent[] = useMemo(() => {
     return events
       .map(parsePublicEvent)
       .filter((e) => e.start > 0)
-      .sort((a, b) => a.start - b.start);
+      .toSorted((a, b) => a.start - b.start);
   }, [events]);
 
   useEffect(() => {

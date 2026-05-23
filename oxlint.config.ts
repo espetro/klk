@@ -32,6 +32,7 @@ export default defineConfig({
       "error",
       { name: "fetch", message: "Use a timeout-wrapped fetch or the API client" },
     ],
+    "react/react-in-jsx-scope": "off",
     "react/no-array-index-key": "warn",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
@@ -58,5 +59,6 @@ export default defineConfig({
     "*.config.js",
     "*.config.ts",
     "metro.config.js",
+    "tests",
   ],
 });

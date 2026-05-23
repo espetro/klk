@@ -1,11 +1,10 @@
-import { useCallback, useContext, useEffect, useState } from "react";
-import { Alert, FlatList, Pressable, ScrollView, Text, View } from "react-native";
-import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useContext, useState } from "react";
+import { Alert, Pressable, ScrollView, Text, View } from "react-native";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { NDKContext } from "@/app/_layout";
-import { getGroup, GroupRecord } from "@klk/infrastructure";
-import { publishPrivateEvent } from "@klk/infrastructure";
+import { getGroup, GroupRecord, publishPrivateEvent } from "@klk/infrastructure";
 import { useGroupEvents } from "@/features";
-import { EventCard, InviteFriendSheet, EventForm, EventFormValues } from "@klk/ui";
+import { EventCard, InviteFriendSheet, EventForm, EventFormValues } from "@/components";
 
 export default function GroupDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -14,7 +13,6 @@ export default function GroupDetailScreen() {
   const [inviteVisible, setInviteVisible] = useState(false);
   const [newEventVisible, setNewEventVisible] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const router = useRouter();
   const privateEvents = useGroupEvents(group);
 
   useFocusEffect(

@@ -1,16 +1,20 @@
+// eslint-disable-next-line import/no-unassigned-import
 import "react-native-get-random-values";
+// eslint-disable-next-line import/no-unassigned-import
 import "../global.css";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import NDK, { NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk-mobile";
 import { NDKContext } from "@/lib/context/ndk-context";
 export { NDKContext };
 import { useOnboarding } from "@/features";
-import { connectNDK } from "@klk/infrastructure";
-import { getOrCreateIdentity } from "@klk/infrastructure";
-import { processIncomingGiftWraps } from "@klk/infrastructure";
-import { isOnboardingComplete } from "@klk/infrastructure";
+import {
+  connectNDK,
+  getOrCreateIdentity,
+  processIncomingGiftWraps,
+  isOnboardingComplete,
+} from "@klk/infrastructure";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -62,10 +66,12 @@ function RootLayoutInner() {
     }
   }, [ready, onboardingChecked, onboardingComplete, segments, router]);
 
+  const ndkContextValue = useMemo(() => ({ ndk, signer, currentUser }), [ndk, signer, currentUser]);
+
   if (!ready) return null;
 
   return (
-    <NDKContext.Provider value={{ ndk, signer, currentUser }}>
+    <NDKContext.Provider value={ndkContextValue}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen

@@ -1,53 +1,52 @@
 import { useContext } from "react";
 import { Alert, Clipboard, Pressable, ScrollView, Text, View } from "react-native";
-import { router } from "expo-router";
+import { router as expoRouter } from "expo-router";
 import { NDKContext } from "@/app/_layout";
 import { $city, useCity } from "@/features";
-import { CityPicker } from "@klk/ui";
-import { wipeIdentity } from "@klk/infrastructure";
-import { resetOnboarding } from "@klk/infrastructure";
-import { RELAY_URL } from "@klk/infrastructure";
+import { CityPicker } from "@/components";
+import { wipeIdentity, resetOnboarding, RELAY_URL } from "@klk/infrastructure";
+
+function handleCityChange(newCity: string) {
+  $city.set({ ...$city.get(), name: newCity });
+}
+
+function handleWipe() {
+  Alert.alert("Wipe Identity", "This will delete your private key. Are you sure?", [
+    { text: "Cancel", style: "cancel" },
+    {
+      text: "Wipe",
+      style: "destructive",
+      onPress: async () => {
+        await wipeIdentity();
+        Alert.alert("Done", "Restart the app to generate a new identity.");
+      },
+    },
+  ]);
+}
+
+function handleResetOnboarding() {
+  Alert.alert("Reset Onboarding", "Start the onboarding flow from the beginning?", [
+    { text: "Cancel", style: "cancel" },
+    {
+      text: "Reset",
+      style: "destructive",
+      onPress: async () => {
+        await resetOnboarding();
+        expoRouter.replace("/onboarding/welcome");
+      },
+    },
+  ]);
+}
 
 export default function ProfileScreen() {
   const { currentUser } = useContext(NDKContext);
   const city = useCity();
   const npub = currentUser?.npub ?? "Loading…";
 
-  const handleCityChange = (newCity: string) => {
-    $city.set({ ...$city.get(), name: newCity });
-  };
-
+  // eslint-disable-next-line consistent-function-scoping
   const copyNpub = () => {
     Clipboard.setString(npub);
     Alert.alert("Copied", "npub copied to clipboard");
-  };
-
-  const handleWipe = () => {
-    Alert.alert("Wipe Identity", "This will delete your private key. Are you sure?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Wipe",
-        style: "destructive",
-        onPress: async () => {
-          await wipeIdentity();
-          Alert.alert("Done", "Restart the app to generate a new identity.");
-        },
-      },
-    ]);
-  };
-
-  const handleResetOnboarding = () => {
-    Alert.alert("Reset Onboarding", "Start the onboarding flow from the beginning?", [
-      { text: "Cancel", style: "cancel" },
-      {
-        text: "Reset",
-        style: "destructive",
-        onPress: async () => {
-          await resetOnboarding();
-          router.replace("/onboarding/welcome");
-        },
-      },
-    ]);
   };
 
   return (

@@ -2,10 +2,13 @@ import { useContext, useEffect, useState } from "react";
 import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { NDKContext } from "@/app/_layout";
-import { parsePublicEvent, PublicEventData } from "@klk/infrastructure";
-import { buildEventCoordinate, publishRsvp } from "@klk/infrastructure";
+import {
+  parsePublicEvent,
+  PublicEventData,
+  buildEventCoordinate,
+  publishRsvp,
+} from "@klk/infrastructure";
 import { useRsvps } from "@/features";
-import { NDKEvent } from "@nostr-dev-kit/ndk-mobile";
 import { User } from "@klk/core";
 import { useFeatureFlag } from "@/features/useFeatureFlag";
 import { useEventDetail } from "@/features/useEventDetail";

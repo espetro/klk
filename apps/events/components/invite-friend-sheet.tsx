@@ -8,10 +8,8 @@ import {
   TextInput,
   View,
 } from "react-native";
-import NDK from "@nostr-dev-kit/ndk-mobile";
-import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk-mobile";
-import { GroupRecord } from "@klk/infrastructure";
-import { inviteToGroup } from "@klk/infrastructure";
+import NDK, { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk-mobile";
+import { GroupRecord, inviteToGroup } from "@klk/infrastructure";
 
 interface Props {
   visible: boolean;

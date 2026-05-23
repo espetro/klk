@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { Platform, Pressable, ScrollView, Text, TextInput } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { Platform } from "react-native";
 
 export interface EventFormValues {
   title: string;

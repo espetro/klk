@@ -3,7 +3,7 @@ import { Alert } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { NDKContext } from "@/app/_layout";
 import { useCity } from "@/features";
-import { EventForm, EventFormValues } from "@klk/ui";
+import { EventForm, EventFormValues } from "@/components";
 import { publishPublicEvent } from "@klk/infrastructure";
 
 export default function NewEventScreen() {

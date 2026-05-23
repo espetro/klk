@@ -1,6 +1,6 @@
 // @ts-check
 
-const path = require("path");
+const path = require("node:path");
 const { getDefaultConfig } = require("expo/metro-config");
 const { withNativeWind } = require("nativewind/metro");
 
@@ -67,6 +67,6 @@ config.resolver.nodeModulesPaths = [
 ];
 
 /** @type {any} */
-const _config = config;
+const finalConfig = config;
 
-module.exports = withNativeWind(_config, { input: "./global.css" });
+module.exports = withNativeWind(finalConfig, { input: "./global.css" });

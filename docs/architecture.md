@@ -23,39 +23,49 @@ This document describes the technical architecture of Klk: how the client is str
 
 ## Project Layout
 
+Monorepo structure with clear separation of concerns:
+
 ```
-app/               Expo Router pages (file = route)
-  (tabs)/          Tab bar: Feed, Groups, Profile
-  event/[id].tsx   Event detail modal
-  event/new.tsx    Create public event
-  group/[id].tsx   Group detail modal
-  group/new.tsx    Create private group
-components/        Shared UI components
-lib/
-  nostr/           Nostr protocol layer
-    ndk.ts         NDK singleton + relay config
-    identity.ts    Keypair generation and storage
-    events.ts      Public event publish/subscribe
-    rsvp.ts        RSVP publish/subscribe
-    groups.ts      Group crypto + gift-wrap invite + private event
-    tags.ts        NIP tag helpers
-  hooks/           React hooks consuming the nostr layer
-  storage/
-    groups-store.ts  GroupRecord persistence (secure-store)
-    secure.ts        Low-level secure-store wrapper
-tests/             Gauge E2E specs + step implementations
+packages/
+  core/           Domain models, ports, and use cases (neverthrow/valibot)
+    src/
+      domain/     Events, Users, Groups, Cities entities; errors
+      ports/      Interfaces: IEventRepository, IStorageService, ICryptoService, IConfigService
+      use-cases/  PublishEvent, RsvpEvent, CreateGroup, FindEventsByCity
+  infrastructure/ Adapters implementing the ports
+    src/
+      nostr/      Nostr protocol layer: ndk, identity, events, rsvp, groups, tags, NostrEventRepository
+      storage/    ExpoStorageAdapter, SecureStoreAdapter, CityStore, GroupsStore
+      crypto/     AesGcmCryptoAdapter
+      config/     ConfigService
+  ui/             Shared UI components and theme
+    src/
+      components/ Button, Input, Card, Avatar, EventForm, CityPicker, etc.
+      theme/      Tailwind tokens, dark mode, global.css
+apps/events/      Main application
+  app/            Expo Router pages (file = route)
+    (tabs)/       Tab bar: Feed, Groups, Profile
+    event/[id].tsx Event detail modal
+    event/new.tsx Create public event
+    group/[id].tsx Group detail modal
+    group/new.tsx Create private group
+  components/     App-specific components
+  src/
+    features/     Glue hooks (use-public-events, use-rsvps, use-identity, ndkStore, cityStore, onboardingStore)
+    widgets/      App-specific composite components
+tests/            Gauge E2E specs + step implementations
 ```
 
 ---
 
 ## NDK Initialization
 
-`lib/nostr/ndk.ts` exports a singleton `NDK` instance. On first call it:
+`packages/infrastructure/src/nostr/ndk.ts` exports a singleton `NDK` instance. On first call it:
 
 1. Creates an `NDKCacheAdapterSqlite` and calls `.initialize()` to create the SQLite schema.
 2. Sets `explicitRelayUrls` to `[RELAY_URL]` (currently `ws://localhost:10547` for dev; production will use `wss://relay.klk.app`).
 
-The singleton is created in `app/_layout.tsx` inside the root `useEffect`, which also:
+The singleton is created in `apps/events/app/_layout.tsx` inside the root `useEffect`, which also:
 
 - Calls `instance.connect()` to open the WebSocket.
 - Attaches the private key signer.
@@ -70,7 +80,7 @@ The singleton is created in `app/_layout.tsx` inside the root `useEffect`, which
 ## Identity (Flow 1)
 
 ```
-lib/nostr/identity.ts → getOrCreateIdentity()
+packages/infrastructure/src/nostr/identity.ts → getOrCreateIdentity()
 ```
 
 On first launch, `getOrCreateIdentity()`:
@@ -81,7 +91,7 @@ On first launch, `getOrCreateIdentity()`:
 
 On subsequent launches it reads the stored key. The public key (npub) is derived from the private key via secp256k1 — it is never transmitted separately.
 
-City selection is stored in React state (root context) and written to AsyncStorage. It drives the subscription filter (`["t", "city:<slug>"]`).
+City selection is managed through nanostores (`apps/events/src/features/cityStore`) and drives the subscription filter (`["t", "city:<slug>"]`).
 
 ---
 
@@ -90,24 +100,27 @@ City selection is stored in React state (root context) and written to AsyncStora
 ### NIP-52 Calendar Events — kind 31923
 
 ```
-lib/nostr/events.ts
-lib/hooks/use-public-events.ts
+packages/infrastructure/src/nostr/events.ts
+apps/events/src/features/use-public-events.ts
 ```
 
-**Publishing (Flow 4)**: `publishEvent()` creates an `NDKEvent` with:
+**Publishing (Flow 4)**: `packages/core/src/use-cases/PublishEvent.ts` orchestrates the flow:
 
-- `kind: 31923`
-- `tags: [["d", unique-id], ["t", "city:<slug>"], ["name", title], ...]`
-- `content`: description/summary
-- Signs and publishes via NDK.
+1. Validates input with valibot schemas
+2. Calls `packages/infrastructure/src/nostr/events.ts` to create NDKEvent
+3. Creates `NDKEvent` with:
+   - `kind: 31923`
+   - `tags: [["d", unique-id], ["t", "city:<slug>"], ["name", title], ...]`
+   - `content`: description/summary
+4. Signs and publishes via NDK.
 
-**Subscribing (Flow 2)**: `usePublicEvents()` subscribes with filter:
+**Subscribing (Flow 2)**: `apps/events/src/features/use-public-events.ts` subscribes with filter:
 
 ```ts
 { kinds: [31923], "#t": ["city:barcelona"] }
 ```
 
-Results are surfaced as React state and rendered in the Feed tab.
+Results are surfaced as React state via nanostores and rendered in the Feed tab.
 
 ---
 
@@ -116,11 +129,18 @@ Results are surfaced as React state and rendered in the Feed tab.
 ### NIP-52 Calendar RSVPs — kind 31925
 
 ```
-lib/nostr/rsvp.ts
-lib/hooks/use-rsvps.ts
+packages/infrastructure/src/nostr/rsvp.ts
+apps/events/src/features/use-rsvps.ts
+packages/core/src/use-cases/RsvpEvent.ts
 ```
 
-`publishRsvp()` publishes a kind 31925 event referencing the event's `d` tag. `useRsvps(eventId)` subscribes and counts unique pubkeys, displayed as the guest count on the event detail screen.
+`packages/core/src/use-cases/RsvpEvent.ts` orchestrates the flow:
+
+1. Validates input with valibot schemas  
+2. Calls `packages/infrastructure/src/nostr/rsvp.ts` to publish NDKEvent
+3. Publishes kind 31925 event referencing the event's `d` tag
+
+`apps/events/src/features/use-rsvps.ts` subscribes to kind 31925 events and counts unique pubkeys, displayed as the guest count on the event detail screen.
 
 ---
 
@@ -129,8 +149,8 @@ lib/hooks/use-rsvps.ts
 ### Group creation — local only
 
 ```
-lib/nostr/groups.ts → createGroup()
-lib/storage/groups-store.ts
+packages/infrastructure/src/nostr/groups.ts → createGroup()
+packages/infrastructure/src/storage/groups-store.ts
 ```
 
 `createGroup()` generates a 256-bit symmetric key using `expo-crypto.getRandomBytesAsync(32)` and a 128-bit group ID. Both are stored locally in `expo-secure-store` as a `GroupRecord`:
@@ -161,7 +181,7 @@ The recipient's `processIncomingGiftWraps()` listener (started at app boot) decr
 ### Encryption — AES-256-GCM
 
 ```
-lib/nostr/groups.ts → publishPrivateEvent() / aesGcmEncrypt() / aesGcmDecrypt()
+packages/infrastructure/src/nostr/groups.ts → publishPrivateEvent() / aesGcmEncrypt() / aesGcmDecrypt()
 ```
 
 `publishPrivateEvent()`:
@@ -180,7 +200,7 @@ Decryption reverses the process: split the hex blob at byte 12 to recover IV and
 
 ## Relay Model
 
-The relay URL is a module-level constant in `lib/nostr/ndk.ts`. All NDK operations (subscribe, publish) go through this single relay. Federation (multiple relays) is supported by expanding the `RELAYS` array — NDK handles multiplexing automatically.
+The relay URL is a module-level constant in `packages/infrastructure/src/nostr/ndk.ts`. All NDK operations (subscribe, publish) go through this single relay. Federation (multiple relays) is supported by expanding the `RELAYS` array — NDK handles multiplexing automatically.
 
 **Runtime relay switching** (letting users change the relay from the Profile screen without rebuilding) is planned. It requires:
 
@@ -193,11 +213,45 @@ The relay URL is a module-level constant in `lib/nostr/ndk.ts`. All NDK operatio
 
 ```
 User action
-  → lib/nostr/* (protocol layer)
+  → packages/infrastructure/src/nostr/* (protocol layer)
       → NDKEvent.publish() → WebSocket → relay
       ← NDKSubscription.on("event") ← WebSocket ← relay
-  → lib/hooks/* (React state)
+  → packages/core/src/use-cases/* (business logic)
+  → apps/events/src/features/* (React state)
   → UI component render
 ```
 
 Encrypted group data never passes through the relay in plaintext. The relay is a dumb message bus for group flows — it stores and forwards ciphertext it cannot read.
+
+---
+
+## Migration Status
+
+The architecture migration from monolithic structure to clean architecture is complete:
+
+### Phase 2 (Contracts): ✅ COMPLETE
+- Domain models (Events, Users, Groups, Cities) in `packages/core/src/domain`
+- Port interfaces in `packages/core/src/ports` (IEventRepository, IStorageService, ICryptoService, IConfigService)
+- Use cases in `packages/core/src/use-cases` (PublishEvent, RsvpEvent, CreateGroup, FindEventsByCity)
+
+### Phase 3 (First Adapter): ✅ COMPLETE  
+- Infrastructure stubs created in `packages/infrastructure/src/`
+- Nostr, storage, crypto, and config adapters implemented
+
+### Phase 4 (Extraction): ✅ COMPLETE
+- All `lib/` contents moved to `packages/`
+- `lib/nostr/*` → `packages/infrastructure/src/nostr/*`
+- `lib/hooks/*` → `apps/events/src/features/*`
+- Library files migrated and cleaned up
+
+### Phase 5 (State Migration): ✅ COMPLETE
+- Nanostores replace React Context throughout the app
+- `apps/events/src/features/` contains all state management hooks
+- Eliminated context propagation issues
+
+### Notes
+- **NDKContext**: Remains in `apps/events/app/_layout.tsx` (final item to migrate to nanostores)
+- **Testing**: All 6 E2E flows verified on iOS simulator with agent-device + Gauge
+- **Validation**: `bun run validate` passes (TypeScript, lint, format, bundle, production start)
+
+The migration successfully separated concerns while maintaining full compatibility with Nostr protocols and existing functionality.

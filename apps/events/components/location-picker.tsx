@@ -1,8 +1,7 @@
 import { View, Text, TextInput, Pressable, ScrollView, Alert } from "react-native";
 import { useState, useCallback } from "react";
 import * as Location from "expo-location";
-import { CITIES } from "@klk/infrastructure";
-import { DistanceRange, DISTANCE_RANGES, DEFAULT_DISTANCE_RANGE } from "@klk/infrastructure";
+import { CITIES, DistanceRange, DISTANCE_RANGES } from "@klk/infrastructure";
 
 export interface LocationSelection {
   city: string;
@@ -81,7 +80,7 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
         distance: value.distance,
       });
       setSearchQuery("Current location");
-    } catch (_err) {
+    } catch {
       Alert.alert("Error", "Unable to get your current location.");
     } finally {
       setIsLocating(false);

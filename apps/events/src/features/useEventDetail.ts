@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { NostrEventRepository } from "@klk/infrastructure";
-import { Event, User, rsvpEvent } from "@klk/core";
+import { User, rsvpEvent } from "@klk/core";
 
 const repository = new NostrEventRepository();
 

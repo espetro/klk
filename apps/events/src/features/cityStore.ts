@@ -1,6 +1,5 @@
 import { atom } from "nanostores";
-import { getSecure, setSecure } from "@klk/infrastructure";
-import { CitySettings, DEFAULT_CITY_SETTINGS } from "@klk/infrastructure";
+import { getSecure, CitySettings, DEFAULT_CITY_SETTINGS } from "@klk/infrastructure";
 
 const CITY_STORE_KEY = "city_settings";
 

@@ -1,10 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState, useCallback } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
-import { useRouter } from "expo-router";
-import { GroupCard } from "@klk/ui";
+import { useRouter, useFocusEffect } from "expo-router";
+import { GroupCard } from "@/components";
 import { getAllGroups, GroupRecord } from "@klk/infrastructure";
-import { useFocusEffect } from "expo-router";
-import { useCallback } from "react";
 
 export default function GroupsScreen() {
   const [groups, setGroups] = useState<GroupRecord[]>([]);

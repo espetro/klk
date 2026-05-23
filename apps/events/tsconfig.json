@@ -12,6 +12,8 @@
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "paths": {
       "@/*": ["./*"],
+      "@/components": ["./components"],
+      "@/components/*": ["./components/*"],
       "@/features": ["./src/features"],
       "@/features/*": ["./src/features/*"],
       "@klk/core": ["../../packages/core/src"],

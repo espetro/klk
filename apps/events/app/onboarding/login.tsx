@@ -2,8 +2,7 @@ import { View, Text, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { getOrCreateIdentity } from "@klk/infrastructure";
-import { completeOnboarding } from "@klk/infrastructure";
+import { getOrCreateIdentity, completeOnboarding } from "@klk/infrastructure";
 import { useOnboarding } from "@/features";
 import Animated, { FadeInUp, FadeIn } from "react-native-reanimated";
 

@@ -1,6 +1,5 @@
 import { View, Text, Pressable } from "react-native";
-import { CITIES } from "@klk/infrastructure";
-import { Coordinates, DistanceRange, DISTANCE_RANGES } from "@klk/infrastructure";
+import { CITIES, Coordinates, DistanceRange, DISTANCE_RANGES } from "@klk/infrastructure";
 
 interface MapFilterBarProps {
   selectedCity: Coordinates;

@@ -8,6 +8,7 @@ export default function TabsLayout() {
         name="feed"
         options={{
           title: "Feed",
+          // oxlint-disable-next-line react/no-unstable-nested-components
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="calendar-outline" size={size} color={color} />
           ),
@@ -17,6 +18,7 @@ export default function TabsLayout() {
         name="groups"
         options={{
           title: "Groups",
+          // oxlint-disable-next-line react/no-unstable-nested-components
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="people-outline" size={size} color={color} />
           ),
@@ -26,6 +28,7 @@ export default function TabsLayout() {
         name="profile"
         options={{
           title: "Profile",
+          // oxlint-disable-next-line react/no-unstable-nested-components
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person-outline" size={size} color={color} />
           ),

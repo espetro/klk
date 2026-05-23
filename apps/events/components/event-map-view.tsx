@@ -1,7 +1,6 @@
 import { View, type ViewStyle } from "react-native";
 import { Map, Camera, Marker, type MapRef } from "@maplibre/maplibre-react-native";
-import { PublicEventData } from "@klk/infrastructure";
-import { Coordinates } from "@klk/infrastructure";
+import { PublicEventData, Coordinates } from "@klk/infrastructure";
 import { useRef, useCallback } from "react";
 
 const MAP_STYLE = "https://demotiles.maplibre.org/style.json";
@@ -38,10 +37,14 @@ export function EventMapView({ events, selectedCity, onEventPress, style }: Even
           duration={600}
         />
         {events
-          .filter((e) => e.location != null && e.location.includes(","))
+          .filter(
+            (e) => e.location !== null && e.location !== undefined && e.location.includes(","),
+          )
           .map((event) => {
             const parts = event.location.split(",").map((s) => parseFloat(s.trim()));
-            if (parts.length < 2 || parts.some(isNaN)) return null;
+            if (parts.length < 2 || parts.some(isNaN)) {
+              return null;
+            }
             const longitude = parts[0]!;
             const latitude = parts[1]!;
             return (

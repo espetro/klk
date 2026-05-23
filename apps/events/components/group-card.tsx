@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text } from "react-native";
 import { useRouter } from "expo-router";
 import { GroupRecord } from "@klk/infrastructure";
 
