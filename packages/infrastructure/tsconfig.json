@@ -7,8 +7,7 @@
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "moduleResolution": "node",
     "paths": {
-      "@klk/core": ["../core/src"],
-      "@events/storage/*": ["src/storage/*"]
+      "@klk/core": ["../core/src"]
     }
   },
   "include": ["src/**/*"]
