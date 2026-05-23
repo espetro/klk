@@ -46,7 +46,7 @@ type TextVariantProps = VariantProps<typeof textVariants>;
 
 type TextVariant = NonNullable<TextVariantProps['variant']>;
 
-const ROLE: Partial<Record<TextVariant, Role>> = {
+const ROLE: Partial<Record<TextVariant, Role | undefined>> = {
   h1: 'heading',
   h2: 'heading',
   h3: 'heading',

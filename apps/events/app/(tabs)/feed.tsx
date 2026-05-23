@@ -3,6 +3,7 @@ import { FlatList, Pressable, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { $city, useCity, useCityCoordinates, usePublicEvents } from "@/features";
 import { CityPicker, EventCard, EventMapView } from "@/components";
+import { Button } from "@klk/ui";
 
 type ViewMode = "list" | "map";
 
