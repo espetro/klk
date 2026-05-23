@@ -1,4 +1,5 @@
-import { ScrollView, Pressable, Text } from "react-native";
+import { View } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import { CITIES } from "@klk/infrastructure";
 
 interface Props {
@@ -8,20 +9,16 @@ interface Props {
 
 export function CityPicker({ current, onChange }: Props) {
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
-      {CITIES.map((c) => (
-        <Pressable
-          key={c.slug}
-          onPress={() => onChange(c.slug)}
-          className={`mr-2 px-4 py-2 rounded-full ${
-            current === c.slug ? "bg-indigo-600" : "bg-gray-100"
-          }`}
-        >
-          <Text className={current === c.slug ? "text-white font-medium" : "text-gray-700"}>
-            {c.label}
-          </Text>
-        </Pressable>
-      ))}
-    </ScrollView>
+    <View className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+      <Picker
+        selectedValue={current}
+        onValueChange={(value) => onChange(value as string)}
+        className="h-12"
+      >
+        {CITIES.map((c) => (
+          <Picker.Item key={c.slug} label={c.label} value={c.slug} />
+        ))}
+      </Picker>
+    </View>
   );
 }

@@ -20,6 +20,7 @@
     "@nanostores/react": "^1.0.0",
     "@nostr-dev-kit/ndk-mobile": "^0.8.43",
     "@react-native-community/datetimepicker": "9.1.0",
+    "@react-native-picker/picker": "^2.11.4",
     "@rn-primitives/avatar": "^1.4.0",
     "@rn-primitives/separator": "^1.4.0",
     "@rn-primitives/slot": "^1.4.0",
