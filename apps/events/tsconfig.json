@@ -9,10 +9,17 @@
     "noFallthroughCasesInSwitch": true,
     "exactOptionalPropertyTypes": true,
     "noUncheckedSideEffectImports": true,
-    "lib": ["ESNext"],
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "paths": {
       "@/*": ["./*"],
-      "@/features/*": ["./src/features/*"]
+      "@/features": ["./src/features"],
+      "@/features/*": ["./src/features/*"],
+      "@klk/core": ["../../packages/core/src"],
+      "@klk/core/*": ["../../packages/core/src/*"],
+      "@klk/infrastructure": ["../../packages/infrastructure/src"],
+      "@klk/infrastructure/*": ["../../packages/infrastructure/src/*"],
+      "@klk/ui": ["../../packages/ui/src"],
+      "@klk/ui/*": ["../../packages/ui/src/*"]
     }
   },
   "include": [

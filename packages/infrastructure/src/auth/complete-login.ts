@@ -1,6 +1,6 @@
 import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk-mobile";
-import { getOrCreateIdentity } from "@/lib/nostr/identity";
-import { deleteSecure, getSecure, setSecure } from "@/lib/storage/secure";
+import { getOrCreateIdentity } from "../nostr/identity";
+import { deleteSecure, getSecure, setSecure } from "../storage/secure";
 
 const ONBOARDING_KEY = "onboarding_complete";
 const OAUTH_CREDENTIAL_KEY = "oauth_credential";

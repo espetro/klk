@@ -2,7 +2,7 @@
 export { NostrEventRepository } from './NostrEventRepository';
 export { publishPublicEvent, parsePublicEvent } from './events';
 export type { PublicEventData } from './events';
-export { createGroup, inviteToGroup, processIncomingGiftWraps, publishPrivateEvent } from './groups';
+export { createGroup, inviteToGroup, processIncomingGiftWraps, publishPrivateEvent, aesGcmDecrypt } from './groups';
 export { publishRsvp, buildEventCoordinate } from './rsvp';
 export { getNDK, connectNDK, RELAY_URL, RELAYS } from './ndk';
 export { getOrCreateIdentity, wipeIdentity } from './identity';

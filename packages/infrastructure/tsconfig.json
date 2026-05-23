@@ -1,13 +1,15 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "skipLibCheck": true,
     "outDir": "./dist",
     "rootDir": "./src",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "moduleResolution": "node",
     "paths": {
       "@klk/core": ["../core/src"],
-      "@events/storage/*": ["../../apps/events/lib/storage/*"]
+      "@events/storage/*": ["src/storage/*"]
     }
   },
-  "include": ["src/**/*"],
-  "references": [{ "path": "../core" }]
+  "include": ["src/**/*"]
 }

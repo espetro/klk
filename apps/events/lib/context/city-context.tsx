@@ -1,11 +1,11 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { Coordinates, DEFAULT_DISTANCE_RANGE, DistanceRange } from "@/lib/nostr/geo";
+import { type Coordinates, DEFAULT_DISTANCE_RANGE, type DistanceRange } from "@klk/infrastructure";
 import {
-  CitySettings,
+  type CitySettings,
   DEFAULT_CITY_SETTINGS,
   loadCitySettings,
   saveCitySettings,
-} from "@/lib/storage/city-store";
+} from "@klk/infrastructure";
 
 export interface CityContextValue {
   city: string;

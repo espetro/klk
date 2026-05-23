@@ -56,9 +56,7 @@ export function useEventDetail(eventId: string, user: User | null): UseEventDeta
         title: found.title,
         pubkey: found.id,
         start: found.startTime.getTime() / 1000,
-        end: undefined,
-        location: found.location,
-        summary: undefined,
+        ...(found.location && { location: found.location }),
       });
       setLoading(false);
     });

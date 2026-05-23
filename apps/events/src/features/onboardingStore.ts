@@ -1,13 +1,11 @@
-import { persistentAtom } from "@nanostores/persistent";
+import { atom } from "nanostores";
 import { useStore } from "@nanostores/react";
 
 interface OnboardingState {
   complete: boolean;
 }
 
-export const $onboarding = persistentAtom<OnboardingState>("onboarding", {
-  complete: false,
-});
+export const $onboarding = atom<OnboardingState>({ complete: false });
 
 export function useOnboarding() {
   const state = useStore($onboarding);
