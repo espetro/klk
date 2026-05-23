@@ -1,7 +1,7 @@
 import { View, type ViewStyle } from "react-native";
 import { Map, Camera, Marker, type MapRef } from "@maplibre/maplibre-react-native";
 import { PublicEventData, Coordinates } from "@klk/infrastructure";
-import { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useMemo } from "react";
 
 const MAP_STYLE = "https://demotiles.maplibre.org/style.json";
 
@@ -16,7 +16,12 @@ interface EventMapProps {
   style?: ViewStyle;
 }
 
-export function EventMapView({ events, selectedCity, onEventPress, style }: EventMapProps) {
+export const EventMapView = React.memo(function EventMapView({
+  events,
+  selectedCity,
+  onEventPress,
+  style,
+}: EventMapProps) {
   const mapRef = useRef<MapRef>(null);
   const center = selectedCity ?? DEFAULT_CENTER;
 
@@ -27,6 +32,32 @@ export function EventMapView({ events, selectedCity, onEventPress, style }: Even
     [onEventPress],
   );
 
+  const markers = useMemo(() => {
+    return events
+      .filter(
+        (e) => e.location !== null && e.location !== undefined && e.location.includes(","),
+      )
+      .map((event) => {
+        const parts = event.location.split(",").map((s) => parseFloat(s.trim()));
+        if (parts.length < 2 || parts.some(isNaN)) {
+          return null;
+        }
+        const longitude = parts[0]!;
+        const latitude = parts[1]!;
+        return (
+          <Marker
+            key={event.id}
+            lngLat={[longitude, latitude]}
+            onPress={() => handleMarkerPress(event)}
+          >
+            <View className="bg-indigo-600 rounded-full w-7 h-7 items-center justify-center shadow-sm">
+              <View className="bg-white w-2.5 h-2.5 rounded-full" />
+            </View>
+          </Marker>
+        );
+      });
+  }, [events, handleMarkerPress]);
+
   return (
     <View style={[{ flex: 1 }, style]}>
       <Map ref={mapRef} style={{ flex: 1 }} mapStyle={MAP_STYLE}>
@@ -36,30 +67,8 @@ export function EventMapView({ events, selectedCity, onEventPress, style }: Even
           easing="fly"
           duration={600}
         />
-        {events
-          .filter(
-            (e) => e.location !== null && e.location !== undefined && e.location.includes(","),
-          )
-          .map((event) => {
-            const parts = event.location.split(",").map((s) => parseFloat(s.trim()));
-            if (parts.length < 2 || parts.some(isNaN)) {
-              return null;
-            }
-            const longitude = parts[0]!;
-            const latitude = parts[1]!;
-            return (
-              <Marker
-                key={event.id}
-                lngLat={[longitude, latitude]}
-                onPress={() => handleMarkerPress(event)}
-              >
-                <View className="bg-indigo-600 rounded-full w-7 h-7 items-center justify-center shadow-sm">
-                  <View className="bg-white w-2.5 h-2.5 rounded-full" />
-                </View>
-              </Marker>
-            );
-          })}
+        {markers}
       </Map>
     </View>
   );
-}
+});

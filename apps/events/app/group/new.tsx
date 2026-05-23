@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Alert, Pressable, ScrollView, Text, TextInput } from "react-native";
+import { Alert, ScrollView, Text, TextInput } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { NDKContext } from "@/app/_layout";
 import { createGroup } from "@klk/infrastructure";

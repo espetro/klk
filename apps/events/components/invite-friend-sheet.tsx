@@ -6,8 +6,7 @@ import {
   Text,
   View,
 } from "react-native";
-import { Button } from "@klk/ui";
-import { Input } from "@klk/ui";
+import { Button, Input } from "@klk/ui";
 import NDK, { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk-mobile";
 import { GroupRecord, inviteToGroup } from "@klk/infrastructure";
 

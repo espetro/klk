@@ -1,5 +1,5 @@
 import { useCallback, useContext, useState } from "react";
-import { Alert, Pressable, ScrollView, Text, View } from "react-native";
+import { Alert, ScrollView, Text, View } from "react-native";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { NDKContext } from "@/app/_layout";
 import { getGroup, GroupRecord, publishPrivateEvent } from "@klk/infrastructure";

@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView, Alert } from "react-native";
+import { View, Text, ScrollView, Alert } from "react-native";
 import { useState, useCallback } from "react";
 import * as Location from "expo-location";
 import { Button, Input } from "@klk/ui";
