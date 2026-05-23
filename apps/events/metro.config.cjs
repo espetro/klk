@@ -2,7 +2,7 @@
 
 const path = require("node:path");
 const { getDefaultConfig } = require("expo/metro-config");
-const { withNativeWind } = require("nativewind/metro");
+const { withUniwind } = require("uniwind/metro");
 
 const config = getDefaultConfig(__dirname);
 
@@ -69,4 +69,4 @@ config.resolver.nodeModulesPaths = [
 /** @type {any} */
 const finalConfig = config;
 
-module.exports = withNativeWind(finalConfig, { input: "./global.css" });
+module.exports = withUniwind(finalConfig, { input: "./global.css" });

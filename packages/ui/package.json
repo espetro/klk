@@ -6,11 +6,11 @@
   "types": "src/index.ts",
   "peerDependencies": {
     "react": ">=18",
-    "react-native": "*"
+    "react-native": "*",
+    "uniwind": "^1.7.0"
   },
   "dependencies": {
-    "@react-native-community/datetimepicker": "9.1.0",
-    "nativewind": "^4.2.4"
+    "@react-native-community/datetimepicker": "9.1.0"
   },
   "devDependencies": {
     "@types/react": "~19.2.14"
