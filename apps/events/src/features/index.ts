@@ -1,4 +1,9 @@
 // Feature hooks barrel export
+export { $city, loadCity, useCity, useDistanceRange, useCityCoordinates } from "./cityStore";
+export type { CitySettings } from "./cityStore";
+export { $onboarding, useOnboarding } from "./onboardingStore";
+export { $ndk, useNDK } from "./ndkStore";
+export type { NDKStoreValue } from "./ndkStore";
 export { useEventDetail } from "./useEventDetail";
 export type { EventDetailData, UseEventDetailResult } from "./useEventDetail";
 export { useFeatureFlag } from "./useFeatureFlag";
