@@ -1,8 +1,9 @@
 import { useState, useCallback } from "react";
-import { FlatList, Pressable, Text, View } from "react-native";
+import { FlatList, Text, View } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { GroupCard } from "@/components";
 import { getAllGroups, GroupRecord } from "@klk/infrastructure";
+import { Button } from "@klk/ui";
 
 export default function GroupsScreen() {
   const [groups, setGroups] = useState<GroupRecord[]>([]);
@@ -18,12 +19,9 @@ export default function GroupsScreen() {
     <View className="flex-1 bg-gray-50">
       <View className="px-4 pt-4 pb-2 flex-row items-center justify-between">
         <Text className="text-2xl font-bold text-gray-900">Groups</Text>
-        <Pressable
-          className="bg-indigo-600 rounded-full px-4 py-2"
-          onPress={() => router.push("/group/new")}
-        >
+        <Button variant="default" onPress={() => router.push("/group/new")}>
           <Text className="text-white font-medium">+ New</Text>
-        </Pressable>
+        </Button>
       </View>
 
       <FlatList

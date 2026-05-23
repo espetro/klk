@@ -5,6 +5,7 @@ import { NDKContext } from "@/app/_layout";
 import { $city, useCity } from "@/features";
 import { CityPicker } from "@/components";
 import { wipeIdentity, resetOnboarding, RELAY_URL } from "@klk/infrastructure";
+import { Button } from "@klk/ui";
 
 function handleCityChange(newCity: string) {
   $city.set({ ...$city.get(), name: newCity });
@@ -71,19 +72,20 @@ export default function ProfileScreen() {
         <Text className="text-sm text-gray-700 font-mono">{RELAY_URL}</Text>
       </View>
 
-      <Pressable
-        className="bg-red-50 border border-red-200 rounded-xl p-4 items-center mb-4"
+      <Button
+        variant="destructive"
+        className="mb-4"
         onPress={handleWipe}
       >
         <Text className="text-red-600 font-medium">Wipe Identity (Dev Only)</Text>
-      </Pressable>
+      </Button>
 
-      <Pressable
-        className="bg-orange-50 border border-orange-200 rounded-xl p-4 items-center"
+      <Button
+        variant="secondary"
         onPress={handleResetOnboarding}
       >
         <Text className="text-orange-600 font-medium">Reset Onboarding</Text>
-      </Pressable>
+      </Button>
     </ScrollView>
   );
 }

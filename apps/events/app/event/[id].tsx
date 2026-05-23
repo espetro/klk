@@ -12,6 +12,7 @@ import { useRsvps } from "@/features";
 import { User } from "@klk/core";
 import { useFeatureFlag } from "@/features/useFeatureFlag";
 import { useEventDetail } from "@/features/useEventDetail";
+import { Button } from "@klk/ui";
 
 function formatDate(ts: number) {
   if (!ts) return "TBD";
@@ -114,17 +115,16 @@ export default function EventDetailScreen() {
         </View>
 
         <View className="p-4">
-          <Pressable
-            className={`rounded-xl p-4 items-center ${
-              hasRsvpd || rsvping ? "bg-gray-200" : "bg-indigo-600"
-            }`}
+          <Button
+            variant={hasRsvpd || rsvping ? "secondary" : "default"}
             onPress={handleRsvp}
             disabled={hasRsvpd || rsvping}
+            className={hasRsvpd || rsvping ? "bg-gray-200" : "bg-indigo-600"}
           >
             <Text className={`font-semibold ${hasRsvpd ? "text-gray-500" : "text-white"}`}>
               {hasRsvpd ? "You're going!" : rsvping ? "RSVP-ing…" : "RSVP"}
             </Text>
-          </Pressable>
+          </Button>
         </View>
       </ScrollView>
     </>
@@ -187,17 +187,16 @@ function NewEventDetail({ eventId }: { eventId: string }) {
         </View>
 
         <View className="p-4">
-          <Pressable
-            className={`rounded-xl p-4 items-center ${
-              hasRsvpd || rsvping ? "bg-gray-200" : "bg-indigo-600"
-            }`}
+          <Button
+            variant={hasRsvpd || rsvping ? "secondary" : "default"}
             onPress={rsvp}
             disabled={hasRsvpd || rsvping}
+            className={hasRsvpd || rsvping ? "bg-gray-200" : "bg-indigo-600"}
           >
             <Text className={`font-semibold ${hasRsvpd ? "text-gray-500" : "text-white"}`}>
               {hasRsvpd ? "You're going!" : rsvping ? "RSVP-ing…" : "RSVP"}
             </Text>
-          </Pressable>
+          </Button>
         </View>
       </ScrollView>
     </>

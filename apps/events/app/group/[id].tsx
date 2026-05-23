@@ -5,6 +5,7 @@ import { NDKContext } from "@/app/_layout";
 import { getGroup, GroupRecord, publishPrivateEvent } from "@klk/infrastructure";
 import { useGroupEvents } from "@/features";
 import { EventCard, InviteFriendSheet, EventForm, EventFormValues } from "@/components";
+import { Button } from "@klk/ui";
 
 export default function GroupDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -79,12 +80,13 @@ export default function GroupDetailScreen() {
           </Text>
         ))}
         {ndk && signer ? (
-          <Pressable
-            className="mt-3 border border-indigo-200 rounded-lg p-2 items-center"
+          <Button
+            variant="outline"
+            className="mt-3"
             onPress={() => setInviteVisible(true)}
           >
             <Text className="text-indigo-600 text-sm font-medium">+ Invite Friend</Text>
-          </Pressable>
+          </Button>
         ) : null}
       </View>
 
@@ -92,12 +94,12 @@ export default function GroupDetailScreen() {
         <Text className="text-base font-semibold text-gray-700">
           Private Events ({privateEvents.length})
         </Text>
-        <Pressable
-          className="bg-indigo-600 rounded-full px-3 py-1"
+        <Button
+          variant="default"
           onPress={() => setNewEventVisible(true)}
         >
           <Text className="text-white text-sm font-medium">+ New</Text>
-        </Pressable>
+        </Button>
       </View>
 
       {privateEvents.length === 0 ? (

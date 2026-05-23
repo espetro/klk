@@ -3,6 +3,7 @@ import { Alert, Pressable, ScrollView, Text, TextInput } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { NDKContext } from "@/app/_layout";
 import { createGroup } from "@klk/infrastructure";
+import { Button } from "@klk/ui";
 
 export default function NewGroupScreen() {
   const { currentUser } = useContext(NDKContext);
@@ -45,13 +46,14 @@ export default function NewGroupScreen() {
           placeholder="e.g. Family, Book Club…"
           autoFocus
         />
-        <Pressable
-          className={`rounded-xl p-4 items-center ${loading || !name.trim() ? "bg-gray-300" : "bg-indigo-600"}`}
+        <Button
+          variant="default"
           onPress={handleCreate}
           disabled={loading || !name.trim()}
+          className={loading || !name.trim() ? "bg-gray-300" : "bg-indigo-600"}
         >
           <Text className="text-white font-semibold">{loading ? "Creating…" : "Create Group"}</Text>
-        </Pressable>
+        </Button>
       </ScrollView>
     </>
   );

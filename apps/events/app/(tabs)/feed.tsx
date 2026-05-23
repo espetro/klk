@@ -46,12 +46,9 @@ export default function FeedScreen() {
                 </Text>
               </Pressable>
             </View>
-            <Pressable
-              className="bg-indigo-600 rounded-full px-4 py-2"
-              onPress={() => router.push("/event/new")}
-            >
+            <Button variant="default" onPress={() => router.push("/event/new")}>
               <Text className="text-white font-medium">+ New</Text>
-            </Pressable>
+            </Button>
           </View>
         </View>
         <CityPicker current={city} onChange={handleCityChange} />
