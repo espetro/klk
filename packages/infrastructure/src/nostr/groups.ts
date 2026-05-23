@@ -1,7 +1,7 @@
 import NDK, { NDKEvent, NDKPrivateKeySigner } from "@nostr-dev-kit/ndk-mobile";
 import * as Crypto from "expo-crypto";
 import { gcm } from "@noble/ciphers/aes.js";
-import { GroupRecord, getGroup, saveGroup } from "../storage/groups-store";
+import { GroupRecord, getGroup, saveGroup } from "@events/storage/groups-store";
 import { PublicEventData } from "./events";
 
 function uint8ToHex(buf: Uint8Array): string {

@@ -1,4 +1,3 @@
-// @ts-check
 import { defineConfig } from "oxlint";
 import native from "oxlint-config-universe/native";
 

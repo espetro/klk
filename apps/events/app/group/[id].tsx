@@ -2,12 +2,10 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { Alert, FlatList, Pressable, ScrollView, Text, View } from "react-native";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { NDKContext } from "@/app/_layout";
-import { getGroup, GroupRecord } from "@/lib/storage/groups-store";
-import { publishPrivateEvent } from "@/lib/nostr/groups";
-import { useGroupEvents } from "@/lib/hooks/use-group-events";
-import { EventCard } from "@/components/event-card";
-import { InviteFriendSheet } from "@/components/invite-friend-sheet";
-import { EventForm, EventFormValues } from "@/components/event-form";
+import { getGroup, GroupRecord } from "@klk/infrastructure";
+import { publishPrivateEvent } from "@klk/infrastructure";
+import { useGroupEvents } from "@/features";
+import { EventCard, InviteFriendSheet, EventForm, EventFormValues } from "@klk/ui";
 
 export default function GroupDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

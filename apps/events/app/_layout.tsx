@@ -8,10 +8,10 @@ import { NDKContext } from "@/lib/context/ndk-context";
 export { NDKContext };
 import { CityProvider } from "@/lib/context/city-context";
 import { OnboardingProvider, useOnboarding } from "@/lib/context/onboarding-context";
-import { connectNDK } from "@/lib/nostr/ndk";
-import { getOrCreateIdentity } from "@/lib/nostr/identity";
-import { processIncomingGiftWraps } from "@/lib/nostr/groups";
-import { isOnboardingComplete } from "@/lib/auth/complete-login";
+import { connectNDK } from "@klk/infrastructure";
+import { getOrCreateIdentity } from "@klk/infrastructure";
+import { processIncomingGiftWraps } from "@klk/infrastructure";
+import { isOnboardingComplete } from "@klk/infrastructure";
 
 SplashScreen.preventAutoHideAsync();
 

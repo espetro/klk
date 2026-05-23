@@ -2,7 +2,11 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "paths": {
+      "@klk/core": ["../core/src"],
+      "@events/storage/*": ["../../apps/events/lib/storage/*"]
+    }
   },
   "include": ["src/**/*"],
   "references": [{ "path": "../core" }]

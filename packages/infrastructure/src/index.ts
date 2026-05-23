@@ -3,6 +3,8 @@
 // export { SQLiteAdapter } from './storage/SQLiteAdapter';
 // export { CryptoService } from './crypto/CryptoService';
 export { NostrEventRepository } from './nostr/NostrEventRepository';
+export * from './nostr';
 export { ExpoStorageAdapter } from './storage/ExpoStorageAdapter';
 export { ConfigService } from './config/ConfigService';
 export { AesGcmCryptoAdapter } from './crypto/AesGcmCryptoAdapter';
+export * as Auth from './auth';

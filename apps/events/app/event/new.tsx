@@ -3,8 +3,8 @@ import { Alert } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { NDKContext } from "@/app/_layout";
 import { useCity } from "@/lib/context/city-context";
-import { EventForm, EventFormValues } from "@/components/event-form";
-import { publishPublicEvent } from "@/lib/nostr/events";
+import { EventForm, EventFormValues } from "@klk/ui";
+import { publishPublicEvent } from "@klk/infrastructure";
 
 export default function NewEventScreen() {
   const { ndk } = useContext(NDKContext);

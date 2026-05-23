@@ -1,3 +1,5 @@
+// @ts-check
+
 const path = require("path");
 const { getDefaultConfig } = require("expo/metro-config");
 const { withNativeWind } = require("nativewind/metro");
@@ -6,9 +8,17 @@ const config = getDefaultConfig(__dirname);
 
 // Resolve @klk/* monorepo package aliases from tsconfig.json paths.
 // Without this Metro cannot find packages/core, packages/infrastructure, etc.
+/** @type {Record<string, string>}  */
 const klkPackages = {
   "@klk/core": path.resolve(__dirname, "..", "..", "packages", "core", "package.json"),
-  "@klk/infrastructure": path.resolve(__dirname, "..", "..", "packages", "infrastructure", "package.json"),
+  "@klk/infrastructure": path.resolve(
+    __dirname,
+    "..",
+    "..",
+    "packages",
+    "infrastructure",
+    "package.json",
+  ),
   "@klk/ui": path.resolve(__dirname, "..", "..", "packages", "ui", "package.json"),
 };
 
@@ -24,7 +34,8 @@ const singletons = ["react-native", "expo", "react", "react-native-reanimated"];
 // (pulled in by ndk-mobile) hard-deps react-native@0.79.2 inside its own
 // node_modules; without this redirect Metro's hierarchical lookup picks that
 // up, causing a PlatformConstants TurboModule mismatch on New Architecture.
-config.resolver.resolveRequest = (context, moduleName, platform) => {
+/** @type {typeof config.resolver.resolveRequest} */
+const customResolver = (context, moduleName, platform) => {
   if (moduleName in klkPackages) {
     return context.resolveRequest(
       { ...context, originModulePath: klkPackages[moduleName] },
@@ -42,13 +53,20 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
   return context.resolveRequest(context, moduleName, platform);
 };
 
+// @ts-ignore not a read-only property
+config.resolver.resolveRequest = customResolver;
+
 // Bun stores packages in .bun/node_modules/ with symlinks, but Metro doesn't
 // look there by default. Add it to the search paths so Metro can resolve
 // packages installed by Bun.
 const rootNodeModules = path.resolve(__dirname, "..", "..", "node_modules");
+
 config.resolver.nodeModulesPaths = [
   ...(config.resolver.nodeModulesPaths || []),
   path.join(rootNodeModules, ".bun", "node_modules"),
 ];
 
-module.exports = withNativeWind(config, { input: "./global.css" });
+/** @type {any} */
+const _config = config;
+
+module.exports = withNativeWind(_config, { input: "./global.css" });

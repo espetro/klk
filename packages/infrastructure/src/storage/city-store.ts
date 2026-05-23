@@ -4,7 +4,7 @@ import {
   DEFAULT_DISTANCE_RANGE,
   DISTANCE_RANGES,
   DistanceRange,
-} from "@/lib/nostr/geo";
+} from "./geo";
 
 const CITY_KEY = "city_settings";
 

@@ -2,10 +2,10 @@ import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { NDKEvent } from "@nostr-dev-kit/ndk-mobile";
 import { NDKContext } from "@/app/_layout";
 import { useCity } from "@/lib/context/city-context";
-import { cityTagValue } from "../nostr/tags";
-import { parsePublicEvent, PublicEventData } from "../nostr/events";
-import { KlkKind } from "../nostr/kinds";
-import { getSecure, setSecure } from "../storage/secure";
+import { cityTagValue } from "@klk/infrastructure";
+import { parsePublicEvent, PublicEventData } from "@klk/infrastructure";
+import { KlkKind } from "@klk/infrastructure";
+import { getSecure, setSecure } from "@klk/infrastructure";
 
 export interface PublicEvent extends PublicEventData {
   id: string;

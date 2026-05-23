@@ -3,10 +3,10 @@ import { Alert, Clipboard, Pressable, ScrollView, Text, View } from "react-nativ
 import { router } from "expo-router";
 import { NDKContext } from "@/app/_layout";
 import { useCityContext } from "@/lib/context/city-context";
-import { CityPicker } from "@/components/city-picker";
-import { wipeIdentity } from "@/lib/nostr/identity";
-import { resetOnboarding } from "@/lib/auth/reset-onboarding";
-import { RELAY_URL } from "@/lib/nostr/ndk";
+import { CityPicker } from "@klk/ui";
+import { wipeIdentity } from "@klk/infrastructure";
+import { resetOnboarding } from "@klk/infrastructure";
+import { RELAY_URL } from "@klk/infrastructure";
 
 export default function ProfileScreen() {
   const { currentUser } = useContext(NDKContext);

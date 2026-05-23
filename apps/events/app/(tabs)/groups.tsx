@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
 import { useRouter } from "expo-router";
-import { GroupCard } from "@/components/group-card";
-import { getAllGroups, GroupRecord } from "@/lib/storage/groups-store";
+import { GroupCard } from "@klk/ui";
+import { getAllGroups, GroupRecord } from "@klk/infrastructure";
 import { useFocusEffect } from "expo-router";
 import { useCallback } from "react";
 

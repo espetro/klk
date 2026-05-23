@@ -1,5 +1,5 @@
 import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk-mobile";
-import { deleteSecure, getSecure, setSecure } from "../storage/secure";
+import { deleteSecure, getSecure, setSecure } from "@events/storage/secure";
 
 const NSEC_KEY = "events_app_nsec";
 
