@@ -3,11 +3,11 @@ import {
   KeyboardAvoidingView,
   Modal,
   Platform,
-  Pressable,
   Text,
-  TextInput,
   View,
 } from "react-native";
+import { Button } from "@klk/ui";
+import { Input } from "@klk/ui";
 import NDK, { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk-mobile";
 import { GroupRecord, inviteToGroup } from "@klk/infrastructure";
 
@@ -58,8 +58,8 @@ export function InviteFriendSheet({ visible, onClose, ndk, signer, group, onGrou
       >
         <View className="bg-white rounded-t-2xl p-6 shadow-xl">
           <Text className="text-lg font-bold text-gray-900 mb-4">Invite a Friend</Text>
-          <TextInput
-            className="border border-gray-200 rounded-lg p-3 mb-2 text-gray-900"
+          <Input
+            className="mb-2"
             value={npub}
             onChangeText={setNpub}
             placeholder="npub1… or hex pubkey"
@@ -67,16 +67,17 @@ export function InviteFriendSheet({ visible, onClose, ndk, signer, group, onGrou
             autoCorrect={false}
           />
           {error ? <Text className="text-red-500 text-sm mb-2">{error}</Text> : null}
-          <Pressable
-            className={`rounded-xl p-4 items-center mt-2 ${loading || !npub.trim() ? "bg-gray-300" : "bg-indigo-600"}`}
+          <Button
+            className="mt-2"
+            variant={loading || !npub.trim() ? "secondary" : "default"}
             onPress={handleInvite}
             disabled={loading || !npub.trim()}
           >
-            <Text className="text-white font-semibold">{loading ? "Sending…" : "Send Invite"}</Text>
-          </Pressable>
-          <Pressable className="items-center mt-3 p-2" onPress={onClose}>
-            <Text className="text-gray-500">Cancel</Text>
-          </Pressable>
+            <Text className="text-sm font-semibold">{loading ? "Sending…" : "Send Invite"}</Text>
+          </Button>
+          <Button className="mt-3" variant="ghost" onPress={onClose}>
+            <Text className="text-gray-500 text-sm">Cancel</Text>
+          </Button>
         </View>
       </KeyboardAvoidingView>
     </Modal>

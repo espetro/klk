@@ -1,6 +1,7 @@
-import { View, Text, TextInput, Pressable, ScrollView, Alert } from "react-native";
+import { View, Text, Pressable, ScrollView, Alert } from "react-native";
 import { useState, useCallback } from "react";
 import * as Location from "expo-location";
+import { Button, Input } from "@klk/ui";
 import { CITIES, DistanceRange, DISTANCE_RANGES } from "@klk/infrastructure";
 
 export interface LocationSelection {
@@ -91,8 +92,8 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
     <View className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
       <View className="mb-4">
         <Text className="text-sm font-medium text-gray-700 mb-2">Search city</Text>
-        <TextInput
-          className="bg-gray-50 rounded-lg px-4 py-3 text-gray-900 border border-gray-200"
+        <Input
+          className="bg-gray-50 text-gray-900 border-gray-200"
           placeholder="Type a city name..."
           value={searchQuery}
           onChangeText={handleSearchChange}
@@ -102,43 +103,45 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
         {suggestions.length > 0 && (
           <View className="mt-1 bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
             {suggestions.map((city) => (
-              <Pressable
+              <Button
                 key={city.slug}
                 onPress={() => handleCitySelect(city.slug, city.label)}
-                className="px-4 py-3 border-b border-gray-100 last:border-b-0"
+                variant="ghost"
+                className="justify-start px-4 py-3 border-b border-gray-100 last:border-b-0 rounded-none"
               >
                 <Text className="text-gray-900">{city.label}</Text>
-              </Pressable>
+              </Button>
             ))}
           </View>
         )}
       </View>
 
-      <Pressable
+      <Button
         onPress={handleUseCurrentLocation}
         disabled={isLocating}
-        className="flex-row items-center bg-gray-50 rounded-lg px-4 py-3 mb-4 border border-gray-200"
+        variant="secondary"
+        className="flex-row items-center bg-gray-50 mb-4 border border-gray-200"
       >
         <Text className="text-indigo-600 font-medium">
           {isLocating ? "Getting location..." : "Use current location"}
         </Text>
-      </Pressable>
+      </Button>
 
       <View className="mb-4">
         <Text className="text-sm font-medium text-gray-700 mb-2">Popular cities</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
           {PRESET_CITIES.map((c) => (
-            <Pressable
+            <Button
               key={c.slug}
               onPress={() => handleCitySelect(c.slug, c.label)}
-              className={`mr-2 px-4 py-2 rounded-full ${
-                value.city === c.slug ? "bg-indigo-600" : "bg-gray-100"
-              }`}
+              variant={value.city === c.slug ? "default" : "secondary"}
+              size="sm"
+              className="mr-2"
             >
               <Text className={value.city === c.slug ? "text-white font-medium" : "text-gray-700"}>
                 {c.label}
               </Text>
-            </Pressable>
+            </Button>
           ))}
         </ScrollView>
       </View>
@@ -147,19 +150,18 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
         <Text className="text-sm font-medium text-gray-700 mb-2">Distance range</Text>
         <View className="flex-row flex-wrap gap-2">
           {DISTANCE_RANGES.map((range) => (
-            <Pressable
+            <Button
               key={range}
               onPress={() => handleDistanceChange(range)}
-              className={`px-4 py-2 rounded-full ${
-                value.distance === range ? "bg-indigo-600" : "bg-gray-100"
-              }`}
+              variant={value.distance === range ? "default" : "secondary"}
+              size="sm"
             >
               <Text
                 className={value.distance === range ? "text-white font-medium" : "text-gray-700"}
               >
                 {range} km
               </Text>
-            </Pressable>
+            </Button>
           ))}
         </View>
       </View>

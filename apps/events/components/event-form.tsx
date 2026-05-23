@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Platform, Pressable, ScrollView, Text, TextInput } from "react-native";
+import { Platform, Pressable, ScrollView, Text } from "react-native";
+import { Input } from "@klk/ui";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 export interface EventFormValues {
@@ -38,7 +39,7 @@ export function EventForm({ onSubmit, submitting, submitLabel = "Publish" }: Pro
       contentInsetAdjustmentBehavior="automatic"
     >
       <Text className="text-sm font-medium text-gray-700 mb-1">Title *</Text>
-      <TextInput
+      <Input
         className="border border-gray-200 rounded-lg p-3 mb-4 text-gray-900"
         value={title}
         onChangeText={setTitle}
@@ -86,7 +87,7 @@ export function EventForm({ onSubmit, submitting, submitLabel = "Publish" }: Pro
       )}
 
       <Text className="text-sm font-medium text-gray-700 mb-1">Location</Text>
-      <TextInput
+      <Input
         className="border border-gray-200 rounded-lg p-3 mb-4 text-gray-900"
         value={location}
         onChangeText={setLocation}
@@ -94,7 +95,7 @@ export function EventForm({ onSubmit, submitting, submitLabel = "Publish" }: Pro
       />
 
       <Text className="text-sm font-medium text-gray-700 mb-1">Description</Text>
-      <TextInput
+      <Input
         className="border border-gray-200 rounded-lg p-3 mb-4 text-gray-900"
         value={summary}
         onChangeText={setSummary}
@@ -105,7 +106,7 @@ export function EventForm({ onSubmit, submitting, submitLabel = "Publish" }: Pro
       />
 
       <Text className="text-sm font-medium text-gray-700 mb-1">Image URL (optional)</Text>
-      <TextInput
+      <Input
         className="border border-gray-200 rounded-lg p-3 mb-6 text-gray-900"
         value={image}
         onChangeText={setImage}

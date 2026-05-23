@@ -1,4 +1,5 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text } from "react-native";
+import { Button } from "@klk/ui";
 import { CITIES, Coordinates, DistanceRange, DISTANCE_RANGES } from "@klk/infrastructure";
 
 interface MapFilterBarProps {
@@ -22,22 +23,23 @@ export function MapFilterBar({
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Text className="text-xs font-medium text-gray-500 uppercase tracking-wide">City</Text>
-          <Pressable
+          <Button
             onPress={() => onCityChange(selectedCitySlug)}
-            className="bg-indigo-50 px-3 py-1 rounded-full"
+            variant="secondary"
+            size="sm"
           >
             <Text className="text-sm font-medium text-indigo-700">{cityLabel}</Text>
-          </Pressable>
+          </Button>
         </View>
         <View className="flex-row items-center gap-1">
           <Text className="text-xs font-medium text-gray-500 uppercase tracking-wide">Within</Text>
           {DISTANCE_RANGES.map((range) => (
-            <Pressable
+            <Button
               key={range}
               onPress={() => onDistanceChange(range)}
-              className={`px-2.5 py-1 rounded-full ${
-                distanceRange === range ? "bg-indigo-600" : "bg-gray-100"
-              }`}
+              variant={distanceRange === range ? "default" : "secondary"}
+              size="sm"
+              className={distanceRange === range ? "" : "bg-gray-100"}
             >
               <Text
                 className={`text-xs font-medium ${
@@ -46,7 +48,7 @@ export function MapFilterBar({
               >
                 {range}km
               </Text>
-            </Pressable>
+            </Button>
           ))}
         </View>
       </View>
