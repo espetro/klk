@@ -223,7 +223,7 @@ Strict config with additional guards:
 
 ### React Compiler
 
-Babel plugin added to `babel.config.js`:
+Babel plugin added to `babel.config.cjs`:
 
 ```js
 plugins: ["react-native-reanimated/plugin", ["babel-plugin-react-compiler", { target: "18" }]];

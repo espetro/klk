@@ -1,8 +1,5 @@
 {
-  "extends": [
-    "expo/tsconfig.base",
-    "../../tsconfig.json"
-  ],
+  "extends": ["expo/tsconfig.base", "../../tsconfig.json"],
   "compilerOptions": {
     "experimentalDecorators": true,
     "strict": true,
@@ -12,8 +9,10 @@
     "noFallthroughCasesInSwitch": true,
     "exactOptionalPropertyTypes": true,
     "noUncheckedSideEffectImports": true,
+    "lib": ["ESNext"],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@/features/*": ["./src/features/*"]
     }
   },
   "include": [
@@ -23,5 +22,7 @@
     "expo-env.d.ts",
     "nativewind-env.d.ts",
     ".expo/types/**/*.ts"
+    // "babel.config.cjs",
+    // "metro.config.cjs"
   ]
 }
