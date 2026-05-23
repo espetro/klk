@@ -6,8 +6,7 @@ import * as SplashScreen from "expo-splash-screen";
 import NDK, { NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk-mobile";
 import { NDKContext } from "@/lib/context/ndk-context";
 export { NDKContext };
-import { CityProvider } from "@/lib/context/city-context";
-import { OnboardingProvider, useOnboarding } from "@/lib/context/onboarding-context";
+import { useOnboarding } from "@/features";
 import { connectNDK } from "@klk/infrastructure";
 import { getOrCreateIdentity } from "@klk/infrastructure";
 import { processIncomingGiftWraps } from "@klk/infrastructure";
@@ -67,51 +66,45 @@ function RootLayoutInner() {
 
   return (
     <NDKContext.Provider value={{ ndk, signer, currentUser }}>
-      <CityProvider>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="event/[id]"
-            options={{
-              title: "Event",
-              presentation: "formSheet",
-              sheetGrabberVisible: true,
-              sheetAllowedDetents: [0.75, 1.0],
-              contentStyle: { backgroundColor: "transparent" },
-            }}
-          />
-          <Stack.Screen
-            name="event/new"
-            options={{
-              title: "New Event",
-              presentation: "formSheet",
-              sheetGrabberVisible: true,
-              contentStyle: { backgroundColor: "transparent" },
-            }}
-          />
-          <Stack.Screen name="group/[id]" options={{ title: "Group" }} />
-          <Stack.Screen
-            name="group/new"
-            options={{
-              title: "New Group",
-              presentation: "formSheet",
-              sheetGrabberVisible: true,
-              contentStyle: { backgroundColor: "transparent" },
-            }}
-          />
-          <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-          <Stack.Screen name="legal/terms" options={{ title: "Terms of Service" }} />
-          <Stack.Screen name="legal/privacy" options={{ title: "Privacy Policy" }} />
-        </Stack>
-      </CityProvider>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="event/[id]"
+          options={{
+            title: "Event",
+            presentation: "formSheet",
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: [0.75, 1.0],
+            contentStyle: { backgroundColor: "transparent" },
+          }}
+        />
+        <Stack.Screen
+          name="event/new"
+          options={{
+            title: "New Event",
+            presentation: "formSheet",
+            sheetGrabberVisible: true,
+            contentStyle: { backgroundColor: "transparent" },
+          }}
+        />
+        <Stack.Screen name="group/[id]" options={{ title: "Group" }} />
+        <Stack.Screen
+          name="group/new"
+          options={{
+            title: "New Group",
+            presentation: "formSheet",
+            sheetGrabberVisible: true,
+            contentStyle: { backgroundColor: "transparent" },
+          }}
+        />
+        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+        <Stack.Screen name="legal/terms" options={{ title: "Terms of Service" }} />
+        <Stack.Screen name="legal/privacy" options={{ title: "Privacy Policy" }} />
+      </Stack>
     </NDKContext.Provider>
   );
 }
 
 export default function RootLayout() {
-  return (
-    <OnboardingProvider>
-      <RootLayoutInner />
-    </OnboardingProvider>
-  );
+  return <RootLayoutInner />;
 }

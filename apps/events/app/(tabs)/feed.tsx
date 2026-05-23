@@ -2,17 +2,22 @@ import { useContext, useState } from "react";
 import { FlatList, Pressable, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { NDKContext } from "@/app/_layout";
-import { useCityContext } from "@/lib/context/city-context";
+import { $city, useCity, useCityCoordinates } from "@/features";
 import { CityPicker, EventCard, EventMapView } from "@klk/ui";
 import { usePublicEvents } from "@/features";
 
 type ViewMode = "list" | "map";
 
 export default function FeedScreen() {
-  const { city, setCity, coordinates } = useCityContext();
+  const city = useCity();
+  const coordinates = useCityCoordinates();
   const { events } = usePublicEvents();
   const router = useRouter();
   const [viewMode, setViewMode] = useState<ViewMode>("list");
+
+  const handleCityChange = (newCity: string) => {
+    $city.set({ ...$city.get(), name: newCity });
+  };
 
   return (
     <View className="flex-1 bg-gray-50">
@@ -50,7 +55,7 @@ export default function FeedScreen() {
             </Pressable>
           </View>
         </View>
-        <CityPicker current={city} onChange={setCity} />
+        <CityPicker current={city} onChange={handleCityChange} />
       </View>
 
       {viewMode === "list" ? (

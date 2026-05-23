@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { NDKEvent } from "@nostr-dev-kit/ndk-mobile";
 import { NDKContext } from "@/app/_layout";
-import { useCity } from "@/lib/context/city-context";
+import { useCity } from "@/features";
 import { cityTagValue } from "@klk/infrastructure";
 import { parsePublicEvent, PublicEventData } from "@klk/infrastructure";
 import { KlkKind } from "@klk/infrastructure";

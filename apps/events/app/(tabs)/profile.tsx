@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { Alert, Clipboard, Pressable, ScrollView, Text, View } from "react-native";
 import { router } from "expo-router";
 import { NDKContext } from "@/app/_layout";
-import { useCityContext } from "@/lib/context/city-context";
+import { $city, useCity } from "@/features";
 import { CityPicker } from "@klk/ui";
 import { wipeIdentity } from "@klk/infrastructure";
 import { resetOnboarding } from "@klk/infrastructure";
@@ -10,8 +10,12 @@ import { RELAY_URL } from "@klk/infrastructure";
 
 export default function ProfileScreen() {
   const { currentUser } = useContext(NDKContext);
-  const { city, setCity } = useCityContext();
+  const city = useCity();
   const npub = currentUser?.npub ?? "Loading…";
+
+  const handleCityChange = (newCity: string) => {
+    $city.set({ ...$city.get(), name: newCity });
+  };
 
   const copyNpub = () => {
     Clipboard.setString(npub);
@@ -60,7 +64,7 @@ export default function ProfileScreen() {
 
       <Text className="text-sm font-medium text-gray-500 mb-2">City</Text>
       <View className="mb-6">
-        <CityPicker current={city} onChange={setCity} />
+        <CityPicker current={city} onChange={handleCityChange} />
       </View>
 
       <Text className="text-sm font-medium text-gray-500 mb-1">Relay</Text>

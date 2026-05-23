@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { getOrCreateIdentity } from "@klk/infrastructure";
 import { completeOnboarding } from "@klk/infrastructure";
-import { useOnboarding } from "@/lib/context/onboarding-context";
+import { useOnboarding } from "@/features";
 import Animated, { FadeInUp, FadeIn } from "react-native-reanimated";
 
 export default function LoginScreen() {
