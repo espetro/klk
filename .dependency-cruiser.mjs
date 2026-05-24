@@ -1,18 +1,22 @@
-/** @type {import('dependency-cruiser').IConfiguration} */
-import { recommended } from "dependency-cruiser/configs/recommended-strict.js";
+import { createRequire } from "node:module";
+import path from "node:path";
 
-// Remove noNonPackageJson and notToUnresolvable
-// (false positives for this monorepo: @klk/* resolved by bun workspace,
-// @/ Expo aliases resolved by Metro, bun's nested modules are valid)
-const baseForbidden = recommended.forbidden.filter(
-  (r) => r.name !== "no-non-package-json" && r.name !== "not-to-unresolvable"
-);
+// Load the CJS config using absolute path (bypasses package exports)
+const configPath = path.resolve("node_modules/dependency-cruiser/configs/recommended-strict.cjs");
+
+const require = createRequire(configPath);
+const recommended = require(configPath);
 
 /** @type {import('dependency-cruiser').IConfiguration} */
 const config = {
   ...recommended,
   forbidden: [
-    ...baseForbidden,
+    // Remove noNonPackageJson and notToUnresolvable
+    // (false positives for this monorepo: @klk/* resolved by bun workspace,
+    // @/ Expo aliases resolved by Metro, bun's nested modules are valid)
+    ...recommended.forbidden.filter(
+      (_) => _.name !== "no-non-package-json" && _.name !== "not-to-unresolvable",
+    ),
     // UI ↔ Infrastructure isolation rules
     {
       name: "no-ui-from-infrastructure",
