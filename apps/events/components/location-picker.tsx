@@ -1,6 +1,6 @@
 import { HostedButton as Button } from '@/components/hosted-button';
+import { HostedInput as Input } from '@/components/hosted-input';
 import { CITIES, DistanceRange, DISTANCE_RANGES } from '@klk/infrastructure';
-import { Input } from '@klk/ui';
 import * as Location from 'expo-location';
 import { useState, useCallback } from 'react';
 import { View, Text, ScrollView, Alert } from 'react-native';
@@ -94,7 +94,6 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
       <View className='mb-4'>
         <Text className='text-sm font-medium text-gray-700 mb-2'>Search city</Text>
         <Input
-          className='bg-gray-50 text-gray-900 border-gray-200'
           placeholder='Type a city name...'
           value={searchQuery}
           onChangeText={handleSearchChange}

@@ -1,6 +1,6 @@
 import { HostedButton as Button } from '@/components/hosted-button';
+import { HostedInput as Input } from '@/components/hosted-input';
 import { GroupRecord, inviteToGroup } from '@klk/infrastructure';
-import { Input } from '@klk/ui';
 import NDK, { NDKPrivateKeySigner } from '@nostr-dev-kit/ndk-mobile';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Modal, Platform, Text, View } from 'react-native';
@@ -53,7 +53,6 @@ export function InviteFriendSheet({ visible, onClose, ndk, signer, group, onGrou
         <View className='bg-white rounded-t-2xl p-6 shadow-xl'>
           <Text className='text-lg font-bold text-gray-900 mb-4'>Invite a Friend</Text>
           <Input
-            className='mb-2'
             value={npub}
             onChangeText={setNpub}
             placeholder='npub1… or hex pubkey'

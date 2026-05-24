@@ -1,4 +1,4 @@
-import { Input } from '@klk/ui';
+import { HostedInput as Input } from '@/components/hosted-input';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useState } from 'react';
 import { Platform, Pressable, ScrollView, Text } from 'react-native';
@@ -40,14 +40,12 @@ export function EventForm({ onSubmit, submitting, submitLabel = 'Publish' }: Pro
     >
       <Text className='text-sm font-medium text-gray-700 mb-1'>Title *</Text>
       <Input
-        className='border border-gray-200 rounded-lg p-3 mb-4 text-gray-900'
         value={title}
         onChangeText={setTitle}
         placeholder='Event title'
         autoCorrect={false}
         returnKeyType='done'
         onSubmitEditing={() => {}}
-        blurOnSubmit={true}
       />
 
       <Text className='text-sm font-medium text-gray-700 mb-1'>Start</Text>
@@ -87,27 +85,19 @@ export function EventForm({ onSubmit, submitting, submitLabel = 'Publish' }: Pro
       )}
 
       <Text className='text-sm font-medium text-gray-700 mb-1'>Location</Text>
-      <Input
-        className='border border-gray-200 rounded-lg p-3 mb-4 text-gray-900'
-        value={location}
-        onChangeText={setLocation}
-        placeholder='Venue / address'
-      />
+      <Input value={location} onChangeText={setLocation} placeholder='Venue / address' />
 
       <Text className='text-sm font-medium text-gray-700 mb-1'>Description</Text>
       <Input
-        className='border border-gray-200 rounded-lg p-3 mb-4 text-gray-900'
         value={summary}
         onChangeText={setSummary}
         placeholder="What's the event about?"
         multiline
         numberOfLines={4}
-        textAlignVertical='top'
       />
 
       <Text className='text-sm font-medium text-gray-700 mb-1'>Image URL (optional)</Text>
       <Input
-        className='border border-gray-200 rounded-lg p-3 mb-6 text-gray-900'
         value={image}
         onChangeText={setImage}
         placeholder='https://...'
