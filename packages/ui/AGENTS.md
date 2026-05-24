@@ -15,7 +15,7 @@ src/
 Utility classes via UniWind:
 
 ```tsx
-<View className="flex-row items-center gap-2 dark:bg-gray-900" />
+<View className='flex-row items-center gap-2 dark:bg-gray-900' />
 ```
 
 ## Theme
