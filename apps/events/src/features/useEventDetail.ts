@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
-import { NostrEventRepository } from "@klk/infrastructure";
-import { User, rsvpEvent } from "@klk/core";
+import { User, rsvpEvent } from '@klk/core';
+import { NostrEventRepository } from '@klk/infrastructure';
+import { useCallback, useEffect, useState } from 'react';
 
 const repository = new NostrEventRepository();
 
@@ -46,7 +46,7 @@ export function useEventDetail(eventId: string, user: User | null): UseEventDeta
 
       const found = result.value;
       if (!found) {
-        setError("Event not found");
+        setError('Event not found');
         setLoading(false);
         return;
       }

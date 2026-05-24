@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { KeyboardAvoidingView, Modal, Platform, Text, View } from "react-native";
-import { Button, Input } from "@klk/ui";
-import NDK, { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk-mobile";
-import { GroupRecord, inviteToGroup } from "@klk/infrastructure";
+import { GroupRecord, inviteToGroup } from '@klk/infrastructure';
+import { Button, Input } from '@klk/ui';
+import NDK, { NDKPrivateKeySigner } from '@nostr-dev-kit/ndk-mobile';
+import { useState } from 'react';
+import { KeyboardAvoidingView, Modal, Platform, Text, View } from 'react-native';
 
 interface Props {
   visible: boolean;
@@ -14,7 +14,7 @@ interface Props {
 }
 
 export function InviteFriendSheet({ visible, onClose, ndk, signer, group, onGroupUpdated }: Props) {
-  const [npub, setNpub] = useState("");
+  const [npub, setNpub] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -24,8 +24,8 @@ export function InviteFriendSheet({ visible, onClose, ndk, signer, group, onGrou
     setError(null);
     try {
       let pubkey = npub.trim();
-      if (pubkey.startsWith("npub")) {
-        const { nip19 } = await import("nostr-tools");
+      if (pubkey.startsWith('npub')) {
+        const { nip19 } = await import('nostr-tools');
         pubkey = (nip19.decode(pubkey) as any).data as string;
       }
       await inviteToGroup(ndk, signer, group, pubkey);
@@ -34,42 +34,42 @@ export function InviteFriendSheet({ visible, onClose, ndk, signer, group, onGrou
         members: [...new Set([...group.members, pubkey])],
       };
       onGroupUpdated(updated);
-      setNpub("");
+      setNpub('');
       onClose();
     } catch (e: any) {
-      setError(e?.message ?? "Failed to invite");
+      setError(e?.message ?? 'Failed to invite');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+    <Modal visible={visible} animationType='slide' transparent onRequestClose={onClose}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        className="flex-1 justify-end"
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        className='flex-1 justify-end'
       >
-        <View className="bg-white rounded-t-2xl p-6 shadow-xl">
-          <Text className="text-lg font-bold text-gray-900 mb-4">Invite a Friend</Text>
+        <View className='bg-white rounded-t-2xl p-6 shadow-xl'>
+          <Text className='text-lg font-bold text-gray-900 mb-4'>Invite a Friend</Text>
           <Input
-            className="mb-2"
+            className='mb-2'
             value={npub}
             onChangeText={setNpub}
-            placeholder="npub1… or hex pubkey"
-            autoCapitalize="none"
+            placeholder='npub1… or hex pubkey'
+            autoCapitalize='none'
             autoCorrect={false}
           />
-          {error ? <Text className="text-red-500 text-sm mb-2">{error}</Text> : null}
+          {error ? <Text className='text-red-500 text-sm mb-2'>{error}</Text> : null}
           <Button
-            className="mt-2"
-            variant={loading || !npub.trim() ? "secondary" : "default"}
+            className='mt-2'
+            variant={loading || !npub.trim() ? 'secondary' : 'default'}
             onPress={handleInvite}
             disabled={loading || !npub.trim()}
           >
-            <Text className="text-sm font-semibold">{loading ? "Sending…" : "Send Invite"}</Text>
+            <Text className='text-sm font-semibold'>{loading ? 'Sending…' : 'Send Invite'}</Text>
           </Button>
-          <Button className="mt-3" variant="ghost" onPress={onClose}>
-            <Text className="text-gray-500 text-sm">Cancel</Text>
+          <Button className='mt-3' variant='ghost' onPress={onClose}>
+            <Text className='text-gray-500 text-sm'>Cancel</Text>
           </Button>
         </View>
       </KeyboardAvoidingView>

@@ -1,7 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { NDKEvent } from "@nostr-dev-kit/ndk-mobile";
-import { NDKContext } from "@/lib/context/ndk-context";
-import { useCity } from "./cityStore";
+import { NDKContext } from '@/lib/context/ndk-context';
 import {
   cityTagValue,
   parsePublicEvent,
@@ -9,7 +6,11 @@ import {
   KlkKind,
   getSecure,
   setSecure,
-} from "@klk/infrastructure";
+} from '@klk/infrastructure';
+import { NDKEvent } from '@nostr-dev-kit/ndk-mobile';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+
+import { useCity } from './cityStore';
 
 export interface PublicEvent extends PublicEventData {
   id: string;
@@ -74,16 +75,16 @@ export function usePublicEvents(): UsePublicEventsResult {
         }
 
         const sub = ndk.subscribe(
-          { kinds: [KlkKind.PublicEvent as number], "#t": [cityTagValue(city)] },
-          { closeOnEose: false },
+          { kinds: [KlkKind.PublicEvent as number], '#t': [cityTagValue(city)] },
+          { closeOnEose: false }
         );
-        sub.on("event", (e: NDKEvent) => {
+        sub.on('event', (e: NDKEvent) => {
           setEvents((prev) => {
             const exists = prev.find((x) => x.id === e.id);
             return exists ? prev : [...prev, e];
           });
         });
-        sub.on("eose", () => {
+        sub.on('eose', () => {
           setLoading(false);
         });
         setAttemptCount(attempt);
@@ -97,7 +98,7 @@ export function usePublicEvents(): UsePublicEventsResult {
       }
     }
 
-    setError(lastError?.message ?? "Failed to load events after retries");
+    setError(lastError?.message ?? 'Failed to load events after retries');
     setLoading(false);
   }, [ndk, city]);
 

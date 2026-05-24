@@ -1,9 +1,9 @@
-import { View, type ViewStyle } from "react-native";
-import { Map, Camera, Marker, type MapRef } from "@maplibre/maplibre-react-native";
-import { PublicEventData, Coordinates } from "@klk/infrastructure";
-import React, { useRef, useCallback, useMemo } from "react";
+import { PublicEventData, Coordinates } from '@klk/infrastructure';
+import { Map, Camera, Marker, type MapRef } from '@maplibre/maplibre-react-native';
+import React, { useRef, useCallback, useMemo } from 'react';
+import { View, type ViewStyle } from 'react-native';
 
-const MAP_STYLE = "https://demotiles.maplibre.org/style.json";
+const MAP_STYLE = 'https://demotiles.maplibre.org/style.json';
 
 type EventWithId = PublicEventData & { id: string; pubkey: string };
 
@@ -29,14 +29,14 @@ export const EventMapView = React.memo(function EventMapView({
     (event: EventWithId) => {
       onEventPress?.(event);
     },
-    [onEventPress],
+    [onEventPress]
   );
 
   const markers = useMemo(() => {
     return events
-      .filter((e) => e.location !== null && e.location !== undefined && e.location.includes(","))
+      .filter((e) => e.location !== null && e.location !== undefined && e.location.includes(','))
       .map((event) => {
-        const parts = event.location.split(",").map((s) => parseFloat(s.trim()));
+        const parts = event.location.split(',').map((s) => parseFloat(s.trim()));
         if (parts.length < 2 || parts.some(isNaN)) {
           return null;
         }
@@ -48,8 +48,8 @@ export const EventMapView = React.memo(function EventMapView({
             lngLat={[longitude, latitude]}
             onPress={() => handleMarkerPress(event)}
           >
-            <View className="bg-indigo-600 rounded-full w-7 h-7 items-center justify-center shadow-sm">
-              <View className="bg-white w-2.5 h-2.5 rounded-full" />
+            <View className='bg-indigo-600 rounded-full w-7 h-7 items-center justify-center shadow-sm'>
+              <View className='bg-white w-2.5 h-2.5 rounded-full' />
             </View>
           </Marker>
         );
@@ -62,7 +62,7 @@ export const EventMapView = React.memo(function EventMapView({
         <Camera
           center={[center.longitude, center.latitude]}
           zoom={12}
-          easing="fly"
+          easing='fly'
           duration={600}
         />
         {markers}

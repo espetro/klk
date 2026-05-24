@@ -1,4 +1,4 @@
-import { Stack } from "expo-router";
+import { Stack } from 'expo-router';
 
 export default function OnboardingLayout() {
   return (
@@ -6,13 +6,13 @@ export default function OnboardingLayout() {
       screenOptions={{
         headerShown: false,
         gestureEnabled: false,
-        animation: "slide_from_right",
+        animation: 'slide_from_right',
       }}
     >
-      <Stack.Screen name="welcome" />
-      <Stack.Screen name="events" />
-      <Stack.Screen name="location" />
-      <Stack.Screen name="login" />
+      <Stack.Screen name='welcome' />
+      <Stack.Screen name='events' />
+      <Stack.Screen name='location' />
+      <Stack.Screen name='login' />
     </Stack>
   );
 }

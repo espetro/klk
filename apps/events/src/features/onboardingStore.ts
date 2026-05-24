@@ -1,5 +1,5 @@
-import { atom } from "nanostores";
-import { useStore } from "@nanostores/react";
+import { useStore } from '@nanostores/react';
+import { atom } from 'nanostores';
 
 interface OnboardingState {
   complete: boolean;

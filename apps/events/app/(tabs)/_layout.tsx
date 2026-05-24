@@ -1,36 +1,36 @@
-import { Tabs } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from '@expo/vector-icons';
+import { Tabs } from 'expo-router';
 
 export default function TabsLayout() {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: "#6366f1" }}>
+    <Tabs screenOptions={{ tabBarActiveTintColor: '#6366f1' }}>
       <Tabs.Screen
-        name="feed"
+        name='feed'
         options={{
-          title: "Feed",
+          title: 'Feed',
           // oxlint-disable-next-line react/no-unstable-nested-components
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="calendar-outline" size={size} color={color} />
+            <Ionicons name='calendar-outline' size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="groups"
+        name='groups'
         options={{
-          title: "Groups",
+          title: 'Groups',
           // oxlint-disable-next-line react/no-unstable-nested-components
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="people-outline" size={size} color={color} />
+            <Ionicons name='people-outline' size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name='profile'
         options={{
-          title: "Profile",
+          title: 'Profile',
           // oxlint-disable-next-line react/no-unstable-nested-components
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
+            <Ionicons name='person-outline' size={size} color={color} />
           ),
         }}
       />
