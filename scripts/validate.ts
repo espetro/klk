@@ -25,7 +25,9 @@ const buildChecks = async (cwd: string): Promise<CheckTask[]> => {
   const hasExpo = 'expo' in allDeps;
 
   const checks: CheckTask[] = [];
-  if (hasTsconfig) checks.push({ name: 'TypeScript', cmd: ['bun', 'tsc', '--noEmit'], cwd });
+  if (hasTsconfig) {
+    checks.push({ name: 'TypeScript', cmd: ['bun', 'tsc', '--noEmit'], cwd });
+  }
   checks.push({ name: 'Lint (oxlint)', cmd: ['bun', 'oxlint', '.'], cwd });
   checks.push({ name: 'Format (oxfmt)', cmd: ['bun', 'oxfmt', '--check', '.'], cwd });
   if (hasExpo) {

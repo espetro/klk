@@ -1,15 +1,26 @@
+import { usePathname } from 'expo-router';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 
+export enum AppTabs {
+  Events = 'events',
+  Circles = 'circles',
+}
+
 export default function TabsLayout() {
+  const isMap = usePathname().includes(AppTabs.Circles);
+
   return (
-    <NativeTabs>
-      <NativeTabs.Trigger name='events'>
-        <NativeTabs.Trigger.Icon sf='calendar' md='event' />
+    <NativeTabs tintColor='#6366f1'>
+      <NativeTabs.Trigger name={AppTabs.Events}>
+        <NativeTabs.Trigger.Icon sf={{ default: 'square.stack', selected: 'square.stack.fill' }} />
         <NativeTabs.Trigger.Label>Events</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name='circles'>
-        <NativeTabs.Trigger.Icon sf='person.2' md='group' />
+      <NativeTabs.Trigger name={AppTabs.Circles}>
+        <NativeTabs.Trigger.Icon sf={{ default: 'person.2', selected: 'person.2.fill' }} />
         <NativeTabs.Trigger.Label>Circles</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name='map' role='search'>
+        <NativeTabs.Trigger.Icon sf={isMap ? 'list.bullet' : 'map'} />
       </NativeTabs.Trigger>
     </NativeTabs>
   );

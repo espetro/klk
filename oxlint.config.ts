@@ -24,6 +24,7 @@ export default defineConfig({
     'no-alert': 'error',
     'require-await': 'error',
     'max-params': ['warn', 3],
+    'max-lines-per-function': ['warn', { max: 120, skipBlankLines: true }],
     'max-lines': ['error', { max: 500, skipBlankLines: true }],
     'no-fallthrough': 'error',
     'no-implicit-globals': 'error',

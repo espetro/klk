@@ -31,6 +31,14 @@ Klk is a Nostr-native events app built with Expo + React Native. Users discover 
 
 Verify there's no regressions introduced by running `bun run validate`
 
+### Commit style
+
+- Atomic commits: Work in small, focused increments. Every commit should follow the criteria:
+  - Pass CI: locally use `bun run validate` (matches what's ran in CI)
+  - Be deployable: application is in a valid state
+  - Introduce no dead code: no unreachable code, unused imports, or half-wired features
+- Conventional commit name and description format
+
 ## Backward Compatibility
 
 `CLAUDE.md → AGENTS.md` symlinks exist at root and in each package for Claude Code compatibility. Do NOT create new `CLAUDE.md` files.

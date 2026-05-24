@@ -22,7 +22,6 @@ export default function LoginPage(_: PageProps) {
     await getOrCreateIdentity();
     await completeOnboarding();
     setOnboardingComplete(true);
-    router.dismissAll();
     router.replace('/');
   }
 

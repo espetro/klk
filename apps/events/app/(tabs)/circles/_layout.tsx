@@ -11,6 +11,14 @@ function ProfileHeaderButton() {
   );
 }
 
+function SearchHeaderButton() {
+  return (
+    <Pressable hitSlop={8}>
+      <Ionicons name="search-outline" size={24} color="#6366f1" />
+    </Pressable>
+  );
+}
+
 export default function CirclesLayout() {
   return (
     <Stack>
@@ -18,6 +26,7 @@ export default function CirclesLayout() {
         name="index"
         options={{
           title: 'Circles',
+          headerLeft: () => <SearchHeaderButton />,
           headerRight: () => <ProfileHeaderButton />,
         }}
       />
