@@ -1,8 +1,9 @@
-import { okAsync, errAsync, Result } from "neverthrow";
-import { Event, parseEvent } from "../domain/events";
-import { ValidationError, PublishError, CryptoError } from "../domain/errors";
-import { IEventRepository } from "../ports/IEventRepository";
-import { ICryptoService } from "../ports/ICryptoService";
+import { okAsync, errAsync, Result } from 'neverthrow';
+
+import { ValidationError, PublishError, CryptoError } from '../domain/errors';
+import { Event, parseEvent } from '../domain/events';
+import { ICryptoService } from '../ports/ICryptoService';
+import { IEventRepository } from '../ports/IEventRepository';
 
 export type PublishedEvent = Event & { publishedAt: Date };
 
@@ -10,7 +11,7 @@ export async function publishEvent(
   repo: IEventRepository,
   crypto: ICryptoService,
   draft: unknown,
-  groupKey?: string,
+  groupKey?: string
 ): Promise<Result<PublishedEvent, PublishError | ValidationError | CryptoError>> {
   const parsed = parseEvent(draft);
 

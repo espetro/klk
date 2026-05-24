@@ -16,7 +16,7 @@ src/
 Uses `neverthrow` Result<T,E>. Never throw exceptions.
 
 ```ts
-import { ok, err } from "neverthrow";
+import { ok, err } from 'neverthrow';
 // ok(value) or err(new DomainError("..."))
 ```
 

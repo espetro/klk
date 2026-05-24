@@ -1,5 +1,6 @@
-import { Result } from "neverthrow";
-import { CryptoError } from "../domain/errors";
+import { Result } from 'neverthrow';
+
+import { CryptoError } from '../domain/errors';
 
 export interface ICryptoService {
   generateKey(): string;

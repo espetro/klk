@@ -1,5 +1,6 @@
-import { Result } from "neverthrow";
-import { StorageError } from "../domain/errors";
+import { Result } from 'neverthrow';
+
+import { StorageError } from '../domain/errors';
 
 /**
  * Port interface for typed key-value storage.

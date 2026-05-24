@@ -1,7 +1,8 @@
-import { Result } from "neverthrow";
-import { Event } from "../domain/events";
-import { User } from "../domain/users";
-import { NostrError, PublishError, RsvpError } from "../domain/errors";
+import { Result } from 'neverthrow';
+
+import { NostrError, PublishError, RsvpError } from '../domain/errors';
+import { Event } from '../domain/events';
+import { User } from '../domain/users';
 
 /**
  * Port interface for event repository operations.
