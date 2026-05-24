@@ -25,6 +25,24 @@ gauge install ts
 
 You also need Xcode (for iOS builds) and Node.js ≥ 20.
 
+### Android
+
+Android builds additionally require a JDK and the Android SDK:
+
+- **JDK**: Java 21 (Temurin) — managed by mise. Run `mise install` after cloning;
+  mise downloads it automatically and exports `JAVA_HOME`.
+- **Android SDK**: Install [Android Studio](https://developer.android.com/studio) and
+  via the SDK Manager install:
+  - Android SDK Platform 35
+  - Android SDK Build-Tools 35.x
+  - Android Emulator
+  - Set `ANDROID_HOME` to your SDK path (Android Studio sets this automatically).
+
+```bash
+# Run on Android emulator
+bun android
+```
+
 ## Development Setup
 
 ```bash
