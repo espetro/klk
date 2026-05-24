@@ -1,5 +1,6 @@
+import { HostedButton as Button } from '@/components/hosted-button';
 import { CITIES, DistanceRange, DISTANCE_RANGES } from '@klk/infrastructure';
-import { Button, Input } from '@klk/ui';
+import { Input } from '@klk/ui';
 import * as Location from 'expo-location';
 import { useState, useCallback } from 'react';
 import { View, Text, ScrollView, Alert } from 'react-native';
@@ -103,45 +104,38 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
         {suggestions.length > 0 && (
           <View className='mt-1 bg-gray-50 rounded-lg border border-gray-200 overflow-hidden'>
             {suggestions.map((city) => (
-              <Button
-                key={city.slug}
-                onPress={() => handleCitySelect(city.slug, city.label)}
-                variant='ghost'
-                className='justify-start px-4 py-3 border-b border-gray-100 last:border-b-0 rounded-none'
-              >
-                <Text className='text-gray-900'>{city.label}</Text>
-              </Button>
+              <View key={city.slug} className='border-b border-gray-100 last:border-b-0'>
+                <Button
+                  label={city.label}
+                  variant='text'
+                  onPress={() => handleCitySelect(city.slug, city.label)}
+                />
+              </View>
             ))}
           </View>
         )}
       </View>
 
-      <Button
-        onPress={handleUseCurrentLocation}
-        disabled={isLocating}
-        variant='secondary'
-        className='flex-row items-center bg-gray-50 mb-4 border border-gray-200'
-      >
-        <Text className='text-indigo-600 font-medium'>
-          {isLocating ? 'Getting location...' : 'Use current location'}
-        </Text>
-      </Button>
+      <View className='mb-4'>
+        <Button
+          label={isLocating ? 'Getting location...' : 'Use current location'}
+          variant='outlined'
+          onPress={handleUseCurrentLocation}
+          disabled={isLocating}
+        />
+      </View>
 
       <View className='mb-4'>
         <Text className='text-sm font-medium text-gray-700 mb-2'>Popular cities</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className='flex-row'>
           {PRESET_CITIES.map((c) => (
-            <Button
-              key={c.slug}
-              onPress={() => handleCitySelect(c.slug, c.label)}
-              variant={value.city === c.slug ? 'default' : 'secondary'}
-              size='sm'
-              className='mr-2'
-            >
-              <Text className={value.city === c.slug ? 'text-white font-medium' : 'text-gray-700'}>
-                {c.label}
-              </Text>
-            </Button>
+            <View key={c.slug} className='mr-2'>
+              <Button
+                label={c.label}
+                onPress={() => handleCitySelect(c.slug, c.label)}
+                variant={value.city === c.slug ? 'filled' : 'outlined'}
+              />
+            </View>
           ))}
         </ScrollView>
       </View>
@@ -152,16 +146,10 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
           {DISTANCE_RANGES.map((range) => (
             <Button
               key={range}
+              label={`${range} km`}
               onPress={() => handleDistanceChange(range)}
-              variant={value.distance === range ? 'default' : 'secondary'}
-              size='sm'
-            >
-              <Text
-                className={value.distance === range ? 'text-white font-medium' : 'text-gray-700'}
-              >
-                {range} km
-              </Text>
-            </Button>
+              variant={value.distance === range ? 'filled' : 'outlined'}
+            />
           ))}
         </View>
       </View>

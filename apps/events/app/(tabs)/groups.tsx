@@ -1,6 +1,6 @@
 import { GroupCard } from '@/components';
+import { HostedButton as Button } from '@/components/hosted-button';
 import { getAllGroups, GroupRecord } from '@klk/infrastructure';
-import { Button } from '@klk/ui';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { useState, useCallback } from 'react';
 import { FlatList, Text, View } from 'react-native';
@@ -19,9 +19,7 @@ export default function GroupsScreen() {
     <View className='flex-1 bg-gray-50'>
       <View className='px-4 pt-4 pb-2 flex-row items-center justify-between'>
         <Text className='text-2xl font-bold text-gray-900'>Groups</Text>
-        <Button variant='default' onPress={() => router.push('/group/new')}>
-          <Text className='text-white font-medium'>+ New</Text>
-        </Button>
+        <Button label='+ New' variant='filled' onPress={() => router.push('/group/new')} />
       </View>
 
       <FlatList

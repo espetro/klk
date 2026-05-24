@@ -120,6 +120,7 @@
       "version": "0.1.0",
       "dependencies": {
         "@react-native-community/datetimepicker": "9.1.0",
+        "@react-native-picker/picker": "^2.11.4",
       },
       "devDependencies": {
         "@rn-primitives/avatar": "^1.4.0",

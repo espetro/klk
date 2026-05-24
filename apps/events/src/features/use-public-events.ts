@@ -110,11 +110,14 @@ export function usePublicEvents(): UsePublicEventsResult {
   }, [ndk, city, startSubscription]);
 
   const parsed: PublicEvent[] = useMemo(() => {
-    return events
-      .map(parsePublicEvent)
-      .filter((e) => e.start > 0)
-      .slice()
-      .sort((a, b) => a.start - b.start);
+    return (
+      events
+        .map(parsePublicEvent)
+        .filter((e) => e.start > 0)
+        .slice()
+        // eslint-disable-next-line unicorn/no-array-sort
+        .sort((a, b) => a.start - b.start)
+    );
   }, [events]);
 
   useEffect(() => {

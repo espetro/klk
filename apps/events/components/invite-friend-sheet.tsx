@@ -1,5 +1,6 @@
+import { HostedButton as Button } from '@/components/hosted-button';
 import { GroupRecord, inviteToGroup } from '@klk/infrastructure';
-import { Button, Input } from '@klk/ui';
+import { Input } from '@klk/ui';
 import NDK, { NDKPrivateKeySigner } from '@nostr-dev-kit/ndk-mobile';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Modal, Platform, Text, View } from 'react-native';
@@ -60,17 +61,17 @@ export function InviteFriendSheet({ visible, onClose, ndk, signer, group, onGrou
             autoCorrect={false}
           />
           {error ? <Text className='text-red-500 text-sm mb-2'>{error}</Text> : null}
-          <Button
-            className='mt-2'
-            variant={loading || !npub.trim() ? 'secondary' : 'default'}
-            onPress={handleInvite}
-            disabled={loading || !npub.trim()}
-          >
-            <Text className='text-sm font-semibold'>{loading ? 'Sending…' : 'Send Invite'}</Text>
-          </Button>
-          <Button className='mt-3' variant='ghost' onPress={onClose}>
-            <Text className='text-gray-500 text-sm'>Cancel</Text>
-          </Button>
+          <View className='mt-2'>
+            <Button
+              label={loading ? 'Sending…' : 'Send Invite'}
+              variant={loading || !npub.trim() ? 'outlined' : 'filled'}
+              onPress={handleInvite}
+              disabled={loading || !npub.trim()}
+            />
+          </View>
+          <View className='mt-3'>
+            <Button label='Cancel' variant='text' onPress={onClose} />
+          </View>
         </View>
       </KeyboardAvoidingView>
     </Modal>

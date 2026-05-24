@@ -1,8 +1,8 @@
 import { CityPicker } from '@/components';
+import { HostedButton as Button } from '@/components/hosted-button';
 import { $city, useCity } from '@/features';
 import { NDKContext } from '@/lib/context/ndk-context';
 import { wipeIdentity, resetOnboarding, RELAY_URL } from '@klk/infrastructure';
-import { Button } from '@klk/ui';
 import { router as expoRouter } from 'expo-router';
 import { useContext } from 'react';
 import { Alert, Clipboard, Pressable, ScrollView, Text, View } from 'react-native';
@@ -72,13 +72,11 @@ export default function ProfileScreen() {
         <Text className='text-sm text-gray-700 font-mono'>{RELAY_URL}</Text>
       </View>
 
-      <Button variant='destructive' className='mb-4' onPress={handleWipe}>
-        <Text className='text-red-600 font-medium'>Wipe Identity (Dev Only)</Text>
-      </Button>
+      <View className='mb-4'>
+        <Button label='Wipe Identity (Dev Only)' variant='filled' onPress={handleWipe} />
+      </View>
 
-      <Button variant='secondary' onPress={handleResetOnboarding}>
-        <Text className='text-orange-600 font-medium'>Reset Onboarding</Text>
-      </Button>
+      <Button label='Reset Onboarding' variant='outlined' onPress={handleResetOnboarding} />
     </ScrollView>
   );
 }

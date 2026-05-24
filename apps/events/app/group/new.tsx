@@ -1,6 +1,6 @@
+import { HostedButton as Button } from '@/components/hosted-button';
 import { NDKContext } from '@/lib/context/ndk-context';
 import { createGroup } from '@klk/infrastructure';
-import { Button } from '@klk/ui';
 import { Stack, useRouter } from 'expo-router';
 import { useContext, useState } from 'react';
 import { Alert, ScrollView, Text, TextInput } from 'react-native';
@@ -47,13 +47,11 @@ export default function NewGroupScreen() {
           autoFocus
         />
         <Button
-          variant='default'
+          label={loading ? 'Creating…' : 'Create Group'}
+          variant='filled'
           onPress={handleCreate}
           disabled={loading || !name.trim()}
-          className={loading || !name.trim() ? 'bg-gray-300' : 'bg-indigo-600'}
-        >
-          <Text className='text-white font-semibold'>{loading ? 'Creating…' : 'Create Group'}</Text>
-        </Button>
+        />
       </ScrollView>
     </>
   );

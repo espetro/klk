@@ -61,5 +61,6 @@ export default defineConfig({
     '*.config.ts',
     'metro.config.js',
     'tests',
+    'uniwind-types.d.ts',
   ],
 });

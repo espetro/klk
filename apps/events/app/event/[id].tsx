@@ -1,3 +1,4 @@
+import { HostedButton as Button } from '@/components/hosted-button';
 import { useRsvps } from '@/features';
 import { useEventDetail } from '@/features/useEventDetail';
 import { useFeatureFlag } from '@/features/useFeatureFlag';
@@ -9,7 +10,6 @@ import {
   buildEventCoordinate,
   publishRsvp,
 } from '@klk/infrastructure';
-import { Button } from '@klk/ui';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useContext, useEffect, useState } from 'react';
 import { Alert, ScrollView, Text, View } from 'react-native';
@@ -116,15 +116,11 @@ export default function EventDetailScreen() {
 
         <View className='p-4'>
           <Button
-            variant={hasRsvpd || rsvping ? 'secondary' : 'default'}
+            label={hasRsvpd ? "You're going!" : rsvping ? 'RSVP-ing…' : 'RSVP'}
+            variant={hasRsvpd || rsvping ? 'outlined' : 'filled'}
             onPress={handleRsvp}
             disabled={hasRsvpd || rsvping}
-            className={hasRsvpd || rsvping ? 'bg-gray-200' : 'bg-indigo-600'}
-          >
-            <Text className={`font-semibold ${hasRsvpd ? 'text-gray-500' : 'text-white'}`}>
-              {hasRsvpd ? "You're going!" : rsvping ? 'RSVP-ing…' : 'RSVP'}
-            </Text>
-          </Button>
+          />
         </View>
       </ScrollView>
     </>
@@ -188,15 +184,11 @@ function NewEventDetail({ eventId }: { eventId: string }) {
 
         <View className='p-4'>
           <Button
-            variant={hasRsvpd || rsvping ? 'secondary' : 'default'}
+            label={hasRsvpd ? "You're going!" : rsvping ? 'RSVP-ing…' : 'RSVP'}
+            variant={hasRsvpd || rsvping ? 'outlined' : 'filled'}
             onPress={rsvp}
             disabled={hasRsvpd || rsvping}
-            className={hasRsvpd || rsvping ? 'bg-gray-200' : 'bg-indigo-600'}
-          >
-            <Text className={`font-semibold ${hasRsvpd ? 'text-gray-500' : 'text-white'}`}>
-              {hasRsvpd ? "You're going!" : rsvping ? 'RSVP-ing…' : 'RSVP'}
-            </Text>
-          </Button>
+          />
         </View>
       </ScrollView>
     </>

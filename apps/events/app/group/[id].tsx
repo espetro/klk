@@ -1,8 +1,8 @@
 import { EventCard, InviteFriendSheet, EventForm, EventFormValues } from '@/components';
+import { HostedButton as Button } from '@/components/hosted-button';
 import { useGroupEvents } from '@/features';
 import { NDKContext } from '@/lib/context/ndk-context';
 import { getGroup, GroupRecord, publishPrivateEvent } from '@klk/infrastructure';
-import { Button } from '@klk/ui';
 import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useContext, useState } from 'react';
 import { Alert, ScrollView, Text, View } from 'react-native';
@@ -80,9 +80,13 @@ export default function GroupDetailScreen() {
           </Text>
         ))}
         {ndk && signer ? (
-          <Button variant='outline' className='mt-3' onPress={() => setInviteVisible(true)}>
-            <Text className='text-indigo-600 text-sm font-medium'>+ Invite Friend</Text>
-          </Button>
+          <View className='mt-3'>
+            <Button
+              label='+ Invite Friend'
+              variant='outlined'
+              onPress={() => setInviteVisible(true)}
+            />
+          </View>
         ) : null}
       </View>
 
@@ -90,9 +94,7 @@ export default function GroupDetailScreen() {
         <Text className='text-base font-semibold text-gray-700'>
           Private Events ({privateEvents.length})
         </Text>
-        <Button variant='default' onPress={() => setNewEventVisible(true)}>
-          <Text className='text-white text-sm font-medium'>+ New</Text>
-        </Button>
+        <Button label='+ New' variant='filled' onPress={() => setNewEventVisible(true)} />
       </View>
 
       {privateEvents.length === 0 ? (
