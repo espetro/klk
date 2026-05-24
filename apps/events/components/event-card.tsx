@@ -1,7 +1,6 @@
 import { PublicEventData } from '@klk/infrastructure';
-import { Card, CardContent } from '@klk/ui';
 import { useRouter } from 'expo-router';
-import { Pressable, Text } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 interface Props {
   event: PublicEventData & { id: string };
@@ -21,20 +20,20 @@ export function EventCard({ event }: Props) {
   const router = useRouter();
   return (
     <Pressable onPress={() => router.push(`/event/${event.id}`)}>
-      <Card className='bg-white mb-3'>
-        <CardContent className='p-4'>
+      <View className='mb-3 flex flex-col rounded-xl border border-gray-200 bg-white py-4 shadow-sm shadow-black/5'>
+        <View className='px-4'>
           <Text className='text-lg font-semibold text-gray-900'>{event.title || 'Untitled'}</Text>
-          <Text className='text-sm text-indigo-600 mt-1'>{formatDate(event.start)}</Text>
+          <Text className='mt-1 text-sm text-indigo-600'>{formatDate(event.start)}</Text>
           {event.location ? (
-            <Text className='text-sm text-gray-500 mt-1'>{event.location}</Text>
+            <Text className='mt-1 text-sm text-gray-500'>{event.location}</Text>
           ) : null}
           {event.summary ? (
-            <Text className='text-sm text-gray-600 mt-2' numberOfLines={2}>
+            <Text className='mt-2 text-sm text-gray-600' numberOfLines={2}>
               {event.summary}
             </Text>
           ) : null}
-        </CardContent>
-      </Card>
+        </View>
+      </View>
     </Pressable>
   );
 }

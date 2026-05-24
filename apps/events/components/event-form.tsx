@@ -1,7 +1,9 @@
+import { HostedButton } from '@/components/hosted-button';
 import { HostedInput as Input } from '@/components/hosted-input';
+import { FieldGroup } from '@expo/ui';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useState } from 'react';
-import { Platform, Pressable, ScrollView, Text } from 'react-native';
+import { Platform, Pressable, Text, View } from 'react-native';
 
 export interface EventFormValues {
   title: string;
@@ -33,28 +35,53 @@ export function EventForm({ onSubmit, submitting, submitLabel = 'Publish' }: Pro
   };
 
   return (
-    <ScrollView
-      className='flex-1 p-4 bg-white'
-      keyboardShouldPersistTaps='handled'
-      contentInsetAdjustmentBehavior='automatic'
-    >
-      <Text className='text-sm font-medium text-gray-700 mb-1'>Title *</Text>
-      <Input
-        value={title}
-        onChangeText={setTitle}
-        placeholder='Event title'
-        autoCorrect={false}
-        returnKeyType='done'
-        onSubmitEditing={() => {}}
-      />
+    <View style={{ flex: 1 }}>
+      <FieldGroup>
+        <FieldGroup.Section title='Event'>
+          <Input
+            value={title}
+            onChangeText={setTitle}
+            placeholder='Event title'
+            autoCorrect={false}
+            returnKeyType='done'
+            onSubmitEditing={() => {}}
+          />
+          <Input
+            value={summary}
+            onChangeText={setSummary}
+            placeholder="What's the event about?"
+            multiline
+            numberOfLines={4}
+          />
+        </FieldGroup.Section>
 
-      <Text className='text-sm font-medium text-gray-700 mb-1'>Start</Text>
-      <Pressable
-        className='border border-gray-200 rounded-lg p-3 mb-4'
-        onPress={() => setShowStart(true)}
-      >
-        <Text className='text-gray-900'>{start.toLocaleString()}</Text>
-      </Pressable>
+        <FieldGroup.Section title='Schedule'>
+          <Pressable onPress={() => setShowStart(true)}>
+            <Text selectable>{start.toLocaleString()}</Text>
+          </Pressable>
+          <Pressable onPress={() => setShowEnd(true)}>
+            <Text selectable>{end.toLocaleString()}</Text>
+          </Pressable>
+        </FieldGroup.Section>
+
+        <FieldGroup.Section title='Details'>
+          <Input value={location} onChangeText={setLocation} placeholder='Venue / address' />
+          <Input
+            value={image}
+            onChangeText={setImage}
+            placeholder='https://...'
+            autoCapitalize='none'
+          />
+        </FieldGroup.Section>
+
+        <HostedButton
+          variant='filled'
+          disabled={submitting || !title}
+          onPress={handleSubmit}
+          label={submitting ? 'Publishing…' : submitLabel}
+        />
+      </FieldGroup>
+
       {showStart && (
         <DateTimePicker
           value={start}
@@ -65,14 +92,6 @@ export function EventForm({ onSubmit, submitting, submitLabel = 'Publish' }: Pro
           }}
         />
       )}
-
-      <Text className='text-sm font-medium text-gray-700 mb-1'>End</Text>
-      <Pressable
-        className='border border-gray-200 rounded-lg p-3 mb-4'
-        onPress={() => setShowEnd(true)}
-      >
-        <Text className='text-gray-900'>{end.toLocaleString()}</Text>
-      </Pressable>
       {showEnd && (
         <DateTimePicker
           value={end}
@@ -83,36 +102,6 @@ export function EventForm({ onSubmit, submitting, submitLabel = 'Publish' }: Pro
           }}
         />
       )}
-
-      <Text className='text-sm font-medium text-gray-700 mb-1'>Location</Text>
-      <Input value={location} onChangeText={setLocation} placeholder='Venue / address' />
-
-      <Text className='text-sm font-medium text-gray-700 mb-1'>Description</Text>
-      <Input
-        value={summary}
-        onChangeText={setSummary}
-        placeholder="What's the event about?"
-        multiline
-        numberOfLines={4}
-      />
-
-      <Text className='text-sm font-medium text-gray-700 mb-1'>Image URL (optional)</Text>
-      <Input
-        value={image}
-        onChangeText={setImage}
-        placeholder='https://...'
-        autoCapitalize='none'
-      />
-
-      <Pressable
-        className={`rounded-xl p-4 items-center ${submitting || !title ? 'bg-gray-300' : 'bg-indigo-600'}`}
-        onPress={handleSubmit}
-        disabled={submitting || !title}
-      >
-        <Text className='text-white font-semibold text-base'>
-          {submitting ? 'Publishing…' : submitLabel}
-        </Text>
-      </Pressable>
-    </ScrollView>
+    </View>
   );
 }
