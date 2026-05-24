@@ -1,4 +1,4 @@
-import * as SecureStore from "expo-secure-store";
+import * as SecureStore from 'expo-secure-store';
 
 export async function getSecure(key: string): Promise<string | null> {
   return SecureStore.getItemAsync(key);

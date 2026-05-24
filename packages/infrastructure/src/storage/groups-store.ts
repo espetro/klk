@@ -1,4 +1,4 @@
-import { deleteSecure, getSecure, setSecure } from "./secure";
+import { deleteSecure, getSecure, setSecure } from './secure';
 
 export interface GroupRecord {
   id: string;
@@ -7,7 +7,7 @@ export interface GroupRecord {
   members: string[];
 }
 
-const INDEX_KEY = "groups_index";
+const INDEX_KEY = 'groups_index';
 
 async function getIndex(): Promise<string[]> {
   const raw = await getSecure(INDEX_KEY);

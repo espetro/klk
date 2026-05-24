@@ -1,4 +1,4 @@
-import * as AppleAuthentication from "expo-apple-authentication";
+import * as AppleAuthentication from 'expo-apple-authentication';
 
 export interface AppleSignInResult {
   identityToken: string | null;
@@ -15,7 +15,7 @@ export async function signInWithApple(): Promise<AppleSignInResult> {
   try {
     const available = await isAppleSignInAvailable();
     if (!available) {
-      throw new Error("Apple Sign-In is not available on this device");
+      throw new Error('Apple Sign-In is not available on this device');
     }
 
     const credential = await AppleAuthentication.signInAsync({
@@ -32,11 +32,11 @@ export async function signInWithApple(): Promise<AppleSignInResult> {
       fullName: credential.fullName ?? null,
     };
   } catch (error) {
-    if (error instanceof Error && error.message === "APPLE_AUTHENTICATION_CANCELED") {
-      throw new Error("Apple Sign-In was cancelled");
+    if (error instanceof Error && error.message === 'APPLE_AUTHENTICATION_CANCELED') {
+      throw new Error('Apple Sign-In was cancelled');
     }
     throw new Error(
-      `Apple Sign-In failed: ${error instanceof Error ? error.message : "Unknown error"}`,
+      `Apple Sign-In failed: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

@@ -1,7 +1,8 @@
-import { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk-mobile";
-import { deleteSecure, getSecure, setSecure } from "../storage/secure";
+import { NDKPrivateKeySigner } from '@nostr-dev-kit/ndk-mobile';
 
-const NSEC_KEY = "events_app_nsec";
+import { deleteSecure, getSecure, setSecure } from '../storage/secure';
+
+const NSEC_KEY = 'events_app_nsec';
 
 export async function getOrCreateIdentity(): Promise<NDKPrivateKeySigner> {
   const stored = await getSecure(NSEC_KEY);
@@ -10,7 +11,7 @@ export async function getOrCreateIdentity(): Promise<NDKPrivateKeySigner> {
   }
   const signer = NDKPrivateKeySigner.generate();
   const nsec = signer.privateKey;
-  if (!nsec) throw new Error("Failed to generate private key");
+  if (!nsec) throw new Error('Failed to generate private key');
   await setSecure(NSEC_KEY, nsec);
   return signer;
 }

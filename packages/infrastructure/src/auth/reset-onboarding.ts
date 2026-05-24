@@ -1,8 +1,8 @@
-import { deleteSecure, getSecure } from "../storage/secure";
+import { deleteSecure, getSecure } from '../storage/secure';
 
-const ONBOARDING_KEY = "onboarding_complete";
-const OAUTH_CREDENTIAL_KEY = "oauth_credential";
-const OAUTH_PROVIDER_KEY = "oauth_provider";
+const ONBOARDING_KEY = 'onboarding_complete';
+const OAUTH_CREDENTIAL_KEY = 'oauth_credential';
+const OAUTH_PROVIDER_KEY = 'oauth_provider';
 
 export async function resetOnboarding(options?: { clearOAuth?: boolean }): Promise<void> {
   await deleteSecure(ONBOARDING_KEY);

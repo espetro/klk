@@ -1,13 +1,14 @@
-import NDK, { NDKEvent, NDKPrivateKeySigner } from "@nostr-dev-kit/ndk-mobile";
-import * as Crypto from "expo-crypto";
-import { gcm } from "@noble/ciphers/aes.js";
-import { GroupRecord, getGroup, saveGroup } from "../storage/groups-store";
-import { PublicEventData } from "./events";
+import { gcm } from '@noble/ciphers/aes.js';
+import NDK, { NDKEvent, NDKPrivateKeySigner } from '@nostr-dev-kit/ndk-mobile';
+import * as Crypto from 'expo-crypto';
+
+import { GroupRecord, getGroup, saveGroup } from '../storage/groups-store';
+import { PublicEventData } from './events';
 
 function uint8ToHex(buf: Uint8Array): string {
   return Array.from(buf)
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
 }
 
 function hexToUint8(hex: string): Uint8Array {
@@ -32,7 +33,7 @@ export async function inviteToGroup(
   ndk: NDK,
   signer: NDKPrivateKeySigner,
   group: GroupRecord,
-  recipientPubkey: string,
+  recipientPubkey: string
 ): Promise<void> {
   const payload = JSON.stringify({
     id: group.id,
@@ -44,19 +45,19 @@ export async function inviteToGroup(
   const inner = new NDKEvent(ndk);
   inner.kind = 14;
   inner.content = payload;
-  inner.tags = [["p", recipientPubkey]];
+  inner.tags = [['p', recipientPubkey]];
   inner.created_at = Math.floor(Date.now() / 1000);
 
   const sealed = await signer.encrypt(
     await ndk.getUser({ pubkey: recipientPubkey }),
     payload,
-    "nip44",
+    'nip44'
   );
 
   const wrap = new NDKEvent(ndk);
   wrap.kind = 1059;
   wrap.content = sealed;
-  wrap.tags = [["p", recipientPubkey]];
+  wrap.tags = [['p', recipientPubkey]];
   await wrap.publish();
 
   const updated: GroupRecord = {
@@ -67,14 +68,14 @@ export async function inviteToGroup(
 }
 
 export function processIncomingGiftWraps(ndk: NDK, myPubkey: string): void {
-  const sub = ndk.subscribe({ kinds: [1059 as any], "#p": [myPubkey] }, { closeOnEose: false });
-  sub.on("event", async (event: NDKEvent) => {
+  const sub = ndk.subscribe({ kinds: [1059 as any], '#p': [myPubkey] }, { closeOnEose: false });
+  sub.on('event', async (event: NDKEvent) => {
     try {
       if (!ndk.signer) return;
       const decrypted = await (ndk.signer as NDKPrivateKeySigner).decrypt(
         await ndk.getUser({ pubkey: event.pubkey }),
         event.content,
-        "nip44",
+        'nip44'
       );
       const parsed = JSON.parse(decrypted) as {
         id: string;
@@ -116,7 +117,7 @@ export async function aesGcmDecrypt(symKeyHex: string, cipherHex: string): Promi
 export async function publishPrivateEvent(
   ndk: NDK,
   group: GroupRecord,
-  data: PublicEventData,
+  data: PublicEventData
 ): Promise<NDKEvent> {
   const payload = JSON.stringify(data);
   const symKey = hexToUint8(group.symKey);
@@ -127,8 +128,8 @@ export async function publishPrivateEvent(
   event.kind = 30078;
   event.content = encrypted;
   event.tags = [
-    ["d", `group-event:${group.id}:${eventId}`],
-    ["g", group.id],
+    ['d', `group-event:${group.id}:${eventId}`],
+    ['g', group.id],
   ];
   await event.publish();
   return event;

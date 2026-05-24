@@ -1,7 +1,7 @@
-import { deleteSecure, getSecure, setSecure } from "./secure";
-import { Coordinates, DEFAULT_DISTANCE_RANGE, DISTANCE_RANGES, DistanceRange } from "./geo";
+import { Coordinates, DEFAULT_DISTANCE_RANGE, DISTANCE_RANGES, DistanceRange } from './geo';
+import { deleteSecure, getSecure, setSecure } from './secure';
 
-const CITY_KEY = "city_settings";
+const CITY_KEY = 'city_settings';
 
 export interface CitySettings {
   name: string;
@@ -10,7 +10,7 @@ export interface CitySettings {
 }
 
 export const DEFAULT_CITY_SETTINGS: CitySettings = {
-  name: "barcelona",
+  name: 'barcelona',
   distanceRange: DEFAULT_DISTANCE_RANGE,
   coordinates: null,
 };
@@ -21,14 +21,14 @@ export async function loadCitySettings(): Promise<CitySettings> {
   try {
     const parsed = JSON.parse(raw);
     return {
-      name: typeof parsed.name === "string" ? parsed.name : DEFAULT_CITY_SETTINGS.name,
+      name: typeof parsed.name === 'string' ? parsed.name : DEFAULT_CITY_SETTINGS.name,
       distanceRange: DISTANCE_RANGES.includes(parsed.distanceRange)
         ? parsed.distanceRange
         : DEFAULT_CITY_SETTINGS.distanceRange,
       coordinates:
         parsed.coordinates &&
-        typeof parsed.coordinates.latitude === "number" &&
-        typeof parsed.coordinates.longitude === "number"
+        typeof parsed.coordinates.latitude === 'number' &&
+        typeof parsed.coordinates.longitude === 'number'
           ? parsed.coordinates
           : null,
     };

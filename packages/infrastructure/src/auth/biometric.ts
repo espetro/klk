@@ -1,4 +1,4 @@
-import * as LocalAuthentication from "expo-local-authentication";
+import * as LocalAuthentication from 'expo-local-authentication';
 
 export interface BiometricResult {
   success: boolean;
@@ -15,12 +15,12 @@ export async function getBiometricType(): Promise<LocalAuthentication.Authentica
   const hasHardware = await LocalAuthentication.hasHardwareAsync();
   if (!hasHardware) return null;
   return await LocalAuthentication.supportedAuthenticationTypesAsync().then(
-    (types) => types[0] ?? null,
+    (types) => types[0] ?? null
   );
 }
 
 export async function authenticateWithBiometrics(
-  promptMessage = "Authenticate to continue",
+  promptMessage = 'Authenticate to continue'
 ): Promise<BiometricResult> {
   try {
     const available = await isBiometricAvailable();
@@ -32,7 +32,7 @@ export async function authenticateWithBiometrics(
 
     const result = await LocalAuthentication.authenticateAsync({
       promptMessage,
-      cancelLabel: "Cancel",
+      cancelLabel: 'Cancel',
     });
 
     return {
