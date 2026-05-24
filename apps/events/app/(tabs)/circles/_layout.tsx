@@ -1,27 +1,19 @@
-import { Ionicons } from "@expo/vector-icons";
-import { Stack, router } from "expo-router";
-import { Pressable } from "react-native";
+import { Stack, router } from 'expo-router';
 
-function ProfileHeaderButton() {
-  return (
-    <Pressable onPress={() => router.push("/profile")} hitSlop={8}>
-      <Ionicons name="person-circle-outline" size={28} color="#6366f1" />
-    </Pressable>
-  );
-}
+const handleClickProfile = () => router.push('/profile');
 
 export default function CirclesLayout() {
   return (
     <Stack>
-      <Stack.Screen
-        name="index"
-        options={{
-          title: "Circles",
-          // oxlint-disable-next-line react/no-unstable-nested-components
-          headerRight: () => <ProfileHeaderButton />,
-          headerShadowVisible: false,
-        }}
-      />
+      <Stack.Screen name='index'>
+        <Stack.Header style={{ shadowColor: 'transparent' }} />
+        <Stack.Title>Circles</Stack.Title>
+
+        {/* Profile header button */}
+        <Stack.Toolbar placement='right'>
+          <Stack.Toolbar.Button icon='person' onPress={handleClickProfile} />
+        </Stack.Toolbar>
+      </Stack.Screen>
     </Stack>
   );
 }
