@@ -19,6 +19,7 @@ tests/             Gauge E2E specs + step implementations
 ## State Management
 
 Uses nanostores (not React Context):
+
 - `cityStore` — current city slug
 - `ndkStore` — NDK singleton + connection state
 - `onboardingStore` — first-launch flow state
@@ -28,6 +29,7 @@ Uses nanostores (not React Context):
 Prerequisites: `nak serve` (relay), `bun ios` (simulator), `gauge run specs/`
 
 6 flows to validate:
+
 1. Join city (keypair + city select)
 2. View public events (city-tagged feed)
 3. RSVP event (kind 31925)

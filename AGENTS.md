@@ -16,7 +16,7 @@ Klk is a Nostr-native events app built with Expo + React Native. Users discover 
 | `docs/self-hosting.md`              | Relay self-hosting guide                                          |
 | `packages/core/AGENTS.md`           | Domain layer — pure TypeScript, neverthrow, valibot               |
 | `packages/infrastructure/AGENTS.md` | Adapter layer — NDK, storage, crypto                              |
-| `packages/ui/AGENTS.md`             | Shared UI — Expo UI (native), UniWind utilities, theme          |
+| `packages/ui/AGENTS.md`             | Shared UI — Expo UI (native), UniWind utilities, theme            |
 | `apps/events/AGENTS.md`             | Main app — Expo Router, E2E testing, features                     |
 
 ## Agent Workflow
