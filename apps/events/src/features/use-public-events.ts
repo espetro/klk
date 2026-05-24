@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { NDKEvent } from "@nostr-dev-kit/ndk-mobile";
-import { NDKContext } from "@/app/_layout";
-import { useCity } from "@/features";
+import { NDKContext } from "@/lib/context/ndk-context";
+import { useCity } from "./cityStore";
 import {
   cityTagValue,
   parsePublicEvent,
@@ -112,7 +112,8 @@ export function usePublicEvents(): UsePublicEventsResult {
     return events
       .map(parsePublicEvent)
       .filter((e) => e.start > 0)
-      .toSorted((a, b) => a.start - b.start);
+      .slice()
+      .sort((a, b) => a.start - b.start);
   }, [events]);
 
   useEffect(() => {
