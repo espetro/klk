@@ -11,7 +11,8 @@
     "lint": "oxlint .",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
-    "test:e2e": "cd tests && gauge run specs/"
+    "test:e2e": "cd tests && gauge run specs/",
+    "validate": "bun run ../../scripts/validate.ts"
   },
   "dependencies": {
     "@expo/ui": "56.0.12",

@@ -20,6 +20,9 @@
     },
     "./domain/*": "./src/domain/*.ts"
   },
+  "scripts": {
+    "validate": "bun run ../../scripts/validate.ts"
+  },
   "dependencies": {
     "neverthrow": "^8.2.0",
     "valibot": "^1.4.0"

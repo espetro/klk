@@ -1,6 +1,7 @@
-#!/usr/bin/env bun
-import { spawn } from 'node:child_process';
-import { pipeline } from 'node:stream/promises';
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { Writable } from 'node:stream';
+import { parseArgs } from 'node:util';
 
 import { $ } from 'bun';
 import task from 'tasuku';
@@ -17,78 +18,99 @@ const KILL_GRACE_PERIOD_MS = 5000;
 const BUNDLE_TIMEOUT_MS = 300_000;
 const STARTUP_PROBE_MS = 15_000;
 
-const checks: CheckTask[] = [
-  {
-    name: 'TypeScript',
-    cmd: ['bun', 'tsc', '--noEmit'],
-    cwd: 'apps/events',
-  },
-  {
-    name: 'Lint (oxlint)',
-    cmd: ['bun', 'oxlint', '.'],
-    cwd: 'apps/events',
-  },
-  {
-    name: 'Format (oxfmt)',
-    cmd: ['bun', 'oxfmt', '--check', '.'],
-    cwd: 'apps/events',
-  },
-  {
-    name: 'Bundle Check (expo export)',
-    cmd: ['bun', 'expo', 'export', '--platform', 'ios', '--clear'],
-    cwd: 'apps/events',
-    timeoutMs: BUNDLE_TIMEOUT_MS,
-    expectTimeout: false,
-  },
-  {
-    name: 'Production Start (expo start --no-dev)',
-    cmd: ['bun', 'expo', 'start', '--no-dev', '--port', '19000'],
-    cwd: 'apps/events',
-    timeoutMs: STARTUP_PROBE_MS,
-    expectTimeout: true,
-  },
-];
+const buildChecks = async (cwd: string): Promise<CheckTask[]> => {
+  const pkg = JSON.parse(await readFile(`${cwd}/package.json`, 'utf-8'));
+  const allDeps = { ...pkg.dependencies, ...pkg.devDependencies };
+  const hasTsconfig = await Bun.file(`${cwd}/tsconfig.json`).exists();
+  const hasExpo = 'expo' in allDeps;
 
-const runCheck = async (check: CheckTask, stream?: WritableStream): Promise<boolean> => {
-  return new Promise((resolve) => {
-    const proc = spawn(check.cmd[0], check.cmd.slice(1), {
-      cwd: check.cwd,
-      stdio: ['ignore', 'pipe', 'pipe'],
+  const checks: CheckTask[] = [];
+  if (hasTsconfig) checks.push({ name: 'TypeScript', cmd: ['bun', 'tsc', '--noEmit'], cwd });
+  checks.push({ name: 'Lint (oxlint)', cmd: ['bun', 'oxlint', '.'], cwd });
+  checks.push({ name: 'Format (oxfmt)', cmd: ['bun', 'oxfmt', '--check', '.'], cwd });
+  if (hasExpo) {
+    checks.push({
+      name: 'Bundle Check (expo export)',
+      cmd: ['bun', 'expo', 'export', '--platform', 'ios', '--clear'],
+      cwd,
+      timeoutMs: BUNDLE_TIMEOUT_MS,
+      expectTimeout: false,
     });
+    checks.push({
+      name: 'Production Start (expo start --no-dev)',
+      cmd: ['bun', 'expo', 'start', '--no-dev', '--port', '19000'],
+      cwd,
+      timeoutMs: STARTUP_PROBE_MS,
+      expectTimeout: true,
+    });
+  }
+  return checks;
+};
 
-    let wasKilled = false;
-    const timeoutId = check.timeoutMs
-      ? setTimeout(() => {
-          wasKilled = true;
-          proc.kill('SIGTERM');
-          setTimeout(() => proc.kill('SIGKILL'), KILL_GRACE_PERIOD_MS);
-        }, check.timeoutMs)
-      : null;
+const runCheck = async (check: CheckTask, stream?: Writable): Promise<boolean> => {
+  const [bin, ...args] = check.cmd;
+  const cwd = check.cwd ?? process.cwd();
 
-    if (stream && proc.stdout) {
-      pipeline(proc.stdout, stream).catch(() => {});
+  // Path 1: Simple checks without timeout — use $ template literal
+  if (!check.timeoutMs) {
+    const result = await $`${bin} ${args}`.cwd(cwd).quiet().nothrow();
+    if (stream) {
+      stream.write(result.stdout);
+      stream.write(result.stderr);
     }
-    if (stream && proc.stderr) {
-      pipeline(proc.stderr, stream).catch(() => {});
-    }
+    return result.exitCode === 0;
+  }
 
-    proc.on('exit', (code) => {
-      if (timeoutId) clearTimeout(timeoutId);
-      if (check.expectTimeout && wasKilled) {
-        resolve(true);
-      } else {
-        resolve(code === 0);
-      }
-    });
-
-    proc.on('error', () => {
-      if (timeoutId) clearTimeout(timeoutId);
-      resolve(false);
-    });
+  // Path 2: Timeout-controlled checks — use Bun.spawn for process control
+  const proc = Bun.spawn([bin, ...args], {
+    cwd,
+    stdout: 'pipe',
+    stderr: 'pipe',
   });
+
+  if (stream) {
+    (async () => {
+      for await (const chunk of proc.stdout) {
+        stream.write(chunk);
+      }
+    })().catch(() => {});
+    (async () => {
+      for await (const chunk of proc.stderr) {
+        stream.write(chunk);
+      }
+    })().catch(() => {});
+  }
+
+  let wasKilled = false;
+  const timeoutId = setTimeout(() => {
+    wasKilled = true;
+    proc.kill();
+    setTimeout(() => proc.kill(9), KILL_GRACE_PERIOD_MS);
+  }, check.timeoutMs);
+
+  const exitCode = await proc.exited;
+  clearTimeout(timeoutId);
+
+  return check.expectTimeout ? wasKilled : exitCode === 0;
+};
+
+const getInput = () => {
+  const {
+    values: { cwd },
+  } = parseArgs({
+    args: process.argv.slice(2),
+    options: {
+      cwd: { type: 'string' },
+    },
+  });
+
+  return { cwd: cwd ? resolve(cwd) : process.cwd() };
 };
 
 const main = async () => {
+  const { cwd } = getInput();
+  const checks = await buildChecks(cwd);
+
   const results = await task.group((t) =>
     checks.map((check) =>
       t(check.name, async ({ streamPreview }) => {

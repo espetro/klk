@@ -14,7 +14,7 @@
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
     "test": "turbo test",
-    "validate": "bun run scripts/validate.ts",
+    "validate": "turbo run validate",
     "depcruise": "depcruise apps/*/src packages/*/src --config .dependency-cruiser.mjs"
   },
   "dependencies": {
@@ -24,6 +24,7 @@
     "@babel/core": "7.29.0",
     "@nanostores/persistent": "^1.0.0",
     "@types/bun": "1.3.14",
+    "@types/node": "25.9.1",
     "babel-plugin-react-compiler": "^1.0.0",
     "dependency-cruiser": "^17.4.0",
     "nanostores": "^1.0.0",
@@ -32,6 +33,7 @@
     "oxlint": "^1.66.0",
     "oxlint-config-universe": "^0.0.3",
     "tasuku": "2.3.0",
+    "turbo": "^2.0.0",
     "valibot": "^1.4.0"
   },
   "packageManager": "bun@1.2.13"

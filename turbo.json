@@ -27,6 +27,17 @@
     "android": {
       "cache": false,
       "persistent": true
+    },
+    "validate": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "../../tsconfig.json",
+        "../../oxlint.config.ts",
+        "../../oxfmt.config.ts",
+        "../../scripts/validate.ts"
+      ],
+      "outputs": []
     }
   }
 }

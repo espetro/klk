@@ -2,6 +2,8 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "bundler"
-  }
+    "moduleResolution": "bundler",
+    "types": ["@types/node"]
+  },
+  "include": ["scripts/*.ts"]
 }

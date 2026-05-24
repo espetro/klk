@@ -7,6 +7,9 @@
   "exports": {
     ".": "./src/index.ts"
   },
+  "scripts": {
+    "validate": "bun run ../../scripts/validate.ts"
+  },
   "dependencies": {
     "@react-native-community/datetimepicker": "9.1.0",
     "@react-native-picker/picker": "^2.11.4"
