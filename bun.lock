@@ -28,6 +28,9 @@
       "dependencies": {
         "@expo/ui": "56.0.12",
         "@expo/vector-icons": "^15.0.2",
+        "@klk/core": "workspace:*",
+        "@klk/infrastructure": "workspace:*",
+        "@klk/ui": "workspace:*",
         "@maplibre/maplibre-react-native": "^11.2.1",
         "@nanostores/persistent": "^1.0.0",
         "@nanostores/react": "^1.0.0",
