@@ -34,9 +34,7 @@ export const EventMapView = React.memo(function EventMapView({
 
   const markers = useMemo(() => {
     return events
-      .filter(
-        (e) => e.location !== null && e.location !== undefined && e.location.includes(","),
-      )
+      .filter((e) => e.location !== null && e.location !== undefined && e.location.includes(","))
       .map((event) => {
         const parts = event.location.split(",").map((s) => parseFloat(s.trim()));
         if (parts.length < 2 || parts.some(isNaN)) {

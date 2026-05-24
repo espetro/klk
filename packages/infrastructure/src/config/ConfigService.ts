@@ -1,6 +1,6 @@
-import { Result, ok, err } from 'neverthrow';
-import { IConfigService, FeatureFlag } from '@klk/core';
-import { ConfigError } from '@klk/core';
+import { Result, ok, err } from "neverthrow";
+import { IConfigService, FeatureFlag } from "@klk/core";
+import { ConfigError } from "@klk/core";
 
 export class ConfigService implements IConfigService {
   private readonly flags = new Map<FeatureFlag, boolean>();

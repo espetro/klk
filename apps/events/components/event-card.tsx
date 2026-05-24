@@ -25,7 +25,9 @@ export function EventCard({ event }: Props) {
         <CardContent className="p-4">
           <Text className="text-lg font-semibold text-gray-900">{event.title || "Untitled"}</Text>
           <Text className="text-sm text-indigo-600 mt-1">{formatDate(event.start)}</Text>
-          {event.location ? <Text className="text-sm text-gray-500 mt-1">{event.location}</Text> : null}
+          {event.location ? (
+            <Text className="text-sm text-gray-500 mt-1">{event.location}</Text>
+          ) : null}
           {event.summary ? (
             <Text className="text-sm text-gray-600 mt-2" numberOfLines={2}>
               {event.summary}

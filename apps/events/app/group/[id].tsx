@@ -80,11 +80,7 @@ export default function GroupDetailScreen() {
           </Text>
         ))}
         {ndk && signer ? (
-          <Button
-            variant="outline"
-            className="mt-3"
-            onPress={() => setInviteVisible(true)}
-          >
+          <Button variant="outline" className="mt-3" onPress={() => setInviteVisible(true)}>
             <Text className="text-indigo-600 text-sm font-medium">+ Invite Friend</Text>
           </Button>
         ) : null}
@@ -94,10 +90,7 @@ export default function GroupDetailScreen() {
         <Text className="text-base font-semibold text-gray-700">
           Private Events ({privateEvents.length})
         </Text>
-        <Button
-          variant="default"
-          onPress={() => setNewEventVisible(true)}
-        >
+        <Button variant="default" onPress={() => setNewEventVisible(true)}>
           <Text className="text-white text-sm font-medium">+ New</Text>
         </Button>
       </View>

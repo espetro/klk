@@ -23,11 +23,7 @@ export function MapFilterBar({
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
           <Text className="text-xs font-medium text-gray-500 uppercase tracking-wide">City</Text>
-          <Button
-            onPress={() => onCityChange(selectedCitySlug)}
-            variant="secondary"
-            size="sm"
-          >
+          <Button onPress={() => onCityChange(selectedCitySlug)} variant="secondary" size="sm">
             <Text className="text-sm font-medium text-indigo-700">{cityLabel}</Text>
           </Button>
         </View>

@@ -1,11 +1,5 @@
 import { useState } from "react";
-import {
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  Text,
-  View,
-} from "react-native";
+import { KeyboardAvoidingView, Modal, Platform, Text, View } from "react-native";
 import { Button, Input } from "@klk/ui";
 import NDK, { NDKPrivateKeySigner } from "@nostr-dev-kit/ndk-mobile";
 import { GroupRecord, inviteToGroup } from "@klk/infrastructure";

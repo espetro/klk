@@ -1,6 +1,6 @@
-import * as v from 'valibot';
-import { Result, ok, err } from 'neverthrow';
-import { ValidationError } from './errors';
+import * as v from "valibot";
+import { Result, ok, err } from "neverthrow";
+import { ValidationError } from "./errors";
 
 export const CitySchema = v.object({
   slug: v.pipe(v.string(), v.minLength(1)),
@@ -17,5 +17,5 @@ export function parseCity(raw: unknown): Result<City, ValidationError> {
     return ok(result.output);
   }
   const issue = result.issues[0];
-  return err(new ValidationError(issue?.message ?? 'validation failed'));
+  return err(new ValidationError(issue?.message ?? "validation failed"));
 }

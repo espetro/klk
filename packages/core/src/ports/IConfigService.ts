@@ -1,10 +1,10 @@
-import { Result } from 'neverthrow';
-import { ConfigError } from '../domain/errors';
+import { Result } from "neverthrow";
+import { ConfigError } from "../domain/errors";
 
 /**
  * Feature flag names supported by the app.
  */
-export type FeatureFlag = 'useNewArchitecture' | 'enableEncryption' | 'darkMode';
+export type FeatureFlag = "useNewArchitecture" | "enableEncryption" | "darkMode";
 
 /**
  * Port interface for reading and writing feature flags.

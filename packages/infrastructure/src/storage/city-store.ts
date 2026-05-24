@@ -1,10 +1,5 @@
 import { deleteSecure, getSecure, setSecure } from "./secure";
-import {
-  Coordinates,
-  DEFAULT_DISTANCE_RANGE,
-  DISTANCE_RANGES,
-  DistanceRange,
-} from "./geo";
+import { Coordinates, DEFAULT_DISTANCE_RANGE, DISTANCE_RANGES, DistanceRange } from "./geo";
 
 const CITY_KEY = "city_settings";
 

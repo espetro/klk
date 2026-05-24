@@ -72,18 +72,11 @@ export default function ProfileScreen() {
         <Text className="text-sm text-gray-700 font-mono">{RELAY_URL}</Text>
       </View>
 
-      <Button
-        variant="destructive"
-        className="mb-4"
-        onPress={handleWipe}
-      >
+      <Button variant="destructive" className="mb-4" onPress={handleWipe}>
         <Text className="text-red-600 font-medium">Wipe Identity (Dev Only)</Text>
       </Button>
 
-      <Button
-        variant="secondary"
-        onPress={handleResetOnboarding}
-      >
+      <Button variant="secondary" onPress={handleResetOnboarding}>
         <Text className="text-orange-600 font-medium">Reset Onboarding</Text>
       </Button>
     </ScrollView>

@@ -4,11 +4,7 @@ export type { GoogleSignInResult } from "./google";
 export { signInWithApple, isAppleSignInAvailable } from "./apple";
 export type { AppleSignInResult } from "./apple";
 
-export {
-  authenticateWithBiometrics,
-  isBiometricAvailable,
-  getBiometricType,
-} from "./biometric";
+export { authenticateWithBiometrics, isBiometricAvailable, getBiometricType } from "./biometric";
 export type { BiometricResult } from "./biometric";
 
 export {

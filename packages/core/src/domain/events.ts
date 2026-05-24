@@ -1,6 +1,6 @@
-import * as v from 'valibot';
-import { Result, ok, err } from 'neverthrow';
-import { ValidationError } from './errors';
+import * as v from "valibot";
+import { Result, ok, err } from "neverthrow";
+import { ValidationError } from "./errors";
 
 export const EventSchema = v.object({
   id: v.string(),
@@ -19,5 +19,5 @@ export function parseEvent(raw: unknown): Result<Event, ValidationError> {
     return ok(result.output);
   }
   const issue = result.issues[0];
-  return err(new ValidationError(issue?.message ?? 'validation failed'));
+  return err(new ValidationError(issue?.message ?? "validation failed"));
 }
