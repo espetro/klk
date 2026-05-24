@@ -1,9 +1,9 @@
-import { HostedButton } from "@/components/hosted-button";
-import { HostedInput as Input } from "@/components/hosted-input";
-import { FieldGroup } from "@expo/ui";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { useState } from "react";
-import { Platform, Pressable, Text, View } from "react-native";
+import { HostedButton } from '@/components/hosted-button';
+import { HostedInput as Input } from '@/components/hosted-input';
+import { FieldGroup } from '@expo/ui';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { useState } from 'react';
+import { Platform, Pressable, Text, View } from 'react-native';
 
 export interface EventFormValues {
   title: string;
@@ -20,11 +20,11 @@ interface Props {
   submitLabel?: string;
 }
 
-export function EventForm({ onSubmit, submitting, submitLabel = "Publish" }: Props) {
-  const [title, setTitle] = useState("");
-  const [location, setLocation] = useState("");
-  const [summary, setSummary] = useState("");
-  const [image, setImage] = useState("");
+export function EventForm({ onSubmit, submitting, submitLabel = 'Publish' }: Props) {
+  const [title, setTitle] = useState('');
+  const [location, setLocation] = useState('');
+  const [summary, setSummary] = useState('');
+  const [image, setImage] = useState('');
   const [start, setStart] = useState(new Date());
   const [end, setEnd] = useState(new Date(Date.now() + 2 * 3600 * 1000));
   const [showStart, setShowStart] = useState(false);
@@ -37,13 +37,13 @@ export function EventForm({ onSubmit, submitting, submitLabel = "Publish" }: Pro
   return (
     <View style={{ flex: 1 }}>
       <FieldGroup>
-        <FieldGroup.Section title="Event">
+        <FieldGroup.Section title='Event'>
           <Input
             value={title}
             onChangeText={setTitle}
-            placeholder="Event title"
+            placeholder='Event title'
             autoCorrect={false}
-            returnKeyType="done"
+            returnKeyType='done'
             onSubmitEditing={() => {}}
           />
           <Input
@@ -55,7 +55,7 @@ export function EventForm({ onSubmit, submitting, submitLabel = "Publish" }: Pro
           />
         </FieldGroup.Section>
 
-        <FieldGroup.Section title="Schedule">
+        <FieldGroup.Section title='Schedule'>
           <Pressable onPress={() => setShowStart(true)}>
             <Text selectable>{start.toLocaleString()}</Text>
           </Pressable>
@@ -64,30 +64,30 @@ export function EventForm({ onSubmit, submitting, submitLabel = "Publish" }: Pro
           </Pressable>
         </FieldGroup.Section>
 
-        <FieldGroup.Section title="Details">
-          <Input value={location} onChangeText={setLocation} placeholder="Venue / address" />
+        <FieldGroup.Section title='Details'>
+          <Input value={location} onChangeText={setLocation} placeholder='Venue / address' />
           <Input
             value={image}
             onChangeText={setImage}
-            placeholder="https://..."
-            autoCapitalize="none"
+            placeholder='https://...'
+            autoCapitalize='none'
           />
         </FieldGroup.Section>
 
         <HostedButton
-          variant="filled"
+          variant='filled'
           disabled={submitting || !title}
           onPress={handleSubmit}
-          label={submitting ? "Publishing…" : submitLabel}
+          label={submitting ? 'Publishing…' : submitLabel}
         />
       </FieldGroup>
 
       {showStart && (
         <DateTimePicker
           value={start}
-          mode="datetime"
+          mode='datetime'
           onChange={(_, d) => {
-            setShowStart(Platform.OS === "ios");
+            setShowStart(Platform.OS === 'ios');
             if (d) setStart(d);
           }}
         />
@@ -95,9 +95,9 @@ export function EventForm({ onSubmit, submitting, submitLabel = "Publish" }: Pro
       {showEnd && (
         <DateTimePicker
           value={end}
-          mode="datetime"
+          mode='datetime'
           onChange={(_, d) => {
-            setShowEnd(Platform.OS === "ios");
+            setShowEnd(Platform.OS === 'ios');
             if (d) setEnd(d);
           }}
         />

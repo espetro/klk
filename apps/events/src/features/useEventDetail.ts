@@ -1,6 +1,6 @@
-import { User, rsvpEvent } from "@klk/core";
-import { NostrEventRepository } from "@klk/infrastructure";
-import { useCallback, useEffect, useState } from "react";
+import { User, rsvpEvent } from '@klk/core';
+import { NostrEventRepository } from '@klk/infrastructure';
+import { useCallback, useEffect, useState } from 'react';
 
 const repository = new NostrEventRepository();
 
@@ -47,7 +47,7 @@ export function useEventDetail(eventId: string, user: User | null): UseEventDeta
 
         const found = result.value;
         if (!found) {
-          setError("Event not found");
+          setError('Event not found');
           setLoading(false);
           return;
         }
@@ -62,7 +62,7 @@ export function useEventDetail(eventId: string, user: User | null): UseEventDeta
         setLoading(false);
       });
     },
-    [eventId],
+    [eventId]
   );
 
   const rsvp = useCallback(
@@ -81,7 +81,7 @@ export function useEventDetail(eventId: string, user: User | null): UseEventDeta
       setHasRsvpd(true);
       setRsvping(false);
     },
-    [eventId, user, hasRsvpd],
+    [eventId, user, hasRsvpd]
   );
 
   return {

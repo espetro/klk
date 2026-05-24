@@ -1,10 +1,10 @@
-import { EventForm, EventFormValues } from "@/components";
-import { useCity } from "@/features";
-import { NDKContext } from "@/lib/context/ndk-context";
-import { publishPublicEvent } from "@klk/infrastructure";
-import { Stack, useRouter } from "expo-router";
-import { useContext, useState } from "react";
-import { Alert } from "react-native";
+import { EventForm, EventFormValues } from '@/components';
+import { useCity } from '@/features';
+import { NDKContext } from '@/lib/context/ndk-context';
+import { publishPublicEvent } from '@klk/infrastructure';
+import { Stack, useRouter } from 'expo-router';
+import { useContext, useState } from 'react';
+import { Alert } from 'react-native';
 
 export default function NewEventScreen() {
   const { ndk } = useContext(NDKContext);
@@ -27,7 +27,7 @@ export default function NewEventScreen() {
       });
       router.back();
     } catch (e: any) {
-      Alert.alert("Error", e?.message ?? "Failed to publish event");
+      Alert.alert('Error', e?.message ?? 'Failed to publish event');
     } finally {
       setSubmitting(false);
     }
@@ -37,12 +37,12 @@ export default function NewEventScreen() {
     <>
       <Stack.Screen
         options={{
-          presentation: "formSheet",
+          presentation: 'formSheet',
           sheetGrabberVisible: true,
-          contentStyle: { backgroundColor: "transparent" },
+          contentStyle: { backgroundColor: 'transparent' },
         }}
       />
-      <EventForm onSubmit={handleSubmit} submitting={submitting} submitLabel="Publish Event" />
+      <EventForm onSubmit={handleSubmit} submitting={submitting} submitLabel='Publish Event' />
     </>
   );
 }

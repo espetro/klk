@@ -7,35 +7,28 @@ Add native iOS toolbar items to Stack screens. Items can be placed in the header
 ## Notes app example
 
 ```tsx
-import { Stack } from "expo-router";
-import { ScrollView } from "react-native";
+import { Stack } from 'expo-router';
+import { ScrollView } from 'react-native';
 
 export default function FoldersScreen() {
   return (
     <>
       {/* ScrollView must be the first child of the screen */}
-      <ScrollView
-        style={{ flex: 1 }}
-        contentInsetAdjustmentBehavior="automatic"
-      >
+      <ScrollView style={{ flex: 1 }} contentInsetAdjustmentBehavior='automatic'>
         {/* Screen content */}
       </ScrollView>
       <Stack.Screen.Title large>Folders</Stack.Screen.Title>
-      <Stack.SearchBar placeholder="Search" onChangeText={() => {}} />
+      <Stack.SearchBar placeholder='Search' onChangeText={() => {}} />
       {/* Header toolbar - right side */}
-      <Stack.Toolbar placement="right">
-        <Stack.Toolbar.Button icon="folder.badge.plus" onPress={() => {}} />
+      <Stack.Toolbar placement='right'>
+        <Stack.Toolbar.Button icon='folder.badge.plus' onPress={() => {}} />
         <Stack.Toolbar.Button onPress={() => {}}>Edit</Stack.Toolbar.Button>
       </Stack.Toolbar>
 
       {/* Bottom toolbar */}
-      <Stack.Toolbar placement="bottom">
+      <Stack.Toolbar placement='bottom'>
         <Stack.Toolbar.SearchBarSlot />
-        <Stack.Toolbar.Button
-          icon="square.and.pencil"
-          onPress={() => {}}
-          separateBackground
-        />
+        <Stack.Toolbar.Button icon='square.and.pencil' onPress={() => {}} separateBackground />
       </Stack.Toolbar>
     </>
   );
@@ -45,9 +38,9 @@ export default function FoldersScreen() {
 ## Mail inbox example
 
 ```tsx
-import { Color, Stack } from "expo-router";
-import { useState } from "react";
-import { ScrollView, Text, View } from "react-native";
+import { Color, Stack } from 'expo-router';
+import { useState } from 'react';
+import { ScrollView, Text, View } from 'react-native';
 
 export default function InboxScreen() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -55,44 +48,40 @@ export default function InboxScreen() {
     <>
       <ScrollView
         style={{ flex: 1 }}
-        contentInsetAdjustmentBehavior="automatic"
+        contentInsetAdjustmentBehavior='automatic'
         contentContainerStyle={{ paddingHorizontal: 16 }}
       >
         {/* Screen content */}
       </ScrollView>
       <Stack.Screen options={{ headerTransparent: true }} />
       <Stack.Screen.Title>Inbox</Stack.Screen.Title>
-      <Stack.SearchBar placeholder="Search" onChangeText={() => {}} />
+      <Stack.SearchBar placeholder='Search' onChangeText={() => {}} />
       {/* Header toolbar - right side */}
-      <Stack.Toolbar placement="right">
+      <Stack.Toolbar placement='right'>
         <Stack.Toolbar.Button onPress={() => {}}>Select</Stack.Toolbar.Button>
-        <Stack.Toolbar.Menu icon="ellipsis">
+        <Stack.Toolbar.Menu icon='ellipsis'>
           <Stack.Toolbar.Menu inline>
-            <Stack.Toolbar.Menu inline title="Sort By">
-              <Stack.Toolbar.MenuAction isOn>
-                Categories
-              </Stack.Toolbar.MenuAction>
+            <Stack.Toolbar.Menu inline title='Sort By'>
+              <Stack.Toolbar.MenuAction isOn>Categories</Stack.Toolbar.MenuAction>
               <Stack.Toolbar.MenuAction>List</Stack.Toolbar.MenuAction>
             </Stack.Toolbar.Menu>
-            <Stack.Toolbar.MenuAction icon="info.circle">
-              About categories
-            </Stack.Toolbar.MenuAction>
+            <Stack.Toolbar.MenuAction icon='info.circle'>About categories</Stack.Toolbar.MenuAction>
           </Stack.Toolbar.Menu>
-          <Stack.Toolbar.MenuAction icon="person.circle">
+          <Stack.Toolbar.MenuAction icon='person.circle'>
             Show Contact Photos
           </Stack.Toolbar.MenuAction>
         </Stack.Toolbar.Menu>
       </Stack.Toolbar>
 
       {/* Bottom toolbar */}
-      <Stack.Toolbar placement="bottom">
+      <Stack.Toolbar placement='bottom'>
         <Stack.Toolbar.Button
-          icon="line.3.horizontal.decrease"
+          icon='line.3.horizontal.decrease'
           selected={isFilterOpen}
           onPress={() => setIsFilterOpen((prev) => !prev)}
         />
         <Stack.Toolbar.View hidden={!isFilterOpen}>
-          <View style={{ width: 70, height: 32, justifyContent: "center" }}>
+          <View style={{ width: 70, height: 32, justifyContent: 'center' }}>
             <Text style={{ fontSize: 12, fontWeight: 700 }}>Filter by</Text>
             <Text
               style={{
@@ -107,11 +96,7 @@ export default function InboxScreen() {
         </Stack.Toolbar.View>
         <Stack.Toolbar.Spacer />
         <Stack.Toolbar.SearchBarSlot />
-        <Stack.Toolbar.Button
-          icon="square.and.pencil"
-          onPress={() => {}}
-          separateBackground
-        />
+        <Stack.Toolbar.Button icon='square.and.pencil' onPress={() => {}} separateBackground />
       </Stack.Toolbar>
     </>
   );
@@ -138,22 +123,20 @@ export default function InboxScreen() {
 Dropdown menu for grouping actions.
 
 ```tsx
-<Stack.Toolbar.Menu icon="ellipsis">
+<Stack.Toolbar.Menu icon='ellipsis'>
   <Stack.Toolbar.Menu inline>
     <Stack.Toolbar.MenuAction>Sort by Recently Added</Stack.Toolbar.MenuAction>
-    <Stack.Toolbar.MenuAction isOn>
-      Sort by Date Captured
-    </Stack.Toolbar.MenuAction>
+    <Stack.Toolbar.MenuAction isOn>Sort by Date Captured</Stack.Toolbar.MenuAction>
   </Stack.Toolbar.Menu>
-  <Stack.Toolbar.Menu title="Filter">
+  <Stack.Toolbar.Menu title='Filter'>
     <Stack.Toolbar.Menu inline>
-      <Stack.Toolbar.MenuAction isOn icon="square.grid.2x2">
+      <Stack.Toolbar.MenuAction isOn icon='square.grid.2x2'>
         All Items
       </Stack.Toolbar.MenuAction>
     </Stack.Toolbar.Menu>
-    <Stack.Toolbar.MenuAction icon="heart">Favorites</Stack.Toolbar.MenuAction>
-    <Stack.Toolbar.MenuAction icon="photo">Photos</Stack.Toolbar.MenuAction>
-    <Stack.Toolbar.MenuAction icon="video">Videos</Stack.Toolbar.MenuAction>
+    <Stack.Toolbar.MenuAction icon='heart'>Favorites</Stack.Toolbar.MenuAction>
+    <Stack.Toolbar.MenuAction icon='photo'>Photos</Stack.Toolbar.MenuAction>
+    <Stack.Toolbar.MenuAction icon='video'>Videos</Stack.Toolbar.MenuAction>
   </Stack.Toolbar.Menu>
 </Stack.Toolbar.Menu>
 ```
@@ -177,7 +160,7 @@ Embed custom React Native components. When adding a custom view make sure that t
 
 ```tsx
 <Stack.Toolbar.View>
-  <View style={{ width: 70, height: 32, justifyContent: "center" }}>
+  <View style={{ width: 70, height: 32, justifyContent: 'center' }}>
     <Text style={{ fontSize: 12, fontWeight: 700 }}>Filter by</Text>
   </View>
 </Stack.Toolbar.View>
@@ -217,8 +200,8 @@ function InboxHeader() {
   return (
     <>
       <Stack.Screen.Title>Inbox</Stack.Screen.Title>
-      <Stack.SearchBar placeholder="Search" onChangeText={() => {}} />
-      <Stack.Toolbar placement="right">{/* Toolbar buttons */}</Stack.Toolbar>
+      <Stack.SearchBar placeholder='Search' onChangeText={() => {}} />
+      <Stack.Toolbar placement='right'>{/* Toolbar buttons */}</Stack.Toolbar>
     </>
   );
 }
@@ -232,7 +215,7 @@ This will **not work**:
 function Buttons() {
   return (
     <>
-      <Stack.Toolbar.Button icon="star.fill" onPress={() => {}} />
+      <Stack.Toolbar.Button icon='star.fill' onPress={() => {}} />
       <Stack.Toolbar.Button onPress={() => {}}>Done</Stack.Toolbar.Button>
     </>
   );
@@ -242,7 +225,7 @@ function Page() {
   return (
     <>
       <ScrollView>{/* Screen content */}</ScrollView>
-      <Stack.Toolbar placement="right">
+      <Stack.Toolbar placement='right'>
         <Buttons /> {/* ❌ This will NOT work */}
       </Stack.Toolbar>
     </>
@@ -256,7 +239,7 @@ This will work:
 function ToolbarWithButtons() {
   return (
     <Stack.Toolbar>
-      <Stack.Toolbar.Button icon="star.fill" onPress={() => {}} />
+      <Stack.Toolbar.Button icon='star.fill' onPress={() => {}} />
       <Stack.Toolbar.Button onPress={() => {}}>Done</Stack.Toolbar.Button>
     </Stack.Toolbar>
   );

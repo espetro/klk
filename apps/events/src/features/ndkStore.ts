@@ -1,6 +1,6 @@
-import { useStore } from "@nanostores/react";
-import type NDK from "@nostr-dev-kit/ndk-mobile";
-import type { NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk-mobile";
+import { useStore } from '@nanostores/react';
+import type NDK from '@nostr-dev-kit/ndk-mobile';
+import type { NDKPrivateKeySigner, NDKUser } from '@nostr-dev-kit/ndk-mobile';
 /**
  * NDK lifecycle wrapper (atom-based)
  *
@@ -10,7 +10,7 @@ import type { NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk-mobile";
  * The $ndk atom is non-persistent since NDK state is runtime-only
  * (keys come from secure storage, not localStorage).
  */
-import { atom } from "nanostores";
+import { atom } from 'nanostores';
 
 export interface NDKStoreValue {
   ndk: NDK | null;

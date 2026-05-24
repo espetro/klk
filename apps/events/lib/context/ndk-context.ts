@@ -1,5 +1,5 @@
-import NDK, { NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk-mobile";
-import { createContext } from "react";
+import NDK, { NDKPrivateKeySigner, NDKUser } from '@nostr-dev-kit/ndk-mobile';
+import { createContext } from 'react';
 
 export interface NDKContextValue {
   ndk: NDK | null;

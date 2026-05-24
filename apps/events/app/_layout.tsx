@@ -1,19 +1,19 @@
 // eslint-disable-next-line import/no-unassigned-import
-import "react-native-get-random-values";
+import 'react-native-get-random-values';
 // eslint-disable-next-line import/no-unassigned-import
-import "../global.css";
-import { useOnboarding } from "@/features";
-import { NDKContext } from "@/lib/context/ndk-context";
+import '../global.css';
+import { useOnboarding } from '@/features';
+import { NDKContext } from '@/lib/context/ndk-context';
 import {
   connectNDK,
   getOrCreateIdentity,
   processIncomingGiftWraps,
   isOnboardingComplete,
-} from "@klk/infrastructure";
-import NDK, { NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk-mobile";
-import { Stack, useRouter, useSegments } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
-import { useEffect, useMemo, useState } from "react";
+} from '@klk/infrastructure';
+import NDK, { NDKPrivateKeySigner, NDKUser } from '@nostr-dev-kit/ndk-mobile';
+import { Stack, useRouter, useSegments } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect, useMemo, useState } from 'react';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -48,7 +48,7 @@ function RootLayoutInner() {
             processIncomingGiftWraps(instance, user.pubkey);
           }
         } catch (e) {
-          console.error("RootLayout init error:", e);
+          console.error('RootLayout init error:', e);
           setOnboardingComplete(false);
         } finally {
           setReady(true);
@@ -56,19 +56,19 @@ function RootLayoutInner() {
         }
       })();
     },
-    [setOnboardingComplete],
+    [setOnboardingComplete]
   );
 
   useEffect(
     function handleRoutingAfterOnboarding() {
       if (ready && onboardingChecked && !onboardingComplete) {
-        const isOnboardingRoute = segments[0] === "onboarding";
+        const isOnboardingRoute = segments[0] === 'onboarding';
         if (!isOnboardingRoute) {
-          router.replace("/onboarding");
+          router.replace('/onboarding');
         }
       }
     },
-    [ready, onboardingChecked, onboardingComplete, segments, router],
+    [ready, onboardingChecked, onboardingComplete, segments, router]
   );
 
   const ndkContextValue = useMemo(() => ({ ndk, signer, currentUser }), [ndk, signer, currentUser]);
@@ -80,47 +80,47 @@ function RootLayoutInner() {
   return (
     <NDKContext.Provider value={ndkContextValue}>
       <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
         <Stack.Screen
-          name="event/[id]"
+          name='event/[id]'
           options={{
-            title: "Event",
-            presentation: "formSheet",
+            title: 'Event',
+            presentation: 'formSheet',
             sheetGrabberVisible: true,
             sheetAllowedDetents: [0.75, 1.0],
-            contentStyle: { backgroundColor: "transparent" },
+            contentStyle: { backgroundColor: 'transparent' },
           }}
         />
         <Stack.Screen
-          name="event/new"
+          name='event/new'
           options={{
-            title: "New Event",
-            presentation: "formSheet",
+            title: 'New Event',
+            presentation: 'formSheet',
             sheetGrabberVisible: true,
-            contentStyle: { backgroundColor: "transparent" },
+            contentStyle: { backgroundColor: 'transparent' },
           }}
         />
-        <Stack.Screen name="group/[id]" options={{ title: "Group" }} />
+        <Stack.Screen name='group/[id]' options={{ title: 'Group' }} />
         <Stack.Screen
-          name="group/new"
+          name='group/new'
           options={{
-            title: "New Group",
-            presentation: "formSheet",
+            title: 'New Group',
+            presentation: 'formSheet',
             sheetGrabberVisible: true,
-            contentStyle: { backgroundColor: "transparent" },
+            contentStyle: { backgroundColor: 'transparent' },
           }}
         />
-        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-        <Stack.Screen name="legal/terms" options={{ title: "Terms of Service" }} />
-        <Stack.Screen name="legal/privacy" options={{ title: "Privacy Policy" }} />
+        <Stack.Screen name='onboarding' options={{ headerShown: false }} />
+        <Stack.Screen name='legal/terms' options={{ title: 'Terms of Service' }} />
+        <Stack.Screen name='legal/privacy' options={{ title: 'Privacy Policy' }} />
         <Stack.Screen
-          name="profile"
+          name='profile'
           options={{
-            title: "Profile",
-            presentation: "formSheet",
+            title: 'Profile',
+            presentation: 'formSheet',
             sheetGrabberVisible: true,
             sheetAllowedDetents: [0.5, 1.0],
-            contentStyle: { backgroundColor: "transparent" },
+            contentStyle: { backgroundColor: 'transparent' },
           }}
         />
       </Stack>
