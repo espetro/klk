@@ -35,8 +35,9 @@ export async function publishPublicEvent(ndk: NDK, data: PublicEventData): Promi
 export function parsePublicEvent(
   event: NDKEvent,
 ): PublicEventData & { id: string; pubkey: string } {
-  const tag = (name: string) => event.tags.find(([t]) => t === name)?.[1] ?? "";
-  const cityTag = event.tags.find(([t, v]) => t === "t" && v?.startsWith("city:"));
+  const tags = event.tags ?? [];
+  const tag = (name: string) => tags.find(([t]) => t === name)?.[1] ?? "";
+  const cityTagValue = tags.find(([t, v]) => t === "t" && v?.startsWith("city:"));
   return {
     id: event.id ?? event.tagId(),
     pubkey: event.pubkey,
@@ -46,6 +47,6 @@ export function parsePublicEvent(
     location: tag("location"),
     summary: tag("summary"),
     image: tag("image") || undefined,
-    city: cityTag?.[1]?.replace("city:", "") ?? "",
+    city: cityTagValue?.[1]?.replace("city:", "") ?? "",
   };
 }
