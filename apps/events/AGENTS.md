@@ -1,0 +1,47 @@
+# Events App — Agent Guide
+
+Main Expo Router app. File-based routing: files in `app/` = routes.
+
+## Structure
+
+```
+app/
+  (tabs)/          Tab bar: Feed, Groups, Profile
+  event/[id].tsx   Event detail (modal)
+  event/new.tsx   Create public event
+  group/[id].tsx   Group detail (modal)
+  group/new.tsx    Create private group
+src/features/      Nanostores: use-public-events, use-rsvps, use-identity
+components/        App-specific components
+tests/             Gauge E2E specs + step implementations
+```
+
+## State Management
+
+Uses nanostores (not React Context):
+- `cityStore` — current city slug
+- `ndkStore` — NDK singleton + connection state
+- `onboardingStore` — first-launch flow state
+
+## E2E Testing
+
+Prerequisites: `nak serve` (relay), `bun ios` (simulator), `gauge run specs/`
+
+6 flows to validate:
+1. Join city (keypair + city select)
+2. View public events (city-tagged feed)
+3. RSVP event (kind 31925)
+4. Create public event (kind 31923)
+5. Create private group + invite (NIP-59 gift wrap)
+6. Create private group event (AES-256-GCM encrypted)
+
+## Import Aliases
+
+- `@/*` — local files (e.g., `@/features/use-public-events`)
+
+## Key Dependencies
+
+- `expo-router` — file-based routing
+- `@nostr-dev-kit/ndk-mobile` — Nostr client
+- `nanostores` + `@nanostores/react` — state management
+- `expo-crypto` — key generation
