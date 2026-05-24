@@ -2,62 +2,19 @@
 import 'react-native-get-random-values';
 // eslint-disable-next-line import/no-unassigned-import
 import '../global.css';
-import { useOnboarding } from '@/features';
+import useInitializeApp from '@/hooks/useInitializeApp';
 import { NDKContext } from '@/lib/context/ndk-context';
-import {
-  connectNDK,
-  getOrCreateIdentity,
-  processIncomingGiftWraps,
-  isOnboardingComplete,
-} from '@klk/infrastructure';
-import NDK, { NDKPrivateKeySigner, NDKUser } from '@nostr-dev-kit/ndk-mobile';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect } from 'react';
 
 SplashScreen.preventAutoHideAsync();
 
 function RootLayoutInner() {
-  const [ready, setReady] = useState(false);
-  const [onboardingChecked, setOnboardingChecked] = useState(false);
-  const { onboardingComplete, setOnboardingComplete } = useOnboarding();
-  const [ndk, setNdk] = useState<NDK | null>(null);
-  const [signer, setSigner] = useState<NDKPrivateKeySigner | null>(null);
-  const [currentUser, setCurrentUser] = useState<NDKUser | null>(null);
   const router = useRouter();
   const segments = useSegments();
 
-  useEffect(
-    function initializeApp() {
-      (async function runInitialization() {
-        try {
-          const complete = await isOnboardingComplete();
-          setOnboardingComplete(complete);
-          setOnboardingChecked(true);
-
-          if (complete) {
-            const s = await getOrCreateIdentity();
-            const instance = connectNDK(s);
-            await instance.connect();
-
-            const user = await s.user();
-            setSigner(s);
-            setNdk(instance);
-            setCurrentUser(user);
-
-            processIncomingGiftWraps(instance, user.pubkey);
-          }
-        } catch (e) {
-          console.error('RootLayout init error:', e);
-          setOnboardingComplete(false);
-        } finally {
-          setReady(true);
-          SplashScreen.hideAsync();
-        }
-      })();
-    },
-    [setOnboardingComplete]
-  );
+  const { ready, onboardingChecked, onboardingComplete, ...contextValue } = useInitializeApp();
 
   useEffect(
     function handleRoutingAfterOnboarding() {
@@ -71,14 +28,12 @@ function RootLayoutInner() {
     [ready, onboardingChecked, onboardingComplete, segments, router]
   );
 
-  const ndkContextValue = useMemo(() => ({ ndk, signer, currentUser }), [ndk, signer, currentUser]);
-
   if (!ready) {
     return null;
   }
 
   return (
-    <NDKContext.Provider value={ndkContextValue}>
+    <NDKContext.Provider value={contextValue}>
       <Stack>
         <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
         <Stack.Screen
