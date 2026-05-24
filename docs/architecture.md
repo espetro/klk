@@ -239,7 +239,7 @@ Encrypted group data never passes through the relay in plaintext. The relay is a
 All use-cases and repository methods return `Result<T, DomainError>` instead of throwing.
 
 ```typescript
-import { Result } from "neverthrow";
+import { Result } from 'neverthrow';
 
 export interface IEventRepository {
   findByCity(city: string): Promise<Result<Event[], NostrError>>;
@@ -254,7 +254,7 @@ Domain errors use typed codes:
 export class NostrError extends Error {
   constructor(
     message: string,
-    public readonly code: "TIMEOUT" | "RELAY_ERROR" | "PARSE_ERROR",
+    public readonly code: 'TIMEOUT' | 'RELAY_ERROR' | 'PARSE_ERROR'
   ) {
     super(message);
   }
@@ -263,7 +263,7 @@ export class NostrError extends Error {
 export class PublishError extends Error {
   constructor(
     message: string,
-    public readonly code: "INVALID_EVENT" | "RELAY_REJECTED",
+    public readonly code: 'INVALID_EVENT' | 'RELAY_REJECTED'
   ) {
     super(message);
   }
@@ -293,17 +293,17 @@ Uses [nanostores](https://github.com/nanostores/nanostores) for cross-cutting st
 - Zero dependencies
 
 ```typescript
-import { atom } from "nanostores";
+import { atom } from 'nanostores';
 
-export const $city = atom<string>("madrid");
+export const $city = atom<string>('madrid');
 
 export async function loadCity(): Promise<Result<void, StorageError>> {
   try {
-    const stored = await AsyncStorage.getItem("city");
+    const stored = await AsyncStorage.getItem('city');
     if (stored) $city.set(stored);
     return ok(undefined);
   } catch (e) {
-    return err(new StorageError("Failed to load city"));
+    return err(new StorageError('Failed to load city'));
   }
 }
 ```
@@ -321,7 +321,7 @@ Custom AsyncStorage adapter or `@nanostores/persistent` with custom storage engi
 - No dependencies
 
 ```typescript
-import * as v from "valibot";
+import * as v from 'valibot';
 
 export const EventSchema = v.object({
   id: v.string(),
@@ -374,7 +374,7 @@ Strict config with additional guards:
 Babel plugin added to `babel.config.cjs`:
 
 ```js
-plugins: ["react-native-reanimated/plugin", ["babel-plugin-react-compiler", { target: "19" }]];
+plugins: ['react-native-reanimated/plugin', ['babel-plugin-react-compiler', { target: '19' }]];
 ```
 
 Auto-memoizes components. Manual `useMemo`/`useCallback` can be removed over time.

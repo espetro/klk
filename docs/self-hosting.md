@@ -75,7 +75,7 @@ cp strfry.conf strfry.local.conf
 ## Docker Compose (nostr-rs-relay)
 
 ```yaml
-version: "3.8"
+version: '3.8'
 services:
   relay:
     image: scsibug/nostr-rs-relay:latest
@@ -83,7 +83,7 @@ services:
       - ./data:/usr/src/app/db
       - ./config.toml:/usr/src/app/config.toml
     ports:
-      - "8080:8080"
+      - '8080:8080'
     restart: unless-stopped
 ```
 
@@ -124,7 +124,7 @@ Obtain a certificate: `certbot --nginx -d relay.yourdomain.com`
 Edit `lib/nostr/ndk.ts`:
 
 ```ts
-export const RELAY_URL = "wss://relay.yourdomain.com";
+export const RELAY_URL = 'wss://relay.yourdomain.com';
 export const RELAYS = [RELAY_URL];
 ```
 
@@ -139,7 +139,7 @@ Runtime relay switching (no rebuild required) is planned for a future release.
 ### Adding multiple relays (federation)
 
 ```ts
-export const RELAYS = ["wss://relay.yourdomain.com", "wss://relay.damus.io"];
+export const RELAYS = ['wss://relay.yourdomain.com', 'wss://relay.damus.io'];
 ```
 
 NDK will subscribe to and publish on all listed relays automatically.

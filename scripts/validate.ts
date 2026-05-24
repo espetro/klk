@@ -1,8 +1,9 @@
 #!/usr/bin/env bun
-import { $ } from "bun";
-import task from "tasuku";
-import { spawn } from "node:child_process";
-import { pipeline } from "node:stream/promises";
+import { spawn } from 'node:child_process';
+import { pipeline } from 'node:stream/promises';
+
+import { $ } from 'bun';
+import task from 'tasuku';
 
 interface CheckTask {
   name: string;
@@ -18,31 +19,31 @@ const STARTUP_PROBE_MS = 15_000;
 
 const checks: CheckTask[] = [
   {
-    name: "TypeScript",
-    cmd: ["bun", "tsc", "--noEmit"],
-    cwd: "apps/events",
+    name: 'TypeScript',
+    cmd: ['bun', 'tsc', '--noEmit'],
+    cwd: 'apps/events',
   },
   {
-    name: "Lint (oxlint)",
-    cmd: ["bun", "oxlint", "."],
-    cwd: "apps/events",
+    name: 'Lint (oxlint)',
+    cmd: ['bun', 'oxlint', '.'],
+    cwd: 'apps/events',
   },
   {
-    name: "Format (oxfmt)",
-    cmd: ["bun", "oxfmt", "--check", "."],
-    cwd: "apps/events",
+    name: 'Format (oxfmt)',
+    cmd: ['bun', 'oxfmt', '--check', '.'],
+    cwd: 'apps/events',
   },
   {
-    name: "Bundle Check (expo export)",
-    cmd: ["bun", "expo", "export", "--platform", "ios", "--clear"],
-    cwd: "apps/events",
+    name: 'Bundle Check (expo export)',
+    cmd: ['bun', 'expo', 'export', '--platform', 'ios', '--clear'],
+    cwd: 'apps/events',
     timeoutMs: BUNDLE_TIMEOUT_MS,
     expectTimeout: false,
   },
   {
-    name: "Production Start (expo start --no-dev)",
-    cmd: ["bun", "expo", "start", "--no-dev", "--port", "19000"],
-    cwd: "apps/events",
+    name: 'Production Start (expo start --no-dev)',
+    cmd: ['bun', 'expo', 'start', '--no-dev', '--port', '19000'],
+    cwd: 'apps/events',
     timeoutMs: STARTUP_PROBE_MS,
     expectTimeout: true,
   },
@@ -52,15 +53,15 @@ const runCheck = async (check: CheckTask, stream?: WritableStream): Promise<bool
   return new Promise((resolve) => {
     const proc = spawn(check.cmd[0], check.cmd.slice(1), {
       cwd: check.cwd,
-      stdio: ["ignore", "pipe", "pipe"],
+      stdio: ['ignore', 'pipe', 'pipe'],
     });
 
     let wasKilled = false;
     const timeoutId = check.timeoutMs
       ? setTimeout(() => {
           wasKilled = true;
-          proc.kill("SIGTERM");
-          setTimeout(() => proc.kill("SIGKILL"), KILL_GRACE_PERIOD_MS);
+          proc.kill('SIGTERM');
+          setTimeout(() => proc.kill('SIGKILL'), KILL_GRACE_PERIOD_MS);
         }, check.timeoutMs)
       : null;
 
@@ -71,7 +72,7 @@ const runCheck = async (check: CheckTask, stream?: WritableStream): Promise<bool
       pipeline(proc.stderr, stream).catch(() => {});
     }
 
-    proc.on("exit", (code) => {
+    proc.on('exit', (code) => {
       if (timeoutId) clearTimeout(timeoutId);
       if (check.expectTimeout && wasKilled) {
         resolve(true);
@@ -80,7 +81,7 @@ const runCheck = async (check: CheckTask, stream?: WritableStream): Promise<bool
       }
     });
 
-    proc.on("error", () => {
+    proc.on('error', () => {
       if (timeoutId) clearTimeout(timeoutId);
       resolve(false);
     });
@@ -93,25 +94,25 @@ const main = async () => {
       t(check.name, async ({ streamPreview }) => {
         const passed = await runCheck(check, streamPreview);
         return { passed, name: check.name };
-      }),
-    ),
+      })
+    )
   );
 
   let allPassed = true;
   for (const result of results) {
-    const status = result.result.passed ? "✅" : "❌";
+    const status = result.result.passed ? '✅' : '❌';
     console.log(`${status} ${result.result.name}`);
     if (!result.result.passed) {
       allPassed = false;
     }
   }
 
-  console.log("");
+  console.log('');
   if (allPassed) {
-    console.log("All checks passed!");
+    console.log('All checks passed!');
     process.exit(0);
   } else {
-    console.log("Some checks failed.");
+    console.log('Some checks failed.');
     process.exit(1);
   }
 };
