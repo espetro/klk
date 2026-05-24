@@ -6,18 +6,18 @@ This document describes the technical architecture of Klk: how the client is str
 
 ## Stack
 
-| Layer           | Technology                                                |
-| --------------- | --------------------------------------------------------- |
-| Framework       | Expo 55 / React Native 0.83.6                             |
-| JS Engine       | Hermes (New Architecture — Fabric + TurboModules)         |
-| Routing         | Expo Router 55 (file-based, tab + modal)                  |
-| UI              | NativeWind v4 (Tailwind CSS for React Native)             |
-| Nostr client    | `@nostr-dev-kit/ndk-mobile` 0.8.x                         |
-| Relay cache     | `expo-sqlite` via `NDKCacheAdapterSqlite`                 |
-| Key storage     | `expo-secure-store` (iOS Keychain / Android Keystore)     |
-| Encryption      | `@noble/ciphers/aes` — AES-256-GCM                        |
-| RNG             | `expo-crypto` + `react-native-get-random-values` polyfill |
-| Package manager | Bun                                                       |
+| Layer           | Technology                                                              |
+| --------------- | ----------------------------------------------------------------------- |
+| Framework       | Expo 56 / React Native 0.85.6                                           |
+| JS Engine       | Hermes (New Architecture — Fabric + TurboModules)                       |
+| Routing         | Expo Router 56 (file-based, tab + modal)                                |
+| UI              | UniWind (Tailwind CSS for RN) + Expo UI (native iOS/Android components) |
+| Nostr client    | `@nostr-dev-kit/ndk-mobile`.x                                           |
+| Relay cache     | `expo-sqlite` via `NDKCacheAdapterSqlite`                               |
+| Key storage     | `expo-secure-store` (iOS Keychain / Android Keystore)                   |
+| Encryption      | `@noble/ciphers/aes` — AES-256-GCM                                      |
+| RNG             | `expo-crypto` + `react-native-get-random-values` polyfill               |
+| Package manager | Bun                                                                     |
 
 ---
 
@@ -136,7 +136,7 @@ packages/core/src/use-cases/RsvpEvent.ts
 
 `packages/core/src/use-cases/RsvpEvent.ts` orchestrates the flow:
 
-1. Validates input with valibot schemas  
+1. Validates input with valibot schemas
 2. Calls `packages/infrastructure/src/nostr/rsvp.ts` to publish NDKEvent
 3. Publishes kind 31925 event referencing the event's `d` tag
 
@@ -225,33 +225,190 @@ Encrypted group data never passes through the relay in plaintext. The relay is a
 
 ---
 
-## Migration Status
+## Guiding Principles
 
-The architecture migration from monolithic structure to clean architecture is complete:
+1. **Thin App Shell**: The Expo app (`apps/events`) contains only routing, DI wiring, and glue hooks. All business logic lives in packages.
+2. **Clean Architecture**: Dependencies point inward. The domain (`packages/core`) knows nothing about React Native, NDK, or Expo.
+3. **Error as Value**: All fallible operations return `Result<T, E>` via [neverthrow](https://github.com/supermacro/neverthrow). No exceptions for control flow.
+4. **Explicit Contracts**: Ports (interfaces) in `core`, adapters in `infrastructure`. No direct NDK/Expo imports in screens.
 
-### Phase 2 (Contracts): ✅ COMPLETE
-- Domain models (Events, Users, Groups, Cities) in `packages/core/src/domain`
-- Port interfaces in `packages/core/src/ports` (IEventRepository, IStorageService, ICryptoService, IConfigService)
-- Use cases in `packages/core/src/use-cases` (PublishEvent, RsvpEvent, CreateGroup, FindEventsByCity)
+---
 
-### Phase 3 (First Adapter): ✅ COMPLETE  
-- Infrastructure stubs created in `packages/infrastructure/src/`
-- Nostr, storage, crypto, and config adapters implemented
+## Error Handling
 
-### Phase 4 (Extraction): ✅ COMPLETE
-- All `lib/` contents moved to `packages/`
-- `lib/nostr/*` → `packages/infrastructure/src/nostr/*`
-- `lib/hooks/*` → `apps/events/src/features/*`
-- Library files migrated and cleaned up
+All use-cases and repository methods return `Result<T, DomainError>` instead of throwing.
 
-### Phase 5 (State Migration): ✅ COMPLETE
-- Nanostores replace React Context throughout the app
-- `apps/events/src/features/` contains all state management hooks
-- Eliminated context propagation issues
+```typescript
+import { Result } from "neverthrow";
 
-### Notes
-- **NDKContext**: Remains in `apps/events/app/_layout.tsx` (final item to migrate to nanostores)
-- **Testing**: All 6 E2E flows verified on iOS simulator with agent-device + Gauge
-- **Validation**: `bun run validate` passes (TypeScript, lint, format, bundle, production start)
+export interface IEventRepository {
+  findByCity(city: string): Promise<Result<Event[], NostrError>>;
+  publish(event: Event): Promise<Result<void, PublishError>>;
+  rsvp(eventId: string, user: User): Promise<Result<void, RsvpError>>;
+}
+```
 
-The migration successfully separated concerns while maintaining full compatibility with Nostr protocols and existing functionality.
+Domain errors use typed codes:
+
+```typescript
+export class NostrError extends Error {
+  constructor(
+    message: string,
+    public readonly code: "TIMEOUT" | "RELAY_ERROR" | "PARSE_ERROR",
+  ) {
+    super(message);
+  }
+}
+
+export class PublishError extends Error {
+  constructor(
+    message: string,
+    public readonly code: "INVALID_EVENT" | "RELAY_REJECTED",
+  ) {
+    super(message);
+  }
+}
+```
+
+Consumption in UI:
+
+```typescript
+const result = await publishEvent(repo, crypto, draftEvent);
+if (result.isErr()) {
+  showToast(result.error.message);
+  return;
+}
+router.push(`/event/${result.value.id}`);
+```
+
+---
+
+## State Management
+
+Uses [nanostores](https://github.com/nanostores/nanostores) for cross-cutting state:
+
+- Framework-agnostic (works outside React)
+- Atomic stores = perfect tree-shaking (~1.2KB total)
+- Computed/derived stores built-in
+- Zero dependencies
+
+```typescript
+import { atom } from "nanostores";
+
+export const $city = atom<string>("madrid");
+
+export async function loadCity(): Promise<Result<void, StorageError>> {
+  try {
+    const stored = await AsyncStorage.getItem("city");
+    if (stored) $city.set(stored);
+    return ok(undefined);
+  } catch (e) {
+    return err(new StorageError("Failed to load city"));
+  }
+}
+```
+
+Custom AsyncStorage adapter or `@nanostores/persistent` with custom storage engine.
+
+---
+
+## Validation
+
+[valibot](https://valibot.dev/) for runtime validation at domain boundaries:
+
+- Fully tree-shakeable (~300B per schema vs Zod's ~10KB)
+- Nearly identical API to Zod
+- No dependencies
+
+```typescript
+import * as v from "valibot";
+
+export const EventSchema = v.object({
+  id: v.string(),
+  title: v.pipe(v.string(), v.minLength(1), v.maxLength(200)),
+  city: v.string(),
+  startTime: v.date(),
+  location: v.optional(v.string()),
+  isPrivate: v.boolean(),
+});
+
+export type Event = v.InferOutput<typeof EventSchema>;
+
+export const parseEvent = (raw: unknown): Result<Event, ValidationError> => {
+  const result = v.safeParse(EventSchema, raw);
+  return result.success ? ok(result.output) : err(new ValidationError(result.issues));
+};
+```
+
+---
+
+## Tooling
+
+### Linting & Formatting
+
+- **oxlint**
+- **oxfmt**
+- **@expo/oxlint-config-universe** for Expo-specific rules
+- Config: `.oxlintrc.json` at root, `.oxfmt.toml` at root
+
+### TypeScript
+
+Strict config with additional guards:
+
+```json
+{
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitReturns": true,
+    "useUnknownInCatchVariables": true,
+    "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedSideEffectImports": true
+  }
+}
+```
+
+### React Compiler
+
+Babel plugin added to `babel.config.cjs`:
+
+```js
+plugins: ["react-native-reanimated/plugin", ["babel-plugin-react-compiler", { target: "19" }]];
+```
+
+Auto-memoizes components. Manual `useMemo`/`useCallback` can be removed over time.
+
+### Validation Script
+
+`scripts/validate.ts` runs checks via `tasuku`:
+
+1. TypeScript (`tsc --noEmit`)
+2. Lint (`oxlint`)
+3. Format (`oxfmt --check`)
+4. Bundle Check (`expo export --platform ios`) — catches Metro/Hermes issues
+5. Production Start (`expo start --no-dev`) — smoke test
+
+Run: `bun run validate`
+
+---
+
+## Key Decisions
+
+| Decision         | Choice                | Rationale                                                    |
+| ---------------- | --------------------- | ------------------------------------------------------------ |
+| Core deps        | Zero RN deps          | Pure TypeScript. NDK stays in `infrastructure/`.             |
+| FSD in app       | Pages + Features only | `entities/` and `shared/` belong in packages.                |
+| State management | nanostores            | Atomic, tree-shakeable, framework-agnostic.                  |
+| Validation       | valibot               | 30x smaller than Zod, same API.                              |
+| Error handling   | neverthrow            | Explicit error paths, no try/catch soup.                     |
+| Package linking  | Internal packages     | Path aliases in tsconfig, no build step.                     |
+| Feature flags    | Port only             | Add `IConfigService` to `@klk/core/ports/`. Implement later. |
+
+---
+
+## Watch Out For
+
+- **NDK version pinning**: `@nostr-dev-kit/ndk-mobile` hard-deps RN 0.79.2 but app uses 0.85. Metro singleton redirect is a workaround.
+- **Onboarding init**: `app/_layout.tsx` lines 28-55 is the most complex "thin shell" logic. Treat as first port boundary test.
+- **Bundle size**: Adding packages means Metro resolves more modules. Monitor `expo export` output.
