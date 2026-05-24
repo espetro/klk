@@ -54,20 +54,22 @@ function RootLayoutInner() {
         SplashScreen.hideAsync();
       }
     })();
-  }, []);
+  }, [setOnboardingComplete]);
 
   useEffect(() => {
     if (ready && onboardingChecked && !onboardingComplete) {
       const isOnboardingRoute = segments[0] === 'onboarding';
       if (!isOnboardingRoute) {
-        router.replace('/onboarding/welcome');
+        router.replace('/onboarding');
       }
     }
   }, [ready, onboardingChecked, onboardingComplete, segments, router]);
 
   const ndkContextValue = useMemo(() => ({ ndk, signer, currentUser }), [ndk, signer, currentUser]);
 
-  if (!ready) return null;
+  if (!ready) {
+    return null;
+  }
 
   return (
     <NDKContext.Provider value={ndkContextValue}>
@@ -105,6 +107,16 @@ function RootLayoutInner() {
         <Stack.Screen name='onboarding' options={{ headerShown: false }} />
         <Stack.Screen name='legal/terms' options={{ title: 'Terms of Service' }} />
         <Stack.Screen name='legal/privacy' options={{ title: 'Privacy Policy' }} />
+        <Stack.Screen
+          name='profile'
+          options={{
+            title: 'Profile',
+            presentation: 'formSheet',
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: [0.5, 1.0],
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
       </Stack>
     </NDKContext.Provider>
   );
