@@ -13,3 +13,5 @@ export { useRsvps } from './use-rsvps';
 export { useGroupEvents } from './use-group-events';
 export type { DecryptedGroupEvent } from './use-group-events';
 export { useIdentity } from './use-identity';
+export { $viewMode, useViewMode } from './viewModeStore';
+export type { ViewMode } from './viewModeStore';
