@@ -1,6 +1,6 @@
-import { HostedButton as Button } from '@/components/hosted-button';
-import { CITIES, Coordinates, DistanceRange, DISTANCE_RANGES } from '@klk/infrastructure';
-import { View, Text } from 'react-native';
+import { HostedButton as Button } from "@/components/hosted-button";
+import { CITIES, Coordinates, DistanceRange, DISTANCE_RANGES } from "@klk/infrastructure";
+import { View, Text } from "react-native";
 
 interface MapFilterBarProps {
   selectedCity: Coordinates;
@@ -19,23 +19,23 @@ export function MapFilterBar({
   const cityLabel = CITIES.find((c) => c.slug === selectedCitySlug)?.label ?? selectedCitySlug;
 
   return (
-    <View className='bg-white/90 px-4 py-3 gap-2 shadow-sm'>
-      <View className='flex-row items-center justify-between'>
-        <View className='flex-row items-center gap-2'>
-          <Text className='text-xs font-medium text-gray-500 uppercase tracking-wide'>City</Text>
+    <View className="bg-white/90 px-4 py-3 gap-2 shadow-sm">
+      <View className="flex-row items-center justify-between">
+        <View className="flex-row items-center gap-2">
+          <Text className="text-xs font-medium text-gray-500 uppercase tracking-wide">City</Text>
           <Button
             label={cityLabel}
-            variant='outlined'
+            variant="outlined"
             onPress={() => onCityChange(selectedCitySlug)}
           />
         </View>
-        <View className='flex-row items-center gap-1'>
-          <Text className='text-xs font-medium text-gray-500 uppercase tracking-wide'>Within</Text>
+        <View className="flex-row items-center gap-1">
+          <Text className="text-xs font-medium text-gray-500 uppercase tracking-wide">Within</Text>
           {DISTANCE_RANGES.map((range) => (
             <Button
               key={range}
               label={`${range}km`}
-              variant={distanceRange === range ? 'filled' : 'outlined'}
+              variant={distanceRange === range ? "filled" : "outlined"}
               onPress={() => onDistanceChange(range)}
             />
           ))}

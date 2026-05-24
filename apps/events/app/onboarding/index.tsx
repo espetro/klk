@@ -1,12 +1,12 @@
-import { useCallback, useRef, useState } from 'react';
-import { FlatList, View, Dimensions } from 'react-native';
+import { useCallback, useRef, useState } from "react";
+import { FlatList, View, Dimensions } from "react-native";
 
-import EventsPage from './pages/events';
-import LocationPage from './pages/location';
-import LoginPage from './pages/login';
-import WelcomePage from './pages/welcome';
+import EventsPage from "./pages/events";
+import LocationPage from "./pages/location";
+import LoginPage from "./pages/login";
+import WelcomePage from "./pages/welcome";
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const PAGES = [WelcomePage, EventsPage, LocationPage, LoginPage];
 
 export default function OnboardingPager() {
@@ -24,7 +24,7 @@ export default function OnboardingPager() {
   }, []);
 
   return (
-    <View className='flex-1 bg-gray-50'>
+    <View className="flex-1 bg-gray-50">
       <FlatList
         ref={flatListRef}
         data={PAGES}
@@ -39,7 +39,7 @@ export default function OnboardingPager() {
           setCurrentIndex(index);
         }}
         renderItem={({ item: Page, index }) => (
-          <View style={{ width: SCREEN_WIDTH }} className='flex-1'>
+          <View style={{ width: SCREEN_WIDTH }} className="flex-1">
             <Page
               onProceed={handleProceed}
               onSkip={handleSkip}
@@ -50,12 +50,12 @@ export default function OnboardingPager() {
       />
 
       {/* Page indicator dots */}
-      <View className='flex-row justify-center pb-8 gap-2'>
+      <View className="flex-row justify-center pb-8 gap-2">
         {PAGES.map((_, i) => (
           <View
             key={i}
             className={`h-1.5 rounded-full ${
-              currentIndex === i ? 'w-6 bg-gray-900' : 'w-1.5 bg-gray-300'
+              currentIndex === i ? "w-6 bg-gray-900" : "w-1.5 bg-gray-300"
             }`}
           />
         ))}

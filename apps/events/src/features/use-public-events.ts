@@ -1,4 +1,4 @@
-import { NDKContext } from '@/lib/context/ndk-context';
+import { NDKContext } from "@/lib/context/ndk-context";
 import {
   cityTagValue,
   parsePublicEvent,
@@ -6,11 +6,11 @@ import {
   KlkKind,
   getSecure,
   setSecure,
-} from '@klk/infrastructure';
-import { NDKEvent } from '@nostr-dev-kit/ndk-mobile';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+} from "@klk/infrastructure";
+import { NDKEvent } from "@nostr-dev-kit/ndk-mobile";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 
-import { useCity } from './cityStore';
+import { useCity } from "./cityStore";
 
 export interface PublicEvent extends PublicEventData {
   id: string;
@@ -54,60 +54,66 @@ export function usePublicEvents(): UsePublicEventsResult {
   const [error, setError] = useState<string | null>(null);
   const [_attemptCount, setAttemptCount] = useState(0);
 
-  const startSubscription = useCallback(async () => {
-    if (!ndk || !city) return;
-    setLoading(true);
-    setError(null);
+  const startSubscription = useCallback(
+    async function startSubscription() {
+      if (!ndk || !city) return;
+      setLoading(true);
+      setError(null);
 
-    let lastError: Error | null = null;
-    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-      try {
-        // eslint-disable-next-line no-await-in-loop
-        const cached = await loadCachedEvents(city);
-        if (cached.length > 0) {
-          setEvents([]);
-          cached.forEach((e) => {
+      let lastError: Error | null = null;
+      for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        try {
+          // eslint-disable-next-line no-await-in-loop
+          const cached = await loadCachedEvents(city);
+          if (cached.length > 0) {
+            setEvents([]);
+            cached.forEach((e) => {
+              setEvents((prev) => {
+                const exists = prev.find((x) => x.id === e.id);
+                return exists ? prev : [...prev, e as unknown as NDKEvent];
+              });
+            });
+          }
+
+          const sub = ndk.subscribe(
+            { kinds: [KlkKind.PublicEvent as number], "#t": [cityTagValue(city)] },
+            { closeOnEose: false },
+          );
+          sub.on("event", (e: NDKEvent) => {
             setEvents((prev) => {
               const exists = prev.find((x) => x.id === e.id);
-              return exists ? prev : [...prev, e as unknown as NDKEvent];
+              return exists ? prev : [...prev, e];
             });
           });
-        }
-
-        const sub = ndk.subscribe(
-          { kinds: [KlkKind.PublicEvent as number], '#t': [cityTagValue(city)] },
-          { closeOnEose: false }
-        );
-        sub.on('event', (e: NDKEvent) => {
-          setEvents((prev) => {
-            const exists = prev.find((x) => x.id === e.id);
-            return exists ? prev : [...prev, e];
+          sub.on("eose", () => {
+            setLoading(false);
           });
-        });
-        sub.on('eose', () => {
-          setLoading(false);
-        });
-        setAttemptCount(attempt);
-        return;
-      } catch (err) {
-        lastError = err instanceof Error ? err : new Error(String(err));
-        if (attempt < MAX_RETRIES) {
-          // eslint-disable-next-line no-void
-          void sleep(BASE_DELAY_MS * Math.pow(2, attempt));
+          setAttemptCount(attempt);
+          return;
+        } catch (err) {
+          lastError = err instanceof Error ? err : new Error(String(err));
+          if (attempt < MAX_RETRIES) {
+            // eslint-disable-next-line no-void
+            void sleep(BASE_DELAY_MS * Math.pow(2, attempt));
+          }
         }
       }
-    }
 
-    setError(lastError?.message ?? 'Failed to load events after retries');
-    setLoading(false);
-  }, [ndk, city]);
+      setError(lastError?.message ?? "Failed to load events after retries");
+      setLoading(false);
+    },
+    [ndk, city],
+  );
 
-  useEffect(() => {
-    const run = async () => {
-      await startSubscription();
-    };
-    run();
-  }, [ndk, city, startSubscription]);
+  useEffect(
+    function subscribeToPublicEvents() {
+      const run = async function executeSubscription() {
+        await startSubscription();
+      };
+      run();
+    },
+    [ndk, city, startSubscription],
+  );
 
   const parsed: PublicEvent[] = useMemo(() => {
     return (
@@ -120,16 +126,22 @@ export function usePublicEvents(): UsePublicEventsResult {
     );
   }, [events]);
 
-  useEffect(() => {
-    if (parsed.length > 0) {
-      saveCachedEvents(city, parsed);
-    }
-  }, [parsed, city]);
+  useEffect(
+    function saveCachedEventsEffect() {
+      if (parsed.length > 0) {
+        saveCachedEvents(city, parsed);
+      }
+    },
+    [parsed, city],
+  );
 
-  const retry = useCallback(() => {
-    setAttemptCount(0);
-    startSubscription();
-  }, [startSubscription]);
+  const retry = useCallback(
+    function retrySubscription() {
+      setAttemptCount(0);
+      startSubscription();
+    },
+    [startSubscription],
+  );
 
   return { events: parsed, loading, error, retry };
 }
