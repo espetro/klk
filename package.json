@@ -36,5 +36,9 @@
     "turbo": "^2.0.0",
     "valibot": "^1.4.0"
   },
-  "packageManager": "bun@1.2.13"
+  "packageManager": "bun@1.2.13",
+  "patchedDependencies": {
+    "@react-native/gradle-plugin@0.85.3": "patches/@react-native%2Fgradle-plugin@0.85.3.patch",
+    "expo-image@2.0.7": "patches/expo-image@2.0.7.patch"
+  }
 }

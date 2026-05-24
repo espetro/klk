@@ -1,0 +1,13 @@
+diff --git a/android/src/main/java/expo/modules/image/okhttp/GlideUrlWrapperLoader.kt b/android/src/main/java/expo/modules/image/okhttp/GlideUrlWrapperLoader.kt
+index 0a4bbfa3cd5b2745460d496365b2b4ae644dc465..d18a9882feb5760b4d7699b76c7ed326f3753f6a 100644
+--- a/android/src/main/java/expo/modules/image/okhttp/GlideUrlWrapperLoader.kt
++++ b/android/src/main/java/expo/modules/image/okhttp/GlideUrlWrapperLoader.kt
+@@ -28,7 +28,7 @@ class GlideUrlWrapperLoader(
+             originalResponse
+               .newBuilder()
+               .body(
+-                ProgressResponseBody(originalResponse.body) { bytesWritten, contentLength, done ->
++                ProgressResponseBody(originalResponse.body!!) { bytesWritten, contentLength, done ->
+                   model.progressListener?.onProgress(bytesWritten, contentLength, done)
+                 }
+               )
