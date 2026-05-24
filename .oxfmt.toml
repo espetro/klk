@@ -9,3 +9,8 @@ end_of_line = "lf"
 jsx_single_quote = true
 bracket_spacing = true
 bracket_same_line = false
+
+[sortImports]
+order = "asc"
+internalPattern = ["@/*", "@klk/*"]
+newlinesBetween = "always"

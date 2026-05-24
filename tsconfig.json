@@ -2,11 +2,6 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "bundler",
-    "paths": {
-      "@klk/core": ["./packages/core/src"],
-      "@klk/infrastructure": ["./packages/infrastructure/src"],
-      "@klk/ui": ["./packages/ui/src"]
-    }
+    "moduleResolution": "bundler"
   }
 }

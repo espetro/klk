@@ -5,10 +5,7 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "moduleResolution": "node",
-    "paths": {
-      "@klk/core": ["../core/src"]
-    }
+    "moduleResolution": "bundler"
   },
   "include": ["src/**/*"]
 }
