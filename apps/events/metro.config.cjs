@@ -36,6 +36,11 @@ const uniwindConfig = withUniwindConfig(configAsAny, { cssEntryFile: "./global.c
 
 // const defaultResolveRequest = config.resolver.resolveRequest;
 
+// RESOLVER ORDERING — do NOT reorder these three stages:
+// 1. @klk/* redirect (repoints originModulePath to the package)
+// 2. react-native → uniwind/components swap (must run BEFORE singleton pinning,
+//    or the singleton check short-circuits the redirect and CSS never applies)
+// 3. Singleton pinning (react, react-native, expo pinned to apps/events)
 /** @type {import('metro-resolver').CustomResolver} */
 const customResolver = (context, moduleName, platform) => {
   const origin = context.originModulePath;

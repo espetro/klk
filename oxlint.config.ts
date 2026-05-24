@@ -41,6 +41,7 @@ export default defineConfig({
     "unicorn/prefer-node-protocol": "error",
     "import/no-duplicates": "error",
     "import/no-named-default": "error",
+    "import/no-cycle": "error",
   },
   env: {
     browser: true,

@@ -9,8 +9,8 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
-    "lint": "oxlint . --config .oxlintrc.json",
-    "lint:fix": "oxlint . --config .oxlintrc.json --fix",
+    "lint": "oxlint . --config oxlint.config.ts",
+    "lint:fix": "oxlint . --config oxlint.config.ts --fix",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
     "test": "turbo test",

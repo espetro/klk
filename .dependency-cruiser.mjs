@@ -17,6 +17,14 @@ const config = {
     ...recommended.forbidden.filter(
       (_) => _.name !== "no-non-package-json" && _.name !== "not-to-unresolvable",
     ),
+    // Explicit circular dependency check (included in recommended-strict, but made visible)
+    {
+      name: "no-circular",
+      severity: "error",
+      comment: "Circular imports cause require-cycle crashes and hard-to-debug load ordering bugs",
+      from: {},
+      to: { circular: true },
+    },
     // UI ↔ Infrastructure isolation rules
     {
       name: "no-ui-from-infrastructure",
