@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { NDKEvent } from "@nostr-dev-kit/ndk-mobile";
-import { NDKContext } from "@/app/_layout";
+import { NDKContext } from "@/lib/context/ndk-context";
 import { GroupRecord, aesGcmDecrypt, PublicEventData } from "@klk/infrastructure";
 
 export interface DecryptedGroupEvent extends PublicEventData {

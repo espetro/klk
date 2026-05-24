@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { Alert } from "react-native";
 import { Stack, useRouter } from "expo-router";
-import { NDKContext } from "@/app/_layout";
+import { NDKContext } from "@/lib/context/ndk-context";
 import { useCity } from "@/features";
 import { EventForm, EventFormValues } from "@/components";
 import { publishPublicEvent } from "@klk/infrastructure";

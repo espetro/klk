@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { Alert, ScrollView, Text, TextInput } from "react-native";
 import { Stack, useRouter } from "expo-router";
-import { NDKContext } from "@/app/_layout";
+import { NDKContext } from "@/lib/context/ndk-context";
 import { createGroup } from "@klk/infrastructure";
 import { Button } from "@klk/ui";
 

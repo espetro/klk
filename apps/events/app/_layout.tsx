@@ -7,7 +7,6 @@ import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import NDK, { NDKPrivateKeySigner, NDKUser } from "@nostr-dev-kit/ndk-mobile";
 import { NDKContext } from "@/lib/context/ndk-context";
-export { NDKContext };
 import { useOnboarding } from "@/features";
 import {
   connectNDK,

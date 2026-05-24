@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { NDKContext } from "@/app/_layout";
+import { NDKContext } from "@/lib/context/ndk-context";
 
 export function useIdentity() {
   return useContext(NDKContext);

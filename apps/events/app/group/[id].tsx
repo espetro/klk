@@ -1,7 +1,7 @@
 import { useCallback, useContext, useState } from "react";
 import { Alert, ScrollView, Text, View } from "react-native";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
-import { NDKContext } from "@/app/_layout";
+import { NDKContext } from "@/lib/context/ndk-context";
 import { getGroup, GroupRecord, publishPrivateEvent } from "@klk/infrastructure";
 import { useGroupEvents } from "@/features";
 import { EventCard, InviteFriendSheet, EventForm, EventFormValues } from "@/components";

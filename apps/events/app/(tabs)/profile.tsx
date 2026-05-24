@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { Alert, Clipboard, Pressable, ScrollView, Text, View } from "react-native";
 import { router as expoRouter } from "expo-router";
-import { NDKContext } from "@/app/_layout";
+import { NDKContext } from "@/lib/context/ndk-context";
 import { $city, useCity } from "@/features";
 import { CityPicker } from "@/components";
 import { wipeIdentity, resetOnboarding, RELAY_URL } from "@klk/infrastructure";
