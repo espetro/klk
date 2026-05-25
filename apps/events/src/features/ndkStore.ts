@@ -1,6 +1,6 @@
+import type NDK from '@klk/nostr-mobile';
+import type { NDKPrivateKeySigner, NDKUser } from '@klk/nostr-mobile';
 import { useStore } from '@nanostores/react';
-import type NDK from '@nostr-dev-kit/ndk-mobile';
-import type { NDKPrivateKeySigner, NDKUser } from '@nostr-dev-kit/ndk-mobile';
 /**
  * NDK lifecycle wrapper (atom-based)
  *

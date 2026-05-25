@@ -20,13 +20,13 @@ export * as Auth from './auth';
 export { resetOnboarding } from './auth/reset-onboarding';
 export { completeOnboarding, isOnboardingComplete } from './auth/complete-login';
 
-// Re-export mock types for @nostr-dev-kit/ndk-mobile replacement
+// Re-export NDK core types
 export {
   default as NDKMock,
-  NDKCacheAdapterSqlite,
   NDKPrivateKeySigner,
   NDKEvent,
   type NDKUser,
   type NDKSigner,
   type NDKSubscription,
-} from './__mocks__/@nostr-dev-kit/ndk-mobile';
+} from '@klk/nostr-mobile';
+export { KlkSQLiteCacheAdapter } from '@klk/nostr-mobile';

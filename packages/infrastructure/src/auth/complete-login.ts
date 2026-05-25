@@ -1,4 +1,5 @@
-import { NDKPrivateKeySigner } from '../__mocks__/@nostr-dev-kit/ndk-mobile';
+import { NDKPrivateKeySigner } from '@klk/nostr-mobile';
+
 import { getOrCreateIdentity } from '../nostr/identity';
 import { getSecure, setSecure } from '../storage/secure';
 

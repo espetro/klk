@@ -1,0 +1,36 @@
+{
+  "name": "@klk/nostr-mobile",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "validate": "bun run ../../scripts/validate.ts"
+  },
+  "dependencies": {
+    "@nostr-dev-kit/ndk": "^2.15.0",
+    "@nostr-dev-kit/react": "^1.3.13",
+    "buffer": "^6.0.3",
+    "nanostores": "^1.3.0",
+    "nostr-tools": "^2.0.0",
+    "typescript-lru-cache": "^2.0.0"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "expo-image": "*",
+    "expo-secure-store": "*",
+    "expo-sqlite": "*",
+    "react": "*",
+    "react-native": "*",
+    "react-native-get-random-values": "*",
+    "react-native-reanimated": "*"
+  },
+  "peerDependenciesMeta": {
+    "react-native-reanimated": {
+      "optional": true
+    }
+  }
+}

@@ -1,7 +1,7 @@
+import NDK, { NDKEvent, NDKPrivateKeySigner } from '@klk/nostr-mobile';
 import { gcm } from '@noble/ciphers/aes.js';
 import * as Crypto from 'expo-crypto';
 
-import NDK, { NDKEvent, NDKPrivateKeySigner } from '../__mocks__/@nostr-dev-kit/ndk-mobile';
 import { GroupRecord, getGroup, saveGroup } from '../storage/groups-store';
 import { PublicEventData } from './events';
 
@@ -48,11 +48,7 @@ export async function inviteToGroup(
   inner.tags = [['p', recipientPubkey]];
   inner.created_at = Math.floor(Date.now() / 1000);
 
-  const sealed = await signer.encrypt(
-    await ndk.getUser({ pubkey: recipientPubkey }),
-    payload,
-    'nip44'
-  );
+  const sealed = await signer.encrypt(ndk.getUser({ pubkey: recipientPubkey }), payload, 'nip44');
 
   const wrap = new NDKEvent(ndk);
   wrap.kind = 1059;
@@ -68,12 +64,12 @@ export async function inviteToGroup(
 }
 
 export function processIncomingGiftWraps(ndk: NDK, myPubkey: string): void {
-  const sub = ndk.subscribe({ kinds: [1059 as any], '#p': [myPubkey] }, { closeOnEose: false });
+  const sub = ndk.subscribe({ kinds: [1059], '#p': [myPubkey] }, { closeOnEose: false });
   sub.on('event', async (event: NDKEvent) => {
     try {
       if (!ndk.signer) return;
       const decrypted = await (ndk.signer as NDKPrivateKeySigner).decrypt(
-        await ndk.getUser({ pubkey: event.pubkey }),
+        ndk.getUser({ pubkey: event.pubkey }),
         event.content,
         'nip44'
       );
