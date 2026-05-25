@@ -7,7 +7,7 @@ export interface AppleSignInResult {
   fullName: AppleAuthentication.AppleAuthenticationFullName | null;
 }
 
-export async function isAppleSignInAvailable(): Promise<boolean> {
+export function isAppleSignInAvailable(): Promise<boolean> {
   return AppleAuthentication.isAvailableAsync();
 }
 
@@ -33,10 +33,11 @@ export async function signInWithApple(): Promise<AppleSignInResult> {
     };
   } catch (error) {
     if (error instanceof Error && error.message === 'APPLE_AUTHENTICATION_CANCELED') {
-      throw new Error('Apple Sign-In was cancelled');
+      throw new Error('Apple Sign-In was cancelled', { cause: error });
     }
     throw new Error(
-      `Apple Sign-In failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      `Apple Sign-In failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      { cause: error }
     );
   }
 }

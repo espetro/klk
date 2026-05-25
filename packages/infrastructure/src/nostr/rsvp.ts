@@ -1,4 +1,4 @@
-import NDK, { NDKEvent } from '@nostr-dev-kit/ndk-mobile';
+import NDK, { NDKEvent } from '../__mocks__/@nostr-dev-kit/ndk-mobile';
 
 export async function publishRsvp(ndk: NDK, eventCoordinate: string): Promise<NDKEvent> {
   const rsvp = new NDKEvent(ndk);

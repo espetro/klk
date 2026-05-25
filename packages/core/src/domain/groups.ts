@@ -2,7 +2,6 @@ import { Result, ok, err } from 'neverthrow';
 import * as v from 'valibot';
 
 import { ValidationError } from './errors';
-import type { User } from './users';
 
 export const GroupSchema = v.object({
   id: v.string(),

@@ -1,22 +1,16 @@
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 export type Coordinates = { latitude: number; longitude: number };
 
 export type DistanceRange = 5 | 10 | 25 | 50 | 100;
-
-// ─── Constants ────────────────────────────────────────────────────────────────
 
 export const DISTANCE_RANGES: readonly DistanceRange[] = [5, 10, 25, 50, 100] as const;
 
 export const DEFAULT_DISTANCE_RANGE: DistanceRange = 10;
 
-// ─── Haversine ───────────────────────────────────────────────────────────────
-
 const EARTH_RADIUS_METERS = 6_371_000;
 
-export function haversineDistance(a: Coordinates, b: Coordinates): number {
-  const toRad = (deg: number) => (deg * Math.PI) / 180;
+const toRad = (deg: number) => (deg * Math.PI) / 180;
 
+export function haversineDistance(a: Coordinates, b: Coordinates): number {
   const lat1 = toRad(a.latitude);
   const lat2 = toRad(b.latitude);
   const dLat = toRad(b.latitude - a.latitude);
@@ -31,19 +25,14 @@ export function haversineDistance(a: Coordinates, b: Coordinates): number {
   return EARTH_RADIUS_METERS * centralAngle;
 }
 
-// ─── Geocoding ───────────────────────────────────────────────────────────────
-
-// TODO (Wave 3): Replace stubs with expo-location implementations
-export async function resolveAddress(
-  _address: string
-): Promise<{ lat: number; lon: number } | null> {
+export function resolveAddress(_address: string): Promise<{ lat: number; lon: number } | null> {
   throw new Error('resolveAddress requires expo-location (Wave 3)');
 }
 
-export async function reverseGeocodeCity(_coords: Coordinates): Promise<string | null> {
+export function reverseGeocodeCity(_coords: Coordinates): Promise<string | null> {
   throw new Error('reverseGeocodeCity requires expo-location (Wave 3)');
 }
 
-export async function geocodeCityName(_cityName: string): Promise<Coordinates | null> {
+export function geocodeCityName(_cityName: string): Promise<Coordinates | null> {
   throw new Error('geocodeCityName requires expo-location (Wave 3)');
 }

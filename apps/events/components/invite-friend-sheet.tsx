@@ -1,8 +1,12 @@
 import { HostedButton as Button } from '@/components/hosted-button';
 import { HostedInput as Input } from '@/components/hosted-input';
 import { BottomSheet } from '@expo/ui';
-import { GroupRecord, inviteToGroup } from '@klk/infrastructure';
-import NDK, { NDKPrivateKeySigner } from '@nostr-dev-kit/ndk-mobile';
+import {
+  GroupRecord,
+  inviteToGroup,
+  NDKMock as NDK,
+  NDKPrivateKeySigner,
+} from '@klk/infrastructure';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 

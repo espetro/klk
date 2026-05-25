@@ -1,5 +1,5 @@
 import { NDKContext } from '@/lib/context/ndk-context';
-import { NDKEvent } from '@nostr-dev-kit/ndk-mobile';
+import { NDKEvent } from '@klk/infrastructure';
 import { useContext, useEffect, useState } from 'react';
 
 export function useRsvps(eventCoordinate: string) {

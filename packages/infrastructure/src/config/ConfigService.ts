@@ -1,5 +1,4 @@
-import { IConfigService, FeatureFlag } from '@klk/core';
-import { ConfigError } from '@klk/core';
+import { IConfigService, FeatureFlag, ConfigError } from '@klk/core';
 import { Result, ok, err } from 'neverthrow';
 
 export class ConfigService implements IConfigService {
@@ -8,9 +7,8 @@ export class ConfigService implements IConfigService {
   getFlag(name: FeatureFlag): Result<boolean, ConfigError> {
     try {
       const value = this.flags.get(name);
-      // Default to false if flag not set
       return ok(value ?? false);
-    } catch (e) {
+    } catch {
       return err(new ConfigError(`Failed to get flag: ${name}`));
     }
   }
@@ -19,11 +17,8 @@ export class ConfigService implements IConfigService {
     try {
       this.flags.set(name, value);
       return ok(undefined);
-    } catch (e) {
+    } catch {
       return err(new ConfigError(`Failed to set flag: ${name}`));
     }
   }
-
-  // TODO: Persist flags to AsyncStorage for app restarts
-  // TODO: Load flags from AsyncStorage on initialization
 }

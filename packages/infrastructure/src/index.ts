@@ -2,7 +2,6 @@
 // export { SecureStoreAdapter } from './storage/SecureStoreAdapter';
 // export { SQLiteAdapter } from './storage/SQLiteAdapter';
 // export { CryptoService } from './crypto/CryptoService';
-export { NostrEventRepository } from './nostr/NostrEventRepository';
 export * from './nostr';
 export { ExpoStorageAdapter } from './storage/ExpoStorageAdapter';
 export { getSecure, setSecure, deleteSecure } from './storage';
@@ -20,3 +19,14 @@ export { AesGcmCryptoAdapter } from './crypto/AesGcmCryptoAdapter';
 export * as Auth from './auth';
 export { resetOnboarding } from './auth/reset-onboarding';
 export { completeOnboarding, isOnboardingComplete } from './auth/complete-login';
+
+// Re-export mock types for @nostr-dev-kit/ndk-mobile replacement
+export {
+  default as NDKMock,
+  NDKCacheAdapterSqlite,
+  NDKPrivateKeySigner,
+  NDKEvent,
+  type NDKUser,
+  type NDKSigner,
+  type NDKSubscription,
+} from './__mocks__/@nostr-dev-kit/ndk-mobile';

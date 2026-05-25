@@ -39,6 +39,7 @@
   "packageManager": "bun@1.2.13",
   "patchedDependencies": {
     "@react-native/gradle-plugin@0.85.3": "patches/@react-native%2Fgradle-plugin@0.85.3.patch",
-    "expo-image@2.0.7": "patches/expo-image@2.0.7.patch"
+    "expo-image@2.0.7": "patches/expo-image@2.0.7.patch",
+    "expo-modules-core@56.0.12": "patches/expo-modules-core@56.0.12.patch"
   }
 }

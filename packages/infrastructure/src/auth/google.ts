@@ -44,6 +44,6 @@ export async function signInWithGoogle(): Promise<GoogleSignInResult> {
     throw new Error('Google Sign-In failed: no access token received');
   } catch (error) {
     if (error instanceof Error) throw error;
-    throw new Error('Google Sign-In failed: Unknown error');
+    throw new Error('Google Sign-In failed: Unknown error', { cause: error });
   }
 }

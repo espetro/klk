@@ -1,5 +1,4 @@
-import NDK, { NDKEvent } from '@nostr-dev-kit/ndk-mobile';
-
+import NDK, { NDKEvent } from '../__mocks__/@nostr-dev-kit/ndk-mobile';
 import { KlkKind } from './kinds';
 import { cityTag } from './tags';
 

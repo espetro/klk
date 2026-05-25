@@ -1,4 +1,4 @@
-import { deleteSecure, getSecure } from '../storage/secure';
+import { deleteSecure } from '../storage/secure';
 
 const ONBOARDING_KEY = 'onboarding_complete';
 const OAUTH_CREDENTIAL_KEY = 'oauth_credential';

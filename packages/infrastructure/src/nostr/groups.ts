@@ -1,7 +1,7 @@
 import { gcm } from '@noble/ciphers/aes.js';
-import NDK, { NDKEvent, NDKPrivateKeySigner } from '@nostr-dev-kit/ndk-mobile';
 import * as Crypto from 'expo-crypto';
 
+import NDK, { NDKEvent, NDKPrivateKeySigner } from '../__mocks__/@nostr-dev-kit/ndk-mobile';
 import { GroupRecord, getGroup, saveGroup } from '../storage/groups-store';
 import { PublicEventData } from './events';
 
@@ -104,7 +104,7 @@ async function aesGcmEncrypt(key: Uint8Array, plaintext: string): Promise<string
   return uint8ToHex(combined);
 }
 
-export async function aesGcmDecrypt(symKeyHex: string, cipherHex: string): Promise<string> {
+export function aesGcmDecrypt(symKeyHex: string, cipherHex: string): string {
   const combined = hexToUint8(cipherHex);
   const iv = combined.slice(0, 12);
   const cipherBytes = combined.slice(12);

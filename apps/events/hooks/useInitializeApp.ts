@@ -4,8 +4,10 @@ import {
   getOrCreateIdentity,
   isOnboardingComplete,
   processIncomingGiftWraps,
+  NDKMock as NDK,
+  NDKPrivateKeySigner,
+  NDKUser,
 } from '@klk/infrastructure';
-import NDK, { NDKPrivateKeySigner, NDKUser } from '@nostr-dev-kit/ndk-mobile';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 

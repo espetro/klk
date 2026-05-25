@@ -1,20 +1,20 @@
-import NDK, { NDKCacheAdapterSqlite, NDKSigner } from '@nostr-dev-kit/ndk-mobile';
+import NDK, { NDKCacheAdapterSqlite, NDKSigner } from '../__mocks__/@nostr-dev-kit/ndk-mobile';
 
 export const RELAY_URL = 'ws://localhost:10547';
 export const RELAYS = [RELAY_URL];
 
-let _ndk: NDK | null = null;
+let ndkInstance: NDK | null = null;
 
 export function getNDK(): NDK {
-  if (!_ndk) {
+  if (!ndkInstance) {
     const cacheAdapter = new NDKCacheAdapterSqlite('events-app');
     cacheAdapter.initialize();
-    _ndk = new NDK({
+    ndkInstance = new NDK({
       explicitRelayUrls: RELAYS,
       cacheAdapter,
     });
   }
-  return _ndk;
+  return ndkInstance;
 }
 
 export function connectNDK(signer?: NDKSigner): NDK {

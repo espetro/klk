@@ -6,8 +6,8 @@ import {
   KlkKind,
   getSecure,
   setSecure,
+  NDKEvent,
 } from '@klk/infrastructure';
-import { NDKEvent } from '@nostr-dev-kit/ndk-mobile';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { useCity } from './cityStore';
