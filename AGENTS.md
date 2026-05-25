@@ -27,6 +27,10 @@ Klk is a Nostr-native events app built with Expo + React Native. Users discover 
 4. **Read per-package AGENTS.md** before modifying code in that package
 5. **E2E testing**: See `apps/events/AGENTS.md` for Gauge + agent-device workflow
 
+### **Build fixes & workarounds:**
+
+See `.agents/notepad/` for a running log of dependency and build issues that have blocked simulator runs, with root-cause analysis and fixes. In case you find an issue during dependency and build management, please add a new file entry following the format `<date>-<topic>.md`.
+
 ### Before every single commit
 
 Verify there's no regressions introduced by running `bun run validate`
