@@ -24,6 +24,11 @@ Uses nanostores (not React Context):
 - `ndkStore` — NDK singleton + connection state
 - `onboardingStore` — first-launch flow state
 
+## Icons
+
+- For iOS, use [SF Symbols](https://github.com/andrewtavis/sf-symbols-online/blob/master/README.md)
+- For Android, use [MD Icons](https://fonts.google.com/icons)
+
 ## E2E Testing
 
 Prerequisites: `nak serve` (relay), `bun ios` (simulator), `gauge run specs/`
