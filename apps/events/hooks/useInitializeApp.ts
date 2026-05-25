@@ -34,7 +34,7 @@ export default function useInitializeApp() {
             const s = await getOrCreateIdentity();
 
             const instance = connectNDK(s);
-            await instance.connect();
+            await instance.connect(5000);
 
             const user = await s.user();
 
