@@ -13,7 +13,7 @@
         "@types/node": "25.9.1",
         "babel-plugin-react-compiler": "^1.0.0",
         "dependency-cruiser": "^17.4.0",
-        "nanostores": "^1.0.0",
+        "nanostores": "^1.3.0",
         "neverthrow": "^8.2.0",
         "oxfmt": "^0.51.0",
         "oxlint": "^1.66.0",
@@ -27,6 +27,7 @@
       "name": "events-app",
       "version": "0.1.0",
       "dependencies": {
+        "@expo/material-symbols": "^0.1.1",
         "@expo/ui": "56.0.12",
         "@expo/vector-icons": "^15.0.2",
         "@klk/core": "workspace:*",
@@ -62,7 +63,7 @@
         "expo-system-ui": "~56.0.5",
         "expo-web-browser": "~56.0.5",
         "lucide-react-native": "^1.16.0",
-        "nanostores": "^1.0.0",
+        "nanostores": "^1.3.0",
         "neverthrow": "^8.2.0",
         "nostr-tools": "^2.23.5",
         "react": "19.2.3",
@@ -144,6 +145,7 @@
   "patchedDependencies": {
     "expo-image@2.0.7": "patches/expo-image@2.0.7.patch",
     "@react-native/gradle-plugin@0.85.3": "patches/@react-native%2Fgradle-plugin@0.85.3.patch",
+    "expo-modules-core@56.0.12": "patches/expo-modules-core@56.0.12.patch",
   },
   "packages": {
     "@0no-co/graphql.web": ["@0no-co/graphql.web@1.2.0", "", { "peerDependencies": { "graphql": "^14.0.0 || ^15.0.0 || ^16.0.0" }, "optionalPeers": ["graphql"] }, "sha512-/1iHy9TTr63gE1YcR5idjx8UREz1s0kFhydf3bBLCXyqjhkIc6igAzTOx3zPifCwFR87tsh/4Pa9cNts6d2otw=="],
@@ -385,6 +387,8 @@
     "@expo/local-build-cache-provider": ["@expo/local-build-cache-provider@56.0.7", "", { "dependencies": { "@expo/config": "~56.0.8", "chalk": "^4.1.2" } }, "sha512-GedmHPUQeLKbRZNzxZ4ZiN7NKQw65MSOMMnIqJnbXySZYYeBWg5TMuCzafE0Pt0Tsd2vmp2F7OPpsgAFGFoaBw=="],
 
     "@expo/log-box": ["@expo/log-box@56.0.12", "", { "dependencies": { "@expo/dom-webview": "^56.0.5", "anser": "^1.4.9", "stacktrace-parser": "^0.1.10" }, "peerDependencies": { "expo": "*", "react": "*", "react-native": "*" } }, "sha512-budE6AGmJbpOJfGSOz+JVP3+FevElT82IEIg+ukQ4gZpW/dGO7QX1unFjanKdSaYgudBwJ4FCFGMwWhW/1tXVQ=="],
+
+    "@expo/material-symbols": ["@expo/material-symbols@0.1.1", "", { "bin": { "add-material-symbols": "bin/add-material-symbols.mjs" } }, "sha512-ruA6hZATOPKxo1qSd1NE3HI9FrmEDwcMDhsvzTAdMkP9AapdHfJ/0tKmBMWFJir85voxs1twYxLVrGW9OLGaOg=="],
 
     "@expo/metro": ["@expo/metro@56.0.0", "", { "dependencies": { "metro": "0.84.4", "metro-babel-transformer": "0.84.4", "metro-cache": "0.84.4", "metro-cache-key": "0.84.4", "metro-config": "0.84.4", "metro-core": "0.84.4", "metro-file-map": "0.84.4", "metro-minify-terser": "0.84.4", "metro-resolver": "0.84.4", "metro-runtime": "0.84.4", "metro-source-map": "0.84.4", "metro-symbolicate": "0.84.4", "metro-transform-plugins": "0.84.4", "metro-transform-worker": "0.84.4" } }, "sha512-5gIgQHtEpjjvsjKfVtIv23a98LLRV0/y07PDShEwYSytAMlE3FSF8RHXqtHc1sUJL6dn7hnuIBpIbrLXXuVi0A=="],
 

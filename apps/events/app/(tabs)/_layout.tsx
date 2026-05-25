@@ -13,21 +13,26 @@ export default function TabsLayout() {
     <NativeTabs tintColor="#6366f1">
       <NativeTabs.Trigger name={AppTabs.Events}>
         <NativeTabs.Trigger.Icon
-          md={{ default: "calendar_add_on", selected: "calendar_check" }}
+          md={{ default: "today", selected: "event_upcoming" }}
           sf={{ default: "square.stack", selected: "square.stack.fill" }}
         />
         <NativeTabs.Trigger.Label>Events</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name={AppTabs.Circles}>
-        <NativeTabs.Trigger.Icon sf={{ default: "person.2", selected: "person.2.fill" }} />
+        <NativeTabs.Trigger.Icon
+          md={{ default: "group", selected: "person_celebrate" }}
+          sf={{ default: "person.2", selected: "person.2.fill" }}
+        />
         <NativeTabs.Trigger.Label>Circles</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="map" role="search">
-        <NativeTabs.Trigger.Icon
-          md={isCircles ? "more" : "search"}
-          sf={isCircles ? "plus" : "magnifyingglass"}
-        />
-      </NativeTabs.Trigger>
+      {process.env.EXPO_OS === "ios" && (
+        <NativeTabs.Trigger name="map" role="search">
+          <NativeTabs.Trigger.Icon
+            md={isCircles ? "more" : "search"}
+            sf={isCircles ? "plus" : "magnifyingglass"}
+          />
+        </NativeTabs.Trigger>
+      )}
     </NativeTabs>
   );
 }
