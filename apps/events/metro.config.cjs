@@ -17,6 +17,14 @@ const klkPackages = {
     'infrastructure',
     'package.json'
   ),
+  '@klk/nostr-mobile': path.resolve(
+    __dirname,
+    '..',
+    '..',
+    'packages',
+    'nostr-mobile',
+    'package.json'
+  ),
   '@klk/ui': path.resolve(__dirname, '..', '..', 'packages', 'ui', 'package.json'),
 };
 
