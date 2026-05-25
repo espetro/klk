@@ -3,7 +3,12 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "types": ["@types/node"]
+    "types": [
+      "@types/node"
+    ]
   },
-  "include": ["scripts/*.ts"]
+  "include": [
+    "scripts/*.ts"
+  ],
+  "extends": "expo/tsconfig.base"
 }
