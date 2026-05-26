@@ -15,7 +15,8 @@
     "format:check": "oxfmt --check .",
     "test": "turbo test",
     "validate": "turbo run validate",
-    "depcruise": "depcruise apps/*/src packages/*/src --config .dependency-cruiser.mjs"
+    "depcruise": "depcruise apps/*/src packages/*/src --config .dependency-cruiser.mjs",
+    "seed": "bun run scripts/seed.ts"
   },
   "dependencies": {
     "@noble/ciphers": "^2.2.0",
