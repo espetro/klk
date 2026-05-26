@@ -9,7 +9,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Events App</string>
+	<string>Klk</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -29,8 +29,8 @@
 		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>eventsapp</string>
-				<string>dev.events.app</string>
+				<string>klk</string>
+				<string>dev.klk.app</string>
 			</array>
 		</dict>
 	</array>
