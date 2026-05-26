@@ -18,29 +18,23 @@
     "depcruise": "depcruise apps/*/src packages/*/src --config .dependency-cruiser.mjs",
     "seed": "bun run scripts/seed.ts"
   },
-  "dependencies": {
-    "@noble/ciphers": "^2.2.0",
-    "expo-image": "~55.0.11"
-  },
   "devDependencies": {
+    "@nostr-dev-kit/ndk": "^3.0.3",
     "@babel/core": "7.29.0",
-    "@nanostores/persistent": "^1.0.0",
     "@types/bun": "1.3.14",
     "@types/node": "25.9.1",
     "babel-plugin-react-compiler": "^1.0.0",
     "dependency-cruiser": "^17.4.0",
-    "nanostores": "^1.3.0",
-    "neverthrow": "^8.2.0",
     "oxfmt": "^0.51.0",
     "oxlint": "^1.66.0",
     "oxlint-config-universe": "^0.0.3",
     "tasuku": "2.3.0",
-    "turbo": "^2.0.0",
-    "valibot": "^1.4.0"
+    "turbo": "^2.0.0"
   },
   "packageManager": "bun@1.2.13",
   "patchedDependencies": {
     "@react-native/gradle-plugin@0.85.3": "patches/@react-native%2Fgradle-plugin@0.85.3.patch",
+    "expo-crypto@56.0.4": "patches/expo-crypto@56.0.4.patch",
     "expo-modules-core@56.0.12": "patches/expo-modules-core@56.0.12.patch"
   }
 }
