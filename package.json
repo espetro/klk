@@ -18,7 +18,8 @@
     "depcruise": "depcruise apps/*/src packages/*/src --config .dependency-cruiser.mjs"
   },
   "dependencies": {
-    "@noble/ciphers": "^2.2.0"
+    "@noble/ciphers": "^2.2.0",
+    "expo-image": "~55.0.11"
   },
   "devDependencies": {
     "@babel/core": "7.29.0",
