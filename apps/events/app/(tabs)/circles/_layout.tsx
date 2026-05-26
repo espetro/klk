@@ -1,18 +1,38 @@
 import PersonIcon from '@expo/material-symbols/person.xml';
 import { Stack, router } from 'expo-router';
+import { useStore } from '@nanostores/react';
+import { $circlesSearch } from '@/features';
+import { Input } from '@klk/ui';
 
 type IconType = Parameters<typeof Stack.Toolbar.Button>[number]['icon'];
 
 const handleClickProfile = () => router.push('/profile');
+
+function SearchHeader() {
+  const search = useStore($circlesSearch);
+
+  return (
+    <Input
+      placeholder='Search circles...'
+      value={search}
+      onChangeText={(text) => $circlesSearch.set(text)}
+      className='flex-1'
+    />
+  );
+}
 
 export default function CirclesLayout() {
   const icon = process.env.EXPO_OS === 'ios' ? ('person' satisfies IconType) : PersonIcon;
 
   return (
     <Stack>
-      <Stack.Screen name='index'>
+      <Stack.Screen
+        name='index'
+        options={{
+          headerTitle: () => <SearchHeader />,
+        }}
+      >
         <Stack.Header style={{ shadowColor: 'transparent' }} />
-        <Stack.Title>Circles</Stack.Title>
 
         {/* Profile header button */}
         <Stack.Toolbar placement='right'>

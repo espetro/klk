@@ -1,11 +1,28 @@
 import { router, Stack, useLocalSearchParams } from "expo-router";
+import { useStore } from "@nanostores/react";
+import { $eventsSearch } from "@/features";
+import { Input } from "@klk/ui";
 import MapIcon from "@expo/material-symbols/map.xml";
 import ListIcon from "@expo/material-symbols/list.xml";
+import { View, Text } from "react-native";
 
 type IconType = Parameters<typeof Stack.Toolbar.Button>[number]["icon"];
 
 const ViewModeIcon = (mapView: unknown, mapIcon: IconType, listIcon: IconType) =>
   mapView ? mapIcon : listIcon;
+
+function SearchHeader() {
+  const search = useStore($eventsSearch);
+
+  return (
+    <Input
+      placeholder='Search events...'
+      value={search}
+      onChangeText={(text) => $eventsSearch.set(text)}
+      className='flex-1'
+    />
+  );
+}
 
 export default function EventsLayout() {
   const { mapView } = useLocalSearchParams();
@@ -23,9 +40,13 @@ export default function EventsLayout() {
 
   return (
     <Stack>
-      <Stack.Screen name="index">
+      <Stack.Screen
+        name="index"
+        options={{
+          headerTitle: () => <SearchHeader />,
+        }}
+      >
         <Stack.Header style={{ shadowColor: "transparent" }} />
-        <Stack.Title>Events</Stack.Title>
 
         {/* View mode header button */}
         <Stack.Toolbar placement="right">
