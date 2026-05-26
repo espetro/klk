@@ -1,6 +1,8 @@
 // Feature hooks barrel export
 export { $city, loadCity, useCity, useDistanceRange, useCityCoordinates } from './cityStore';
 export type { CitySettings } from './cityStore';
+export { $lastActiveTab } from './tabStore';
+export { $eventsSearch, $circlesSearch } from './searchStore';
 export { $onboarding, useOnboarding } from './onboardingStore';
 export { $ndk, useNDK } from './ndkStore';
 export type { NDKStoreValue } from './ndkStore';
