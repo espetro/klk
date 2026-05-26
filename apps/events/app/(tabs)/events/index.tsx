@@ -1,17 +1,20 @@
-import { CityPicker, EventCard } from '@/components';
-import { $city, $lastActiveTab, $eventsSearch, useCity, usePublicEvents } from '@/features';
-import { useRouter } from 'expo-router';
-import { useFocusEffect } from 'expo-router';
+import { EventCard } from '@/components';
+import { $lastActiveTab, $eventsSearch, useCity, usePublicEvents } from '@/features';
 import { useStore } from '@nanostores/react';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback } from 'react';
 import { FlatList, Pressable, Text, View } from 'react-native';
 
-function handleCityChange(newCity: string) {
-  $city.set({ ...$city.get(), name: newCity });
+interface EventLike {
+  title?: string;
+  location?: string;
+  summary?: string;
 }
 
-function filterEvents(events: any[], searchQuery: string) {
-  if (!searchQuery.trim()) return events;
+function filterEvents<T extends EventLike>(events: T[], searchQuery: string) {
+  if (!searchQuery.trim()) {
+    return events;
+  }
 
   const query = searchQuery.toLowerCase();
   return events.filter((event) => {
@@ -41,11 +44,7 @@ export default function EventsScreen() {
   const filteredEvents = filterEvents(events, search);
 
   return (
-    <View className='flex-1 bg-gray-50'>
-      <View className='px-4 pt-4 pb-2'>
-        <CityPicker current={city} onChange={handleCityChange} />
-      </View>
-
+    <View className='flex-1 bg-gray-50 pb-2'>
       <FlatList
         data={filteredEvents}
         keyExtractor={(item) => item.id}
@@ -59,7 +58,9 @@ export default function EventsScreen() {
             <Text className='text-gray-400 text-base'>
               {search ? `No events found for "${search}"` : `No upcoming events in ${city}`}
             </Text>
-            {!search && <Text className='text-gray-400 text-sm mt-1'>Be the first to create one!</Text>}
+            {!search && (
+              <Text className='text-gray-400 text-sm mt-1'>Be the first to create one!</Text>
+            )}
           </View>
         }
       />
