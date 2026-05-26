@@ -1,4 +1,4 @@
-# Events App — Agent Guide
+# Klk — Agent Guide
 
 Main Expo Router app. File-based routing: files in `app/` = routes.
 

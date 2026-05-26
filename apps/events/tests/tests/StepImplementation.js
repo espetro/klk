@@ -22,14 +22,14 @@ class StepImplementation {
 
   launchApp() {
     try {
-      const output = execSync("agent-device open 'Events App' --platform ios", {
+      const output = execSync("agent-device open 'Klk' --platform ios", {
         encoding: 'utf-8',
         stdio: 'pipe',
       });
       console.log('App session opened:', output);
     } catch (e) {
       throw new Error(
-        `Failed to launch Events App: ${e.message}. Make sure the iOS simulator is running and the app is installed.`
+        `Failed to launch Klk: ${e.message}. Make sure the iOS simulator is running and the app is installed.`
       );
     }
   }
@@ -77,7 +77,7 @@ class StepImplementation {
 // Apply decorators
 BeforeSuite()(StepImplementation.prototype, 'beforeSuite');
 AfterSuite()(StepImplementation.prototype, 'afterSuite');
-Step('Launch the Events App on iOS simulator')(StepImplementation.prototype, 'launchApp');
+Step('Launch Klk on iOS simulator')(StepImplementation.prototype, 'launchApp');
 Step('Take a screenshot named <name>')(StepImplementation.prototype, 'takeScreenshot');
 Step('The feed screen should be visible')(StepImplementation.prototype, 'verifyFeedVisible');
 
