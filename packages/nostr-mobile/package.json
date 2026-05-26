@@ -20,10 +20,10 @@
   },
   "peerDependencies": {
     "expo": "*",
-    "expo-image": "*",
+    "expo-image": "^56",
     "expo-secure-store": "*",
     "expo-sqlite": "*",
-    "react": "*",
+    "react": ">=19",
     "react-native": "*",
     "react-native-get-random-values": "*",
     "react-native-reanimated": "*"

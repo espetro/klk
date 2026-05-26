@@ -1,4 +1,5 @@
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
+
 import NDK, { NDKEvent, NDKPrivateKeySigner } from '@nostr-dev-kit/ndk';
 
 const CITIES = [

@@ -2,7 +2,7 @@ import { NDKPrivateKeySigner } from '@klk/nostr-mobile';
 
 import { deleteSecure, getSecure, setSecure } from '../storage/secure';
 
-const NSEC_KEY = 'events_app_nsec';
+const NSEC_KEY = 'klk_nsec';
 
 export async function getOrCreateIdentity(): Promise<NDKPrivateKeySigner> {
   const stored = await getSecure(NSEC_KEY);
