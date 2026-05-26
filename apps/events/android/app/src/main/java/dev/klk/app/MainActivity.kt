@@ -1,4 +1,4 @@
-package dev.events.app
+package dev.klk.app
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

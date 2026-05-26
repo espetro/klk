@@ -1,4 +1,4 @@
-package dev.events.app
+package dev.klk.app
 
 import android.app.Application
 import android.content.res.Configuration
