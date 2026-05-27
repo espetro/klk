@@ -1,5 +1,6 @@
 import { HostedButton as Button } from '@/components/hosted-button';
 import { HostedInput as Input } from '@/components/hosted-input';
+import { BottomSheet } from '@expo/ui';
 import {
   CircleRecord,
   inviteToCircle,
@@ -7,15 +8,7 @@ import {
   NDKPrivateKeySigner,
 } from '@klk/infrastructure';
 import { useState } from 'react';
-import {
-  Clipboard,
-  Pressable,
-  Text,
-  View,
-  Modal,
-  TouchableWithoutFeedback,
-  ScrollView,
-} from 'react-native';
+import { Clipboard, Pressable, Text, View } from 'react-native';
 
 interface Props {
   visible: boolean;
@@ -76,57 +69,42 @@ export function InviteFriendSheet({
   const isValidInput = isValidNpub(npub.trim());
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType='slide'
-      onRequestClose={onClose}
-    >
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View className='flex-1 bg-black/40 justify-end'>
-          <TouchableWithoutFeedback>
-            <View className='bg-white rounded-t-3xl p-6 pb-10'>
-              <ScrollView keyboardShouldPersistTaps='handled' showsVerticalScrollIndicator={false}>
-                <Text className='text-lg font-bold text-gray-900 mb-4'>Invite a Member</Text>
+    <BottomSheet isPresented={visible} onDismiss={onClose}>
+      <Text className='text-lg font-bold text-gray-900 mb-4'>Invite a Member</Text>
 
-                <Pressable
-                  onPress={handleCopyCircleId}
-                  className='bg-gray-50 rounded-lg p-3 mb-4 flex-row items-center justify-between'
-                >
-                  <Text className='text-sm text-gray-600'>Copy Circle ID</Text>
-                  <Text className='text-xs text-gray-400 font-mono'>{circle.id.slice(0, 8)}…</Text>
-                </Pressable>
+      <Pressable
+        onPress={handleCopyCircleId}
+        className='bg-gray-50 rounded-lg p-3 mb-4 flex-row items-center justify-between'
+      >
+        <Text className='text-sm text-gray-600'>Copy Circle ID</Text>
+        <Text className='text-xs text-gray-400 font-mono'>{circle.id.slice(0, 8)}…</Text>
+      </Pressable>
 
-                <Text className='text-sm font-medium text-gray-700 mb-2'>Member's npub or public key</Text>
-                <Input
-                  value={npub}
-                  onChangeText={setNpub}
-                  placeholder='npub1… or hex pubkey'
-                  autoCapitalize='none'
-                  autoCorrect={false}
-                  editable={!loading}
-                />
-                {npub && !isValidInput && (
-                  <Text className='text-red-500 text-xs mt-1 mb-2'>Invalid npub or public key format</Text>
-                )}
-                {error && <Text className='text-red-500 text-sm mb-2'>{error}</Text>}
+      <Text className='text-sm font-medium text-gray-700 mb-2'>Member's npub or public key</Text>
+      <Input
+        value={npub}
+        onChangeText={setNpub}
+        placeholder='npub1… or hex pubkey'
+        autoCapitalize='none'
+        autoCorrect={false}
+        editable={!loading}
+      />
+      {npub && !isValidInput && (
+        <Text className='text-red-500 text-xs mt-1 mb-2'>Invalid npub or public key format</Text>
+      )}
+      {error && <Text className='text-red-500 text-sm mb-2'>{error}</Text>}
 
-                <View className='mt-4'>
-                  <Button
-                    label={loading ? 'Sending…' : 'Send Invite'}
-                    variant={loading || !isValidInput ? 'outlined' : 'filled'}
-                    onPress={handleInvite}
-                    disabled={loading || !isValidInput}
-                  />
-                </View>
-                <View className='mt-3'>
-                  <Button label='Cancel' variant='text' onPress={onClose} />
-                </View>
-              </ScrollView>
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
-      </TouchableWithoutFeedback>
-    </Modal>
+      <View className='mt-4'>
+        <Button
+          label={loading ? 'Sending…' : 'Send Invite'}
+          variant={loading || !isValidInput ? 'outlined' : 'filled'}
+          onPress={handleInvite}
+          disabled={loading || !isValidInput}
+        />
+      </View>
+      <View className='mt-3'>
+        <Button label='Cancel' variant='text' onPress={onClose} />
+      </View>
+    </BottomSheet>
   );
 }
