@@ -5,8 +5,8 @@
 export * from './nostr';
 export { ExpoStorageAdapter } from './storage/ExpoStorageAdapter';
 export { getSecure, setSecure, deleteSecure } from './storage';
-export { saveGroup, getGroup, getAllGroups, deleteGroup } from './storage';
-export type { GroupRecord } from './storage';
+export { saveCircle, getCircle, getAllCircles, deleteCircle } from './storage';
+export type { CircleRecord } from './storage';
 export {
   loadCitySettings,
   saveCitySettings,

@@ -2,7 +2,7 @@ import NDK, { NDKEvent, NDKPrivateKeySigner } from '@klk/nostr-mobile';
 import { gcm } from '@noble/ciphers/aes.js';
 import * as Crypto from 'expo-crypto';
 
-import { GroupRecord, getGroup, saveGroup } from '../storage/groups-store';
+import { CircleRecord, getCircle, saveCircle } from '../storage/circles-store';
 import { PublicEventData } from './events';
 
 function uint8ToHex(buf: Uint8Array): string {
@@ -19,27 +19,33 @@ function hexToUint8(hex: string): Uint8Array {
   return arr;
 }
 
-export async function createGroup(name: string, myPubkey: string): Promise<GroupRecord> {
+export async function createCircle(name: string, myPubkey: string): Promise<CircleRecord> {
   const keyBytes = await Crypto.getRandomBytesAsync(32);
   const symKey = uint8ToHex(keyBytes);
   const idBytes = await Crypto.getRandomBytesAsync(16);
   const id = uint8ToHex(idBytes);
-  const group: GroupRecord = { id, name, symKey, members: [myPubkey] };
-  await saveGroup(group);
-  return group;
+  const circle: CircleRecord = {
+    id,
+    name,
+    symKey,
+    members: [myPubkey],
+    createdAt: Math.floor(Date.now() / 1000),
+  };
+  await saveCircle(circle);
+  return circle;
 }
 
-export async function inviteToGroup(
+export async function inviteToCircle(
   ndk: NDK,
   signer: NDKPrivateKeySigner,
-  group: GroupRecord,
+  circle: CircleRecord,
   recipientPubkey: string
 ): Promise<void> {
   const payload = JSON.stringify({
-    id: group.id,
-    name: group.name,
-    symKey: group.symKey,
-    members: group.members,
+    id: circle.id,
+    name: circle.name,
+    symKey: circle.symKey,
+    members: circle.members,
   });
 
   const inner = new NDKEvent(ndk);
@@ -56,11 +62,11 @@ export async function inviteToGroup(
   wrap.tags = [['p', recipientPubkey]];
   await wrap.publish();
 
-  const updated: GroupRecord = {
-    ...group,
-    members: [...new Set([...group.members, recipientPubkey])],
+  const updated: CircleRecord = {
+    ...circle,
+    members: [...new Set([...circle.members, recipientPubkey])],
   };
-  await saveGroup(updated);
+  await saveCircle(updated);
 }
 
 export function processIncomingGiftWraps(ndk: NDK, myPubkey: string): void {
@@ -80,9 +86,9 @@ export function processIncomingGiftWraps(ndk: NDK, myPubkey: string): void {
         members: string[];
       };
       if (parsed.id && parsed.symKey) {
-        const existing = await getGroup(parsed.id);
+        const existing = await getCircle(parsed.id);
         if (!existing) {
-          await saveGroup(parsed as GroupRecord);
+          await saveCircle(parsed as CircleRecord);
         }
       }
     } catch {}
@@ -112,11 +118,11 @@ export function aesGcmDecrypt(symKeyHex: string, cipherHex: string): string {
 
 export async function publishPrivateEvent(
   ndk: NDK,
-  group: GroupRecord,
+  circle: CircleRecord,
   data: PublicEventData
 ): Promise<NDKEvent> {
   const payload = JSON.stringify(data);
-  const symKey = hexToUint8(group.symKey);
+  const symKey = hexToUint8(circle.symKey);
   const encrypted = await aesGcmEncrypt(symKey, payload);
 
   const eventId = uint8ToHex(await Crypto.getRandomBytesAsync(16));
@@ -124,8 +130,8 @@ export async function publishPrivateEvent(
   event.kind = 30078;
   event.content = encrypted;
   event.tags = [
-    ['d', `group-event:${group.id}:${eventId}`],
-    ['g', group.id],
+    ['d', `circle-event:${circle.id}:${eventId}`],
+    ['g', circle.id],
   ];
   await event.publish();
   return event;

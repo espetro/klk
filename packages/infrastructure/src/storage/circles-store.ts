@@ -1,13 +1,14 @@
 import { deleteSecure, getSecure, setSecure } from './secure';
 
-export interface GroupRecord {
+export interface CircleRecord {
   id: string;
   name: string;
   symKey: string;
   members: string[];
+  createdAt?: number;
 }
 
-const INDEX_KEY = 'groups_index';
+const INDEX_KEY = 'circles_index';
 
 async function getIndex(): Promise<string[]> {
   const raw = await getSecure(INDEX_KEY);
@@ -18,27 +19,27 @@ async function setIndex(ids: string[]): Promise<void> {
   await setSecure(INDEX_KEY, JSON.stringify(ids));
 }
 
-export async function saveGroup(group: GroupRecord): Promise<void> {
+export async function saveCircle(circle: CircleRecord): Promise<void> {
   const ids = await getIndex();
-  if (!ids.includes(group.id)) {
-    await setIndex([...ids, group.id]);
+  if (!ids.includes(circle.id)) {
+    await setIndex([...ids, circle.id]);
   }
-  await setSecure(`group_${group.id}`, JSON.stringify(group));
+  await setSecure(`circle_${circle.id}`, JSON.stringify(circle));
 }
 
-export async function getGroup(id: string): Promise<GroupRecord | null> {
-  const raw = await getSecure(`group_${id}`);
+export async function getCircle(id: string): Promise<CircleRecord | null> {
+  const raw = await getSecure(`circle_${id}`);
   return raw ? JSON.parse(raw) : null;
 }
 
-export async function getAllGroups(): Promise<GroupRecord[]> {
+export async function getAllCircles(): Promise<CircleRecord[]> {
   const ids = await getIndex();
-  const groups = await Promise.all(ids.map(getGroup));
-  return groups.filter(Boolean) as GroupRecord[];
+  const circles = await Promise.all(ids.map(getCircle));
+  return circles.filter(Boolean) as CircleRecord[];
 }
 
-export async function deleteGroup(id: string): Promise<void> {
+export async function deleteCircle(id: string): Promise<void> {
   const ids = await getIndex();
   await setIndex(ids.filter((i) => i !== id));
-  await deleteSecure(`group_${id}`);
+  await deleteSecure(`circle_${id}`);
 }

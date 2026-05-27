@@ -3,17 +3,17 @@ import * as v from 'valibot';
 
 import { ValidationError } from './errors';
 
-export const GroupSchema = v.object({
+export const CircleSchema = v.object({
   id: v.string(),
   name: v.pipe(v.string(), v.minLength(1)),
   symkey: v.string(),
   members: v.array(v.any()),
 });
 
-export type Group = v.InferOutput<typeof GroupSchema>;
+export type Circle = v.InferOutput<typeof CircleSchema>;
 
-export function parseGroup(raw: unknown): Result<Group, ValidationError> {
-  const result = v.safeParse(GroupSchema, raw);
+export function parseCircle(raw: unknown): Result<Circle, ValidationError> {
+  const result = v.safeParse(CircleSchema, raw);
   if (result.success) {
     return ok(result.output);
   }

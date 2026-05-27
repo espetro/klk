@@ -3,12 +3,12 @@ export { NostrEventRepository } from './NostrEventRepository';
 export { publishPublicEvent, parsePublicEvent } from './events';
 export type { PublicEventData } from './events';
 export {
-  createGroup,
-  inviteToGroup,
+  createCircle,
+  inviteToCircle,
   processIncomingGiftWraps,
   publishPrivateEvent,
   aesGcmDecrypt,
-} from './groups';
+} from './circles';
 export { publishRsvp, buildEventCoordinate } from './rsvp';
 export { getNDK, connectNDK, connectNDKGuest, RELAY_URL, RELAYS } from './ndk';
 export { getOrCreateIdentity, hasIdentity, wipeIdentity } from './identity';

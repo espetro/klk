@@ -1,19 +1,19 @@
 import { GuestBarrier } from '@/components/GuestBarrier';
-import { GroupCard, HostedFab } from '@/components';
+import { CircleCard, HostedFab } from '@/components';
 import { $lastActiveTab, $circlesSearch } from '@/features';
 import { NDKContext } from '@/lib/context/ndk-context';
-import { getAllGroups, GroupRecord } from '@klk/infrastructure';
+import { getAllCircles, CircleRecord } from '@klk/infrastructure';
 import { useStore } from '@nanostores/react';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useState, useCallback, useContext } from 'react';
 import { FlatList, Text, View } from 'react-native';
 
-function filterGroups(groups: GroupRecord[], searchQuery: string) {
-  if (!searchQuery.trim()) return groups;
+function filterCircles(circles: CircleRecord[], searchQuery: string) {
+  if (!searchQuery.trim()) return circles;
 
   const query = searchQuery.toLowerCase();
-  return groups.filter((group) => {
-    const name = group.name?.toLowerCase() || '';
+  return circles.filter((circle) => {
+    const name = circle.name?.toLowerCase() || '';
     return name.includes(query);
   });
 }
@@ -21,14 +21,14 @@ function filterGroups(groups: GroupRecord[], searchQuery: string) {
 export default function CirclesScreen() {
   const router = useRouter();
   const { signer } = useContext(NDKContext);
-  const [groups, setGroups] = useState<GroupRecord[]>([]);
+  const [circles, setCircles] = useState<CircleRecord[]>([]);
   const search = useStore($circlesSearch);
   const [showBarrier, setShowBarrier] = useState(false);
 
   useFocusEffect(
-    useCallback(function loadAllGroups() {
+    useCallback(function loadAllCircles() {
       $lastActiveTab.set('circles');
-      getAllGroups().then(setGroups);
+      getAllCircles().then(setCircles);
       return () => {
         $circlesSearch.set('');
       };
@@ -40,28 +40,27 @@ export default function CirclesScreen() {
       setShowBarrier(true);
       return;
     }
-    router.push('/group/new');
+    router.push('/circle/new');
   }, [signer, router]);
 
-  const filteredGroups = filterGroups(groups, search);
+  const filteredCircles = filterCircles(circles, search);
 
   return (
     <View className='flex-1 bg-gray-50'>
       <FlatList
-        data={filteredGroups}
+        data={filteredCircles}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <GroupCard group={item} />}
+        renderItem={({ item }) => <CircleCard circle={item} />}
         contentContainerStyle={{
           padding: 16,
           paddingBottom: process.env.EXPO_OS !== 'ios' ? 80 : 16,
         }}
         ListEmptyComponent={
           <View className='items-center mt-20'>
-            <Text className='text-gray-400 text-base'>
-              {search ? `No circles found for "${search}"` : 'No circles yet'}
-            </Text>
+            <Text className='text-gray-400 text-center text-lg'>○</Text>
+            <Text className='text-gray-900 font-semibold text-base mt-2'>No circles yet</Text>
             {!search && (
-              <Text className='text-gray-400 text-sm mt-1'>Create one to invite friends</Text>
+              <Text className='text-gray-500 text-sm mt-1'>Create a circle to share private events with friends</Text>
             )}
           </View>
         }

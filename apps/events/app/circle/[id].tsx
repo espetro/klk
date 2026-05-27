@@ -1,35 +1,35 @@
 import { EventCard, InviteFriendSheet, EventForm, EventFormValues } from '@/components';
 import { HostedButton as Button } from '@/components/hosted-button';
-import { useGroupEvents } from '@/features';
+import { useCircleEvents } from '@/features';
 import { NDKContext } from '@/lib/context/ndk-context';
-import { getGroup, GroupRecord, publishPrivateEvent } from '@klk/infrastructure';
+import { getCircle, CircleRecord, publishPrivateEvent } from '@klk/infrastructure';
 import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useContext, useState } from 'react';
 import { Alert, ScrollView, Text, View } from 'react-native';
 
-export default function GroupDetailScreen() {
+export default function CircleDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { ndk, signer } = useContext(NDKContext);
-  const [group, setGroup] = useState<GroupRecord | null>(null);
+  const [circle, setCircle] = useState<CircleRecord | null>(null);
   const [inviteVisible, setInviteVisible] = useState(false);
   const [newEventVisible, setNewEventVisible] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const privateEvents = useGroupEvents(group);
+  const privateEvents = useCircleEvents(circle);
 
   useFocusEffect(
     useCallback(
-      function loadGroup() {
-        if (id) getGroup(id).then(setGroup);
+      function loadCircle() {
+        if (id) getCircle(id).then(setCircle);
       },
       [id]
     )
   );
 
   const handlePublishPrivateEvent = async (values: EventFormValues) => {
-    if (!ndk || !group) return;
+    if (!ndk || !circle) return;
     setSubmitting(true);
     try {
-      await publishPrivateEvent(ndk, group, {
+      await publishPrivateEvent(ndk, circle, {
         title: values.title,
         start: Math.floor(values.start.getTime() / 1000),
         end: Math.floor(values.end.getTime() / 1000),
@@ -46,7 +46,7 @@ export default function GroupDetailScreen() {
     }
   };
 
-  if (!group) {
+  if (!circle) {
     return (
       <View className='flex-1 items-center justify-center bg-gray-50'>
         <Text className='text-gray-400'>Loading…</Text>
@@ -60,7 +60,7 @@ export default function GroupDetailScreen() {
         <EventForm
           onSubmit={handlePublishPrivateEvent}
           submitting={submitting}
-          submitLabel='Publish to Group'
+          submitLabel='Publish to Circle'
         />
       </View>
     );
@@ -69,15 +69,15 @@ export default function GroupDetailScreen() {
   return (
     <ScrollView className='flex-1 bg-gray-50'>
       <View className='bg-white p-5 mb-2'>
-        <Text className='text-2xl font-bold text-gray-900'>{group.name}</Text>
-        <Text className='text-sm text-gray-500 mt-1'>Private Group</Text>
+        <Text className='text-2xl font-bold text-gray-900'>{circle.name}</Text>
+        <Text className='text-sm text-gray-500 mt-1'>Private Circle</Text>
       </View>
 
       <View className='bg-white p-5 mb-2'>
         <Text className='text-sm font-medium text-gray-500 mb-2'>
-          Members ({group.members.length})
+          Members ({circle.members.length})
         </Text>
-        {group.members.map((m) => (
+        {circle.members.map((m) => (
           <Text key={m} className='text-xs text-gray-600 font-mono mb-1' numberOfLines={1}>
             {m.slice(0, 20)}…
           </Text>
@@ -85,7 +85,7 @@ export default function GroupDetailScreen() {
         {ndk && signer ? (
           <View className='mt-3'>
             <Button
-              label='+ Invite Friend'
+              label='+ Invite Member'
               variant='outlined'
               onPress={() => setInviteVisible(true)}
             />
@@ -118,8 +118,8 @@ export default function GroupDetailScreen() {
           onClose={() => setInviteVisible(false)}
           ndk={ndk}
           signer={signer}
-          group={group}
-          onGroupUpdated={(g) => setGroup(g)}
+          circle={circle}
+          onCircleUpdated={(c) => setCircle(c)}
         />
       ) : null}
     </ScrollView>

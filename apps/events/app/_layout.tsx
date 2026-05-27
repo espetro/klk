@@ -56,13 +56,23 @@ function RootLayoutInner() {
             contentStyle: { backgroundColor: 'transparent' },
           }}
         />
-        <Stack.Screen name='group/[id]' options={{ title: 'Group' }} />
+        <Stack.Screen name='circle/[id]' options={{ title: 'Circle' }} />
         <Stack.Screen
-          name='group/new'
+          name='circle/new'
           options={{
-            title: 'New Group',
+            title: 'New Circle',
             presentation: 'formSheet',
             sheetGrabberVisible: true,
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
+        <Stack.Screen
+          name='circle/manage'
+          options={{
+            title: 'Manage Circle',
+            presentation: 'formSheet',
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: [0.75, 1.0],
             contentStyle: { backgroundColor: 'transparent' },
           }}
         />

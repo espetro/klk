@@ -3,7 +3,7 @@ import { EventForm, EventFormValues, HostedInput } from '@/components';
 import { HostedButton } from '@/components/hosted-button';
 import { $lastActiveTab, useCity } from '@/features';
 import { NDKContext } from '@/lib/context/ndk-context';
-import { createGroup, publishPublicEvent } from '@klk/infrastructure';
+import { createCircle, publishPublicEvent } from '@klk/infrastructure';
 import { useStore } from '@nanostores/react';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useContext, useEffect, useState } from 'react';
@@ -16,13 +16,12 @@ export default function AddTab() {
   const city = useCity();
 
   const [submittingEvent, setSubmittingEvent] = useState(false);
-  const [groupName, setGroupName] = useState('');
-  const [submittingGroup, setSubmittingGroup] = useState(false);
+  const [circleName, setCircleName] = useState('');
+  const [submittingCircle, setSubmittingCircle] = useState(false);
   const [showBarrier, setShowBarrier] = useState(false);
 
   useFocusEffect(useCallback(() => {}, []));
 
-  // Show guest barrier immediately when a guest opens the add tab
   useEffect(
     function checkGuestOnFocus() {
       if (!signer) {
@@ -60,16 +59,16 @@ export default function AddTab() {
     }
   };
 
-  const handleGroupCreate = async () => {
-    if (!groupName.trim() || !currentUser) return;
-    setSubmittingGroup(true);
+  const handleCircleCreate = async () => {
+    if (!circleName.trim() || !currentUser) return;
+    setSubmittingCircle(true);
     try {
-      await createGroup(groupName.trim(), currentUser.pubkey);
+      await createCircle(circleName.trim(), currentUser.pubkey);
       router.back();
     } catch (e: any) {
-      Alert.alert('Error', e?.message ?? 'Failed to create group');
+      Alert.alert('Error', e?.message ?? 'Failed to create circle');
     } finally {
-      setSubmittingGroup(false);
+      setSubmittingCircle(false);
     }
   };
 
@@ -88,18 +87,19 @@ export default function AddTab() {
       >
         {isCircle ? (
           <>
-            <Text className='text-sm font-medium text-gray-700 mb-1'>Group Name *</Text>
+            <Text className='text-sm font-medium text-gray-700 mb-1'>Circle Name *</Text>
             <HostedInput
-              value={groupName}
-              onChangeText={setGroupName}
+              value={circleName}
+              onChangeText={setCircleName}
               placeholder='e.g. Family, Book Club…'
+              maxLength={32}
               autoFocus
             />
             <HostedButton
-              label={submittingGroup ? 'Creating…' : 'Create Group'}
+              label={submittingCircle ? 'Creating…' : 'Create Circle'}
               variant='filled'
-              onPress={handleGroupCreate}
-              disabled={submittingGroup || !groupName.trim()}
+              onPress={handleCircleCreate}
+              disabled={submittingCircle || !circleName.trim()}
             />
           </>
         ) : (

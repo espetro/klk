@@ -1,27 +1,27 @@
 import { NDKContext } from '@/lib/context/ndk-context';
-import { GroupRecord, aesGcmDecrypt, PublicEventData, NDKEvent } from '@klk/infrastructure';
+import { CircleRecord, aesGcmDecrypt, PublicEventData, NDKEvent } from '@klk/infrastructure';
 import { useContext, useEffect, useState } from 'react';
 
-export interface DecryptedGroupEvent extends PublicEventData {
+export interface DecryptedCircleEvent extends PublicEventData {
   id: string;
   pubkey: string;
 }
 
-export function useGroupEvents(group: GroupRecord | null) {
+export function useCircleEvents(circle: CircleRecord | null) {
   const { ndk } = useContext(NDKContext);
-  const [events, setEvents] = useState<DecryptedGroupEvent[]>([]);
+  const [events, setEvents] = useState<DecryptedCircleEvent[]>([]);
 
   useEffect(
-    function subscribeToGroupEvents() {
-      if (!ndk || !group) return;
+    function subscribeToCircleEvents() {
+      if (!ndk || !circle) return;
       setEvents([]);
       const sub = ndk.subscribe(
-        { kinds: [30078 as any], '#g': [group.id] },
+        { kinds: [30078 as any], '#g': [circle.id] },
         { closeOnEose: false }
       );
       sub.on('event', async (e: NDKEvent) => {
         try {
-          const plain = await aesGcmDecrypt(group.symKey, e.content);
+          const plain = await aesGcmDecrypt(circle.symKey, e.content);
           const data = JSON.parse(plain) as PublicEventData;
           setEvents((prev) => {
             const exists = prev.find((x) => x.id === e.id);
@@ -29,11 +29,11 @@ export function useGroupEvents(group: GroupRecord | null) {
           });
         } catch {}
       });
-      return function stopGroupSubscription() {
+      return function stopCircleSubscription() {
         sub.stop();
       };
     },
-    [ndk, group?.id]
+    [ndk, circle?.id]
   );
 
   return events;
