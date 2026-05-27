@@ -6,6 +6,7 @@ import useInitializeApp from '@/hooks/useInitializeApp';
 import { NDKContext } from '@/lib/context/ndk-context';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useEffect } from 'react';
 
 SplashScreen.preventAutoHideAsync();
@@ -84,5 +85,9 @@ function RootLayoutInner() {
 }
 
 export default function RootLayout() {
-  return <RootLayoutInner />;
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <RootLayoutInner />
+    </GestureHandlerRootView>
+  );
 }
