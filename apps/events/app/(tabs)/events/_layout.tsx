@@ -4,7 +4,7 @@ import { $eventsSearch } from "@/features";
 import { Input } from "@klk/ui";
 import MapIcon from "@expo/material-symbols/map.xml";
 import ListIcon from "@expo/material-symbols/list.xml";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 
 type IconType = Parameters<typeof Stack.Toolbar.Button>[number]["icon"];
 
@@ -15,12 +15,14 @@ function SearchHeader() {
   const search = useStore($eventsSearch);
 
   return (
-    <Input
-      placeholder='Search events...'
-      value={search}
-      onChangeText={(text) => $eventsSearch.set(text)}
-      className='flex-1'
-    />
+    <View style={{ flex: 1, paddingRight: process.env.EXPO_OS === 'ios' ? 52 : 0 }}>
+      <Input
+        placeholder='Search events...'
+        value={search}
+        onChangeText={(text) => $eventsSearch.set(text)}
+        className='flex-1 border-transparent bg-black/5 dark:bg-white/10'
+      />
+    </View>
   );
 }
 

@@ -1,4 +1,4 @@
-import { EventForm, EventFormValues } from '@/components';
+import { EventForm, EventFormValues, HostedInput } from '@/components';
 import { HostedButton } from '@/components/hosted-button';
 import { $lastActiveTab, useCity } from '@/features';
 import { NDKContext } from '@/lib/context/ndk-context';
@@ -6,7 +6,7 @@ import { createGroup, publishPublicEvent } from '@klk/infrastructure';
 import { useStore } from '@nanostores/react';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useContext, useState } from 'react';
-import { Alert, ScrollView, Text, TextInput } from 'react-native';
+import { Alert, ScrollView, Text } from 'react-native';
 
 export default function AddTab() {
   const router = useRouter();
@@ -70,8 +70,7 @@ export default function AddTab() {
         {lastActiveTab === 'circles' ? (
           <>
             <Text className='text-sm font-medium text-gray-700 mb-1'>Group Name *</Text>
-            <TextInput
-              className='border border-gray-200 rounded-lg p-3 mb-6 text-gray-900'
+            <HostedInput
               value={groupName}
               onChangeText={setGroupName}
               placeholder='e.g. Family, Book Club…'

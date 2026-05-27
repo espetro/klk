@@ -3,6 +3,7 @@ import { Stack, router } from 'expo-router';
 import { useStore } from '@nanostores/react';
 import { $circlesSearch } from '@/features';
 import { Input } from '@klk/ui';
+import { View } from 'react-native';
 
 type IconType = Parameters<typeof Stack.Toolbar.Button>[number]['icon'];
 
@@ -12,12 +13,14 @@ function SearchHeader() {
   const search = useStore($circlesSearch);
 
   return (
-    <Input
-      placeholder='Search circles...'
-      value={search}
-      onChangeText={(text) => $circlesSearch.set(text)}
-      className='flex-1'
-    />
+    <View style={{ flex: 1, paddingRight: process.env.EXPO_OS === 'ios' ? 52 : 0 }}>
+      <Input
+        placeholder='Search circles...'
+        value={search}
+        onChangeText={(text) => $circlesSearch.set(text)}
+        className='flex-1 border-transparent bg-black/5 dark:bg-white/10'
+      />
+    </View>
   );
 }
 
