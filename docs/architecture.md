@@ -47,14 +47,53 @@ apps/events/      Main application
     (tabs)/       Tab bar: Feed, Groups, Profile
     event/[id].tsx Event detail modal
     event/new.tsx Create public event
-    group/[id].tsx Group detail modal
-    group/new.tsx Create private group
+    circle/[id].tsx Circle detail modal
+    circle/new.tsx Create private circle
   components/     App-specific components
   src/
     features/     Glue hooks (use-public-events, use-rsvps, use-identity, ndkStore, cityStore, onboardingStore)
     widgets/      App-specific composite components
 tests/            Gauge E2E specs + step implementations
 ```
+
+---
+
+## Design Tokens
+
+Klk uses a semantic design token system built on Tailwind v4 with CSS custom properties. This system provides a consistent, maintainable foundation for the UI while maintaining flexibility for different contexts.
+
+### Base Palette
+
+The base palette defines the raw color values that serve as the foundation of the design system. These are the source values that all semantic tokens reference.
+
+| Token | Hex Value | Purpose |
+|-------|-----------|---------|
+| `paper-100` | `#FDFBF7` | Warm global background |
+| `paper-200` | `#F5F0E8` | Elevated surfaces, cards, sheets |
+| `ink-900` | `#1A1612` | Primary text, strongest icon color |
+| `ink-600` | `#5C554D` | Secondary text, metadata, hints |
+| `accent-500` | `#C45B3A` | Main brand accent (terracotta) |
+| `accent-400` | `#D97B5D` | Softer highlight |
+| `accent-olive-500` | `#7A8450` | Secondary accent (olive) |
+
+### Semantic Tokens
+
+Semantic tokens provide meaning and context to the UI. These are the tokens that should be used directly in components and styles.
+
+| Token | Maps To | Usage |
+|-------|---------|-------|
+| `bg-default` | `paper-100` | App background, default page background |
+| `bg-elevated` | `paper-200` | Cards, drawers, modal sheets, elevated surfaces |
+| `text-primary` | `ink-900` | Titles, body text, strong labels, primary content |
+| `text-secondary` | `ink-600` | Supporting copy, timestamps, captions, metadata |
+| `text-inverse` | `paper-100` | Text on dark or accent-filled surfaces |
+| `action-primary` | `accent-500` | Main CTA, active chips, primary highlights |
+| `action-secondary` | `accent-olive-500` | Secondary action, category emphasis, chips |
+| `state-highlight` | `accent-400` | Focus states, onboarding prompts, hover glows |
+
+### Integration
+
+The design tokens are implemented as CSS custom properties in `apps/events/global.css` and automatically generate Tailwind utility classes. For complete details on implementation, usage examples, and component patterns, see [docs/designtokens.md](docs/designtokens.md).
 
 ---
 

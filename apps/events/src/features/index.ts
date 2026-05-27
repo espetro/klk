@@ -15,3 +15,5 @@ export { useRsvps } from './use-rsvps';
 export { useCircleEvents } from './use-circle-events';
 export type { DecryptedCircleEvent } from './use-circle-events';
 export { useIdentity } from './use-identity';
+export { useAllEvents } from './use-all-events';
+export type { AllEvent, UseAllEventsResult } from './use-all-events';

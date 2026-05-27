@@ -3,7 +3,7 @@ import { HostedButton as Button } from '@/components/hosted-button';
 import { $city, useCity } from '@/features';
 import { NDKContext } from '@/lib/context/ndk-context';
 import { wipeIdentity, resetOnboarding, RELAY_URL } from '@klk/infrastructure';
-import { router as expoRouter } from 'expo-router';
+import { router as expoRouter, Stack } from 'expo-router';
 import { useContext } from 'react';
 import { Alert, Clipboard, Pressable, ScrollView, Text, View } from 'react-native';
 
@@ -51,30 +51,48 @@ export default function ProfileScreen() {
   };
 
   return (
-    <ScrollView className='flex-1 bg-gray-50 p-4'>
-      <Text className='text-sm font-medium text-gray-500 mb-1 mt-20'>Your npub</Text>
-      <Pressable onPress={copyNpub} className='bg-white rounded-xl p-4 mb-4 border border-gray-100'>
-        <Text className='text-xs text-gray-700 font-mono' numberOfLines={2}>
-          {npub}
-        </Text>
-        <Text className='text-xs text-indigo-600 mt-2'>Tap to copy</Text>
-      </Pressable>
+    <>
+      <Stack.Screen
+        options={{
+          title: 'Profile',
+          headerBackTitle: 'Back',
+        }}
+      />
+      <ScrollView className='flex-1 bg-bg-default px-4 py-6'>
+        {/* Npub Section */}
+        <View className='mb-8'>
+          <Text className='text-sm font-medium text-text-secondary mb-2'>Your npub</Text>
+          <Pressable
+            onPress={copyNpub}
+            className='bg-bg-elevated rounded-2xl p-4 border border-text-secondary/10 active:bg-bg-elevated/80'
+          >
+            <Text className='text-xs text-text-primary font-mono' numberOfLines={2}>
+              {npub}
+            </Text>
+            <Text className='text-xs text-action-primary mt-2 font-medium'>Tap to copy</Text>
+          </Pressable>
+        </View>
 
-      <Text className='text-sm font-medium text-gray-500 mb-2'>City</Text>
-      <View className='mb-6'>
-        <CityPicker current={city} onChange={handleCityChange} />
-      </View>
+        {/* City Section */}
+        <View className='mb-8'>
+          <Text className='text-sm font-medium text-text-secondary mb-2'>City</Text>
+          <CityPicker current={city} onChange={handleCityChange} />
+        </View>
 
-      <Text className='text-sm font-medium text-gray-500 mb-1'>Relay</Text>
-      <View className='bg-white rounded-xl p-4 mb-6 border border-gray-100'>
-        <Text className='text-sm text-gray-700 font-mono'>{RELAY_URL}</Text>
-      </View>
+        {/* Relay Section */}
+        <View className='mb-8'>
+          <Text className='text-sm font-medium text-text-secondary mb-2'>Relay</Text>
+          <View className='bg-bg-elevated rounded-2xl p-4 border border-text-secondary/10'>
+            <Text className='text-sm text-text-primary font-mono'>{RELAY_URL}</Text>
+          </View>
+        </View>
 
-      <View className='mb-4'>
-        <Button label='Wipe Identity (Dev Only)' variant='filled' onPress={handleWipe} />
-      </View>
-
-      <Button label='Reset Onboarding' variant='outlined' onPress={handleResetOnboarding} />
-    </ScrollView>
+        {/* Dev Actions Section */}
+        <View className='mt-4 gap-4'>
+          <Button label='Wipe Identity (Dev Only)' variant='filled' onPress={handleWipe} />
+          <Button label='Reset Onboarding' variant='outlined' onPress={handleResetOnboarding} />
+        </View>
+      </ScrollView>
+    </>
   );
 }

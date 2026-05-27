@@ -7,8 +7,8 @@ export interface PublicEventData {
   title: string;
   start: number;
   end: number;
-  location: string;
-  summary: string;
+  location: string | undefined;
+  summary: string | undefined;
   image?: string | undefined;
   city: string;
 }
@@ -16,14 +16,15 @@ export interface PublicEventData {
 export async function publishPublicEvent(ndk: NDK, data: PublicEventData): Promise<NDKEvent> {
   const event = new NDKEvent(ndk);
   event.kind = KlkKind.PublicEvent;
-  event.content = data.summary;
+  const summary: string = data.summary ?? '';
+  event.content = summary;
   event.tags = [
     ['d', `${Date.now()}`],
     ['title', data.title],
     ['start', `${data.start}`],
     ['end', `${data.end}`],
-    ['location', data.location],
-    ['summary', data.summary],
+    ['location', data.location ?? ''],
+    ['summary', summary],
     cityTag(data.city),
   ];
   if (data.image) {

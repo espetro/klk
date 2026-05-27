@@ -1,5 +1,5 @@
-import { GuestBarrier } from '@/components/GuestBarrier';
 import { CircleCard, HostedFab } from '@/components';
+import { GuestBarrier } from '@/components/GuestBarrier';
 import { $lastActiveTab, $circlesSearch } from '@/features';
 import { NDKContext } from '@/lib/context/ndk-context';
 import { getAllCircles, CircleRecord } from '@klk/infrastructure';
@@ -46,7 +46,7 @@ export default function CirclesScreen() {
   const filteredCircles = filterCircles(circles, search);
 
   return (
-    <View className='flex-1 bg-gray-50'>
+    <View className='flex-1 bg-bg-default'>
       <FlatList
         data={filteredCircles}
         keyExtractor={(item) => item.id}
@@ -57,10 +57,12 @@ export default function CirclesScreen() {
         }}
         ListEmptyComponent={
           <View className='items-center mt-20'>
-            <Text className='text-gray-400 text-center text-lg'>○</Text>
-            <Text className='text-gray-900 font-semibold text-base mt-2'>No circles yet</Text>
+            <Text className='text-text-secondary text-center text-lg'>○</Text>
+            <Text className='text-text-primary font-semibold text-base mt-2'>No circles yet</Text>
             {!search && (
-              <Text className='text-gray-500 text-sm mt-1'>Create a circle to share private events with friends</Text>
+              <Text className='text-text-secondary text-sm mt-1'>
+                Create a circle to share private events with friends
+              </Text>
             )}
           </View>
         }

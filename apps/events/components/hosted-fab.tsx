@@ -13,17 +13,17 @@ export function HostedFab({ onPress }: HostedFabProps) {
           width: 56,
           height: 56,
           borderRadius: 28,
-          backgroundColor: '#007AFF',
+          backgroundColor: '#c45b3a',
           alignItems: 'center',
           justifyContent: 'center',
-          shadowColor: '#000',
+          shadowColor: '#1a1612',
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.25,
           shadowRadius: 3.84,
           elevation: 5,
         }}
       >
-        <Text style={{ color: '#fff', fontSize: 28, fontWeight: '600', lineHeight: 28 }}>+</Text>
+        <Text style={{ color: '#fdfbf7', fontSize: 28, fontWeight: '600', lineHeight: 28 }}>+</Text>
       </Pressable>
     </View>
   );

@@ -1,7 +1,8 @@
-import { EventForm, EventFormValues } from '@/components';
 import { useCity } from '@/features';
 import { NDKContext } from '@/lib/context/ndk-context';
 import { publishPublicEvent } from '@klk/infrastructure';
+import { EventForm } from '@klk/ui';
+import type { EventFormValues } from '@klk/ui';
 import { Stack, useRouter } from 'expo-router';
 import { useContext, useState } from 'react';
 import { Alert } from 'react-native';
@@ -18,11 +19,11 @@ export default function NewEventScreen() {
     try {
       await publishPublicEvent(ndk, {
         title: values.title,
-        start: Math.floor(values.start.getTime() / 1000),
-        end: Math.floor(values.end.getTime() / 1000),
-        location: values.location,
-        summary: values.summary,
-        image: values.image || undefined,
+        start: Math.floor(values.startDate.getTime() / 1000),
+        end: Math.floor(values.endDate.getTime() / 1000),
+        location: values.location ?? undefined,
+        summary: values.description ?? undefined,
+        image: values.imageUrl ?? undefined,
         city,
       });
       router.back();
@@ -42,7 +43,7 @@ export default function NewEventScreen() {
           contentStyle: { backgroundColor: 'transparent' },
         }}
       />
-      <EventForm onSubmit={handleSubmit} submitting={submitting} submitLabel='Publish Event' />
+      <EventForm onSubmit={handleSubmit} isLoading={submitting} />
     </>
   );
 }

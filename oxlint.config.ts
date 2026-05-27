@@ -63,5 +63,6 @@ export default defineConfig({
     'metro.config.js',
     'tests',
     'uniwind-types.d.ts',
+    '**/rnr/**',
   ],
 });

@@ -13,7 +13,9 @@ export async function createNDK(opts: CreateNDKOptions): Promise<NDK> {
     explicitRelayUrls: opts.relayUrls,
     ...(opts.cacheAdapter ? { cacheAdapter: opts.cacheAdapter } : {}),
   });
-  if (opts.signer) ndk.signer = opts.signer;
+  if (opts.signer) {
+    ndk.signer = opts.signer;
+  }
   await ndk.connect();
   return ndk;
 }

@@ -1,8 +1,5 @@
 import { GuestBarrier } from '@/components/GuestBarrier';
-import { HostedButton as Button } from '@/components/hosted-button';
-import { useRsvps } from '@/features';
-import { useEventDetail } from '@/features/useEventDetail';
-import { useFeatureFlag } from '@/features/useFeatureFlag';
+import { useRsvps, useEventDetail, useFeatureFlag } from '@/features';
 import { NDKContext } from '@/lib/context/ndk-context';
 import { User } from '@klk/core';
 import {
@@ -11,19 +8,220 @@ import {
   buildEventCoordinate,
   publishRsvp,
 } from '@klk/infrastructure';
+import { AttendeeList, RSVPButton, EventDetailSkeleton } from '@klk/ui';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useContext, useEffect, useState } from 'react';
-import { Alert, ScrollView, Text, View } from 'react-native';
+import { Alert, Image, Pressable, ScrollView, Share, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-function formatDate(ts: number) {
-  if (!ts) return 'TBD';
-  return new Date(ts * 1000).toLocaleString('en-US', {
-    weekday: 'short',
+function formatDateRange(startTs: number, endTs?: number) {
+  if (!startTs) return 'TBD';
+  const start = new Date(startTs * 1000);
+  const now = new Date();
+  const isToday = start.toDateString() === now.toDateString();
+  const isTomorrow = new Date(now.getTime() + 86400000).toDateString() === start.toDateString();
+
+  let dateStr: string;
+  if (isToday) {
+    dateStr = 'Today';
+  } else if (isTomorrow) {
+    dateStr = 'Tomorrow';
+  } else {
+    dateStr = start.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+    });
+  }
+
+  const startTime = start.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+
+  if (!endTs) return `${dateStr}, ${startTime}`;
+
+  const endTime = new Date(endTs * 1000).toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+
+  return `${dateStr}, ${startTime} – ${endTime}`;
+}
+
+function SectionHeader({ title }: { title: string }) {
+  return (
+    <Text className='mb-2 text-xs font-semibold uppercase tracking-wider text-text-secondary'>
+      {title}
+    </Text>
+  );
+}
+
+function HeroCard({
+  imageUrl,
+  title,
+  startTs,
+}: {
+  imageUrl?: string;
+  title: string;
+  startTs: number;
+}) {
+  if (imageUrl) {
+    return (
+      <View className='mx-4 mt-4 overflow-hidden rounded-2xl' style={{ height: 240 }}>
+        <Image
+          source={{ uri: imageUrl }}
+          className='h-full w-full'
+          resizeMode='cover'
+          accessibilityIgnoresInvertColors
+        />
+      </View>
+    );
+  }
+
+  const dateStr = new Date(startTs * 1000).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
   });
+
+  return (
+    <View
+      className='mx-4 mt-4 items-center justify-center overflow-hidden rounded-2xl bg-bg-elevated'
+      style={{ height: 240 }}
+    >
+      <Text className='text-5xl mb-3'>📅</Text>
+      <Text className='text-base font-bold text-text-primary text-center px-6' numberOfLines={3}>
+        {title}
+      </Text>
+      <Text className='text-sm text-text-secondary mt-2'>{dateStr}</Text>
+    </View>
+  );
+}
+
+function EventDetailContent({
+  event,
+  rsvps,
+  hasRsvpd,
+  rsvping,
+  onRsvpToggle,
+  onShare,
+}: {
+  event: PublicEventData & { id: string; pubkey: string };
+  rsvps: { pubkey: string; name?: string; picture?: string }[];
+  hasRsvpd: boolean;
+  rsvping: boolean;
+  onRsvpToggle: () => Promise<void>;
+  onShare: () => void;
+}) {
+  const insets = useSafeAreaInsets();
+  const attendees = rsvps.map((r) => ({
+    pubkey: r.pubkey,
+    name: r.name,
+    picture: r.picture,
+    rsvpStatus: 'going' as const,
+  }));
+
+  return (
+    <View className='flex-1 bg-bg-default'>
+      <ScrollView
+        className='flex-1'
+        contentInsetAdjustmentBehavior='automatic'
+        contentContainerStyle={{ paddingBottom: 100 }}
+      >
+        {/* Hero card */}
+        <HeroCard
+          {...(event.image ? { imageUrl: event.image } : {})}
+          title={event.title}
+          startTs={event.start}
+        />
+
+        {/* Title + datetime */}
+        <View className='px-5 pt-5 pb-4'>
+          <Text className='text-2xl font-bold leading-tight text-text-primary'>{event.title}</Text>
+          <Text className='mt-2 text-sm text-text-secondary'>
+            {formatDateRange(event.start, event.end || undefined)}
+          </Text>
+        </View>
+
+        {/* Action buttons */}
+        <View className='flex-row items-center gap-3 px-5 pb-5'>
+          <View className='flex-1'>
+            <RSVPButton isGoing={hasRsvpd} onToggle={onRsvpToggle} loading={rsvping} />
+          </View>
+          <Pressable
+            onPress={onShare}
+            className='h-12 w-12 items-center justify-center rounded-full bg-bg-elevated'
+            accessibilityRole='button'
+            accessibilityLabel='Share event'
+          >
+            <Text className='text-lg'>↗️</Text>
+          </Pressable>
+          <Pressable
+            className='h-12 w-12 items-center justify-center rounded-full bg-bg-elevated'
+            accessibilityRole='button'
+            accessibilityLabel='More options'
+          >
+            <Text className='text-lg'>⋯</Text>
+          </Pressable>
+        </View>
+
+        {/* Location — only when non-empty */}
+        {event.location ? (
+          <View className='mx-4 mb-4 rounded-2xl bg-bg-elevated/50 p-4'>
+            <SectionHeader title='Location' />
+            <View className='flex-row items-center gap-2'>
+              <Text className='text-base'>📍</Text>
+              <Text className='flex-1 text-sm text-text-primary'>{event.location}</Text>
+            </View>
+          </View>
+        ) : null}
+
+        {/* Host */}
+        <View className='mx-4 mb-4 rounded-2xl bg-bg-elevated/50 p-4'>
+          <SectionHeader title='Host' />
+          <View className='flex-row items-center gap-3'>
+            <View className='h-10 w-10 items-center justify-center rounded-full bg-action-primary/15'>
+              <Text className='text-sm font-semibold text-action-primary'>
+                {event.pubkey.slice(0, 2).toUpperCase()}
+              </Text>
+            </View>
+            <View className='flex-1'>
+              <Text className='text-sm font-semibold text-text-primary' numberOfLines={1}>
+                {event.pubkey.slice(0, 16)}…
+              </Text>
+              <Text className='text-xs text-text-secondary'>Event organizer</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Attendees — only when non-empty */}
+        {attendees.length > 0 ? (
+          <View className='mx-4 mb-4 rounded-2xl bg-bg-elevated/50 p-4'>
+            <SectionHeader title={`${attendees.length} Going`} />
+            <AttendeeList attendees={attendees} />
+          </View>
+        ) : null}
+
+        {/* About — only when non-empty */}
+        {event.summary ? (
+          <View className='mx-4 mb-4 rounded-2xl bg-bg-elevated/50 p-4'>
+            <SectionHeader title='About' />
+            <Text className='text-sm leading-relaxed text-text-primary'>{event.summary}</Text>
+          </View>
+        ) : null}
+      </ScrollView>
+
+      {/* Sticky RSVP CTA */}
+      <View
+        className='border-t border-bg-elevated bg-bg-default px-4 pt-3'
+        style={{ paddingBottom: Math.max(insets.bottom, 16) }}
+      >
+        <RSVPButton isGoing={hasRsvpd} onToggle={onRsvpToggle} loading={rsvping} />
+      </View>
+    </View>
+  );
 }
 
 export default function EventDetailScreen() {
@@ -56,19 +254,35 @@ export default function EventDetailScreen() {
 
   const hasRsvpd = rsvps.some((r) => r.pubkey === currentUser?.pubkey);
 
-  const handleRsvp = async () => {
+  const handleRsvpToggle = async () => {
     if (!signer) {
       setShowBarrier(true);
       return;
     }
-    if (!ndk || !coordinate || hasRsvpd) return;
+    if (!ndk || !coordinate) return;
+
+    if (hasRsvpd) return; // Only support RSVP-ing, no un-RSVP yet
+
     setRsvping(true);
     try {
       await publishRsvp(ndk, coordinate);
-    } catch (e: any) {
-      Alert.alert('Error', e?.message ?? 'RSVP failed');
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : 'RSVP failed';
+      Alert.alert('Error', message);
+      throw e;
     } finally {
       setRsvping(false);
+    }
+  };
+
+  const handleShare = async () => {
+    if (!event) return;
+    try {
+      await Share.share({
+        message: `${event.title}\n${formatDateRange(event.start, event.end || undefined)}\n${event.location || ''}`,
+      });
+    } catch {
+      // user cancelled
     }
   };
 
@@ -78,9 +292,17 @@ export default function EventDetailScreen() {
 
   if (!event) {
     return (
-      <View className='flex-1 items-center justify-center bg-gray-50'>
-        <Text className='text-gray-400'>Loading…</Text>
-      </View>
+      <>
+        <Stack.Screen
+          options={{
+            presentation: 'formSheet',
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: [0.75, 1.0],
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
+        <EventDetailSkeleton />
+      </>
     );
   }
 
@@ -94,46 +316,14 @@ export default function EventDetailScreen() {
           contentStyle: { backgroundColor: 'transparent' },
         }}
       />
-      <ScrollView className='flex-1 bg-gray-50' contentInsetAdjustmentBehavior='automatic'>
-        <View className='bg-white p-5 mb-2'>
-          <Text className='text-2xl font-bold text-gray-900'>{event.title}</Text>
-          <Text className='text-indigo-600 mt-2'>{formatDate(event.start)}</Text>
-          {event.end ? (
-            <Text className='text-gray-400 text-sm'>– {formatDate(event.end)}</Text>
-          ) : null}
-          {event.location ? <Text className='text-gray-600 mt-2'>{event.location}</Text> : null}
-        </View>
-
-        {event.summary ? (
-          <View className='bg-white p-5 mb-2'>
-            <Text className='text-sm font-medium text-gray-500 mb-2'>About</Text>
-            <Text className='text-gray-700'>{event.summary}</Text>
-          </View>
-        ) : null}
-
-        <View className='bg-white p-5 mb-2'>
-          <Text className='text-sm font-medium text-gray-500 mb-2'>Attendees ({rsvps.length})</Text>
-          {rsvps.length === 0 ? (
-            <Text className='text-gray-400 text-sm'>No RSVPs yet</Text>
-          ) : (
-            rsvps.map((r) => (
-              <Text key={r.pubkey} className='text-xs text-gray-600 font-mono' numberOfLines={1}>
-                {r.pubkey.slice(0, 16)}…
-              </Text>
-            ))
-          )}
-        </View>
-
-        <View className='p-4'>
-          <Button
-            label={hasRsvpd ? "You're going!" : rsvping ? 'RSVP-ing…' : 'RSVP'}
-            variant={hasRsvpd || rsvping ? 'outlined' : 'filled'}
-            onPress={handleRsvp}
-            disabled={hasRsvpd || rsvping}
-          />
-        </View>
-      </ScrollView>
-
+      <EventDetailContent
+        event={event}
+        rsvps={rsvps}
+        hasRsvpd={hasRsvpd}
+        rsvping={rsvping}
+        onRsvpToggle={handleRsvpToggle}
+        onShare={handleShare}
+      />
       <GuestBarrier
         visible={showBarrier}
         title='RSVP to save your spot'
@@ -158,29 +348,79 @@ function NewEventDetail({ eventId }: { eventId: string }) {
     currentUser ? ({ npub: currentUser.pubkey } as User) : null
   );
 
-  const handleRsvp = () => {
+  const handleRsvpToggle = async () => {
     if (!signer) {
       setShowBarrier(true);
       return;
     }
-    rsvp();
+    await rsvp();
+  };
+
+  const handleShare = async () => {
+    if (!event) return;
+    try {
+      await Share.share({
+        message: `${event.title}\n${formatDateRange(event.start, event.end || undefined)}\n${event.location || ''}`,
+      });
+    } catch {
+      // user cancelled
+    }
   };
 
   if (loading) {
     return (
-      <View className='flex-1 items-center justify-center bg-gray-50'>
-        <Text className='text-gray-400'>Loading…</Text>
-      </View>
+      <>
+        <Stack.Screen
+          options={{
+            presentation: 'formSheet',
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: [0.75, 1.0],
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
+        <EventDetailSkeleton />
+      </>
     );
   }
 
   if (error || !event) {
     return (
-      <View className='flex-1 items-center justify-center bg-gray-50'>
-        <Text className='text-gray-400'>{error ?? 'Event not found'}</Text>
-      </View>
+      <>
+        <Stack.Screen
+          options={{
+            presentation: 'formSheet',
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: [0.75, 1.0],
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
+        <View className='flex-1 items-center justify-center gap-4 bg-bg-default'>
+          <Text className='text-center text-sm text-text-secondary'>
+            {error ?? 'Event not found'}
+          </Text>
+          <Pressable
+            onPress={() => router.back()}
+            className='rounded-full bg-bg-elevated px-5 py-2.5'
+            accessibilityRole='button'
+          >
+            <Text className='text-sm font-semibold text-text-primary'>Go back</Text>
+          </Pressable>
+        </View>
+      </>
     );
   }
+
+  const legacyEvent: PublicEventData & { id: string; pubkey: string } = {
+    id: event.id,
+    pubkey: event.pubkey,
+    title: event.title,
+    start: event.start,
+    end: event.end || 0,
+    location: event.location || '',
+    summary: event.summary || '',
+    image: undefined,
+    city: '',
+  };
 
   return (
     <>
@@ -192,38 +432,14 @@ function NewEventDetail({ eventId }: { eventId: string }) {
           contentStyle: { backgroundColor: 'transparent' },
         }}
       />
-      <ScrollView className='flex-1 bg-gray-50' contentInsetAdjustmentBehavior='automatic'>
-        <View className='bg-white p-5 mb-2'>
-          <Text className='text-2xl font-bold text-gray-900'>{event.title}</Text>
-          <Text className='text-indigo-600 mt-2'>{formatDate(event.start)}</Text>
-          {event.end ? (
-            <Text className='text-gray-400 text-sm'>– {formatDate(event.end)}</Text>
-          ) : null}
-          {event.location ? <Text className='text-gray-600 mt-2'>{event.location}</Text> : null}
-        </View>
-
-        {event.summary ? (
-          <View className='bg-white p-5 mb-2'>
-            <Text className='text-sm font-medium text-gray-500 mb-2'>About</Text>
-            <Text className='text-gray-700'>{event.summary}</Text>
-          </View>
-        ) : null}
-
-        <View className='bg-white p-5 mb-2'>
-          <Text className='text-sm font-medium text-gray-500 mb-2'>Attendees (0)</Text>
-          <Text className='text-gray-400 text-sm'>No RSVPs yet</Text>
-        </View>
-
-        <View className='p-4'>
-          <Button
-            label={hasRsvpd ? "You're going!" : rsvping ? 'RSVP-ing…' : 'RSVP'}
-            variant={hasRsvpd || rsvping ? 'outlined' : 'filled'}
-            onPress={handleRsvp}
-            disabled={hasRsvpd || rsvping}
-          />
-        </View>
-      </ScrollView>
-
+      <EventDetailContent
+        event={legacyEvent}
+        rsvps={[]}
+        hasRsvpd={hasRsvpd}
+        rsvping={rsvping}
+        onRsvpToggle={handleRsvpToggle}
+        onShare={handleShare}
+      />
       <GuestBarrier
         visible={showBarrier}
         title='RSVP to save your spot'

@@ -11,8 +11,11 @@
     "validate": "bun run ../../scripts/validate.ts"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.4.0",
     "@react-native-community/datetimepicker": "9.1.0",
-    "@react-native-picker/picker": "^2.11.4"
+    "@react-native-picker/picker": "^2.11.4",
+    "react-hook-form": "^7.76.1",
+    "valibot": "^1.4.0"
   },
   "devDependencies": {
     "@rn-primitives/avatar": "^1.4.0",

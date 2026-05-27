@@ -87,4 +87,5 @@ function Text({
   );
 }
 
-export { Text, TextClassContext };
+export { Text, TextClassContext, textVariants };
+export type { TextVariantProps, TextVariant };

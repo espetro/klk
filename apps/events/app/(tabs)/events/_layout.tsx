@@ -25,7 +25,7 @@ export default function EventsLayout() {
       <Stack.Screen
         name='index'
         options={{
-          headerTitle: () => <SearchHeader />,
+          headerTitle: SearchHeader,
         }}
       >
         <Stack.Header style={{ shadowColor: 'transparent' }} />

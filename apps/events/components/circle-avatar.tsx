@@ -1,14 +1,18 @@
 import { View, Text } from 'react-native';
 
 const PALETTE = [
-  '#4F46E5', // indigo
-  '#7C3AED', // violet
-  '#EC4899', // pink
-  '#14B8A6', // teal
-  '#F97316', // orange
-  '#0EA5E9', // blue
-  '#10B981', // emerald
-  '#FBBF24', // amber
+  '#c45b3a',
+  '#d97b5d',
+  '#7a8450',
+  '#5c554d',
+  '#4F46E5',
+  '#7C3AED',
+  '#EC4899',
+  '#14B8A6',
+  '#F97316',
+  '#0EA5E9',
+  '#10B981',
+  '#FBBF24',
 ];
 
 function getColorForId(id: string): string {
@@ -38,7 +42,7 @@ export function CircleAvatar({ circleId, name, size = 44 }: Props) {
         alignItems: 'center',
       }}
     >
-      <Text style={{ fontSize, fontWeight: '600', color: '#fff' }}>{initial}</Text>
+      <Text style={{ fontSize, fontWeight: '600', color: '#fdfbf7' }}>{initial}</Text>
     </View>
   );
 }

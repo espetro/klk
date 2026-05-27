@@ -1,5 +1,5 @@
-import { GuestBarrier } from '@/components/GuestBarrier';
 import { EventForm, EventFormValues, HostedInput } from '@/components';
+import { GuestBarrier } from '@/components/GuestBarrier';
 import { HostedButton } from '@/components/hosted-button';
 import { $lastActiveTab, useCity } from '@/features';
 import { NDKContext } from '@/lib/context/ndk-context';

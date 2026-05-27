@@ -1,7 +1,7 @@
 import { Result, okAsync, errAsync } from 'neverthrow';
 
-import { CryptoError, StorageError } from '../domain/errors';
 import { Circle } from '../domain/circles';
+import { CryptoError, StorageError } from '../domain/errors';
 import type { ICryptoService } from '../ports/ICryptoService';
 import type { IStorageService } from '../ports/IStorageService';
 

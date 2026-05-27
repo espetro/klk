@@ -3,20 +3,15 @@ import {
   $lastActiveTab,
   $eventsSearch,
   useCity,
-  usePublicEvents,
+  useAllEvents,
   useCityCoordinates,
 } from '@/features';
+import { AllEvent } from '@/features/use-all-events';
 import { useStore } from '@nanostores/react';
 import { useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
 
-interface EventLike {
-  title?: string;
-  location?: string;
-  summary?: string;
-}
-
-function filterEvents<T extends EventLike>(events: T[], searchQuery: string) {
+function filterEvents(events: AllEvent[], searchQuery: string): AllEvent[] {
   if (!searchQuery.trim()) {
     return events;
   }
@@ -34,7 +29,7 @@ function filterEvents<T extends EventLike>(events: T[], searchQuery: string) {
 export default function EventsScreen() {
   const city = useCity();
   const coordinates = useCityCoordinates();
-  const { events } = usePublicEvents();
+  const { events, loading, error, refresh } = useAllEvents();
   const search = useStore($eventsSearch);
 
   useFocusEffect(
@@ -48,5 +43,14 @@ export default function EventsScreen() {
 
   const filteredEvents = filterEvents(events, search);
 
-  return <EventMapScreen events={filteredEvents} city={city} selectedCity={coordinates} />;
+  return (
+    <EventMapScreen
+      events={filteredEvents}
+      city={city}
+      selectedCity={coordinates}
+      loading={loading}
+      error={error}
+      onRefresh={refresh}
+    />
+  );
 }

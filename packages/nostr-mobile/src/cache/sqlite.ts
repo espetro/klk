@@ -11,11 +11,11 @@ export class KlkSQLiteCacheAdapter implements NDKCacheAdapter {
     this.dbName = dbName;
   }
 
-  initialize(ndk: unknown): void {
+  initialize(_ndk: unknown): void {
     // No-op: DB is opened on-demand in query/setEvent
   }
 
-  async initializeAsync(ndk?: unknown): Promise<void> {
+  async initializeAsync(_ndk?: unknown): Promise<void> {
     if (!this.db) {
       try {
         const { openDatabaseSync } = await import('expo-sqlite');
@@ -28,7 +28,9 @@ export class KlkSQLiteCacheAdapter implements NDKCacheAdapter {
   }
 
   private async setupSchema(): Promise<void> {
-    if (!this.db) return;
+    if (!this.db) {
+      return;
+    }
     await this.db.execAsync(`
       CREATE TABLE IF NOT EXISTS nostr_events (
         id TEXT PRIMARY KEY,
@@ -41,15 +43,17 @@ export class KlkSQLiteCacheAdapter implements NDKCacheAdapter {
     `);
   }
 
-  async query(subscription: unknown): Promise<NDKEvent[]> {
+  query(_subscription: unknown): NDKEvent[] {
     const events = Array.from(this.memoryCache.values());
     return events;
   }
 
-  async setEvent(event: NDKEvent, filters: NDKFilter<any>[], relay?: NDKRelay): Promise<void> {
+  async setEvent(event: NDKEvent, _filters: NDKFilter[], _relay?: NDKRelay): Promise<void> {
     this.memoryCache.set(event.id || '', event);
 
-    if (!this.db) return;
+    if (!this.db) {
+      return;
+    }
 
     try {
       const tagsJson = JSON.stringify(event.tags || []);
@@ -75,7 +79,9 @@ export class KlkSQLiteCacheAdapter implements NDKCacheAdapter {
       this.memoryCache.delete(id);
     }
 
-    if (!this.db) return;
+    if (!this.db) {
+      return;
+    }
 
     try {
       const placeholders = ids.map(() => '?').join(',');
@@ -88,7 +94,9 @@ export class KlkSQLiteCacheAdapter implements NDKCacheAdapter {
   async clear(): Promise<void> {
     this.memoryCache.clear();
 
-    if (!this.db) return;
+    if (!this.db) {
+      return;
+    }
 
     try {
       await this.db.runAsync('DELETE FROM nostr_events');

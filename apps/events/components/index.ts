@@ -4,7 +4,7 @@ export * from './event-card';
 export * from './event-form';
 export * from './event-map-view';
 export * from './event-map-screen';
-export * from './event-calendar-sheet';
+export { default as EventCalendarSheet } from './event-calendar-sheet';
 export * from './circle-card';
 export * from './circle-avatar';
 export * from './member-avatar';

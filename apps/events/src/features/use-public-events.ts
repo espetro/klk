@@ -10,6 +10,7 @@ import {
 } from '@klk/infrastructure';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
+import { FIXTURE_EVENTS } from '../fixtures';
 import { useCity } from './cityStore';
 
 export interface PublicEvent extends PublicEventData {
@@ -21,7 +22,7 @@ export interface UsePublicEventsResult {
   events: PublicEvent[];
   loading: boolean;
   error: string | null;
-  retry: () => void;
+  refresh: () => void;
 }
 
 const MAX_RETRIES = 3;
@@ -46,6 +47,9 @@ async function saveCachedEvents(city: string, events: PublicEvent[]): Promise<vo
   } catch {}
 }
 
+const USE_FIXTURES = __DEV__ && process.env.EXPO_USE_FIXTURES === '1';
+const noop = () => {};
+
 export function usePublicEvents(): UsePublicEventsResult {
   const { ndk } = useContext(NDKContext);
   const city = useCity();
@@ -56,7 +60,7 @@ export function usePublicEvents(): UsePublicEventsResult {
 
   const startSubscription = useCallback(
     async function startSubscription() {
-      if (!ndk || !city) return;
+      if (USE_FIXTURES || !ndk || !city) return;
       setLoading(true);
       setError(null);
 
@@ -116,6 +120,7 @@ export function usePublicEvents(): UsePublicEventsResult {
   );
 
   const parsed: PublicEvent[] = useMemo(() => {
+    if (USE_FIXTURES) return FIXTURE_EVENTS;
     return (
       events
         .map(parsePublicEvent)
@@ -128,20 +133,25 @@ export function usePublicEvents(): UsePublicEventsResult {
 
   useEffect(
     function saveCachedEventsEffect() {
-      if (parsed.length > 0) {
+      if (!USE_FIXTURES && parsed.length > 0) {
         saveCachedEvents(city, parsed);
       }
     },
     [parsed, city]
   );
 
-  const retry = useCallback(
-    function retrySubscription() {
+  const refresh = useCallback(
+    function refreshSubscription() {
+      if (USE_FIXTURES) return;
       setAttemptCount(0);
       startSubscription();
     },
     [startSubscription]
   );
 
-  return { events: parsed, loading, error, retry };
+  if (USE_FIXTURES) {
+    return { events: FIXTURE_EVENTS, loading: false, error: null, refresh: noop };
+  }
+
+  return { events: parsed, loading, error, refresh };
 }

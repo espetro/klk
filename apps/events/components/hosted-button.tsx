@@ -23,18 +23,18 @@ export function HostedButton({
 
   const variantStyle: ViewStyle =
     variant === 'filled'
-      ? { backgroundColor: disabled ? '#ccc' : '#007AFF' }
+      ? { backgroundColor: disabled ? '#5c554d' : '#c45b3a' }
       : variant === 'outlined'
         ? {
             borderWidth: 1,
-            borderColor: disabled ? '#ccc' : '#007AFF',
+            borderColor: disabled ? '#5c554d' : '#c45b3a',
             backgroundColor: 'transparent',
           }
         : { backgroundColor: 'transparent' };
 
   const containerStyle: ViewStyle = { ...baseStyle, ...variantStyle };
   const textColor =
-    variant === 'filled' ? (disabled ? '#666' : '#fff') : disabled ? '#ccc' : '#007AFF';
+    variant === 'filled' ? (disabled ? '#5c554d' : '#fdfbf7') : disabled ? '#5c554d' : '#c45b3a';
 
   return (
     <Pressable disabled={disabled} onPress={onPress} style={containerStyle}>
