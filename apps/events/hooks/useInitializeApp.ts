@@ -1,7 +1,8 @@
 import { useOnboarding } from '@/features';
 import {
-  connectNDK,
+  connectNDKGuest,
   getOrCreateIdentity,
+  hasIdentity,
   isOnboardingComplete,
   processIncomingGiftWraps,
   NDKMock as NDK,
@@ -9,7 +10,7 @@ import {
   NDKUser,
 } from '@klk/infrastructure';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export default function useInitializeApp() {
   const [ndk, setNdk] = useState<NDK | null>(null);
@@ -21,27 +22,39 @@ export default function useInitializeApp() {
 
   const { onboardingComplete, setOnboardingComplete } = useOnboarding();
 
+  const ndkRef = useRef<NDK | null>(null);
+
+  const attachIdentity = useCallback(async function attachIdentity() {
+    if (!ndkRef.current) return;
+    const s = await getOrCreateIdentity();
+    ndkRef.current.signer = s;
+    const user = await s.user();
+    setSigner(s);
+    setCurrentUser(user);
+    processIncomingGiftWraps(ndkRef.current, user.pubkey);
+  }, []);
+
   useEffect(
     function initializeApp() {
       (async function runInitialization() {
         try {
-          const complete = await isOnboardingComplete();
+          // Always connect NDK in read-only mode first — guest mode
+          const instance = await connectNDKGuest();
+          ndkRef.current = instance;
+          setNdk(instance);
 
+          const complete = await isOnboardingComplete();
           setOnboardingComplete(complete);
           setOnboardingChecked(true);
 
-          if (complete) {
+          // Attach signer only if the user already has a stored identity
+          const identified = await hasIdentity();
+          if (identified) {
             const s = await getOrCreateIdentity();
-
-            const instance = connectNDK(s);
-            await instance.connect(5000);
-
+            instance.signer = s;
             const user = await s.user();
-
             setSigner(s);
-            setNdk(instance);
             setCurrentUser(user);
-
             processIncomingGiftWraps(instance, user.pubkey);
           }
         } catch (error) {
@@ -56,5 +69,5 @@ export default function useInitializeApp() {
     [setOnboardingComplete]
   );
 
-  return { ready, onboardingChecked, onboardingComplete, ndk, signer, currentUser };
+  return { ready, onboardingChecked, onboardingComplete, ndk, signer, currentUser, attachIdentity };
 }

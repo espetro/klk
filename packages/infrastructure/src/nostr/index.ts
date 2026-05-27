@@ -10,8 +10,8 @@ export {
   aesGcmDecrypt,
 } from './groups';
 export { publishRsvp, buildEventCoordinate } from './rsvp';
-export { getNDK, connectNDK, RELAY_URL, RELAYS } from './ndk';
-export { getOrCreateIdentity, wipeIdentity } from './identity';
+export { getNDK, connectNDK, connectNDKGuest, RELAY_URL, RELAYS } from './ndk';
+export { getOrCreateIdentity, hasIdentity, wipeIdentity } from './identity';
 export { KlkKind } from './kinds';
 export type { KlkKindValue } from './kinds';
 export { CITIES, cityTag, cityTagValue, slugifyCity } from './tags';

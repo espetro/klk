@@ -1,3 +1,4 @@
+import { GuestBarrier } from '@/components/GuestBarrier';
 import { EventForm, EventFormValues, HostedInput } from '@/components';
 import { HostedButton } from '@/components/hosted-button';
 import { $lastActiveTab, useCity } from '@/features';
@@ -5,23 +6,41 @@ import { NDKContext } from '@/lib/context/ndk-context';
 import { createGroup, publishPublicEvent } from '@klk/infrastructure';
 import { useStore } from '@nanostores/react';
 import { Stack, useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useContext, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { Alert, ScrollView, Text } from 'react-native';
 
 export default function AddTab() {
   const router = useRouter();
   const lastActiveTab = useStore($lastActiveTab);
-  const { ndk, currentUser } = useContext(NDKContext);
+  const { ndk, currentUser, signer } = useContext(NDKContext);
   const city = useCity();
 
   const [submittingEvent, setSubmittingEvent] = useState(false);
   const [groupName, setGroupName] = useState('');
   const [submittingGroup, setSubmittingGroup] = useState(false);
+  const [showBarrier, setShowBarrier] = useState(false);
 
   useFocusEffect(useCallback(() => {}, []));
 
+  // Show guest barrier immediately when a guest opens the add tab
+  useEffect(
+    function checkGuestOnFocus() {
+      if (!signer) {
+        setShowBarrier(true);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  const isCircle = lastActiveTab === 'circles';
+  const barrierTitle = isCircle ? 'Create a circle' : 'Host your own event';
+  const barrierDescription = isCircle
+    ? 'Circles are private groups. You need an identity to create and invite others.'
+    : 'Publish events to your city feed. You need an identity to host.';
+
   const handleEventSubmit = async (values: EventFormValues) => {
-    if (!ndk) return;
+    if (!ndk || !signer) return;
     setSubmittingEvent(true);
     try {
       await publishPublicEvent(ndk, {
@@ -58,7 +77,7 @@ export default function AddTab() {
     <>
       <Stack.Screen
         options={{
-          title: lastActiveTab === 'circles' ? 'New Circle' : 'New Event',
+          title: isCircle ? 'New Circle' : 'New Event',
           headerLargeTitle: false,
         }}
       />
@@ -67,7 +86,7 @@ export default function AddTab() {
         contentInsetAdjustmentBehavior='automatic'
         keyboardShouldPersistTaps='handled'
       >
-        {lastActiveTab === 'circles' ? (
+        {isCircle ? (
           <>
             <Text className='text-sm font-medium text-gray-700 mb-1'>Group Name *</Text>
             <HostedInput
@@ -91,6 +110,21 @@ export default function AddTab() {
           />
         )}
       </ScrollView>
+
+      <GuestBarrier
+        visible={showBarrier}
+        title={barrierTitle}
+        description={barrierDescription}
+        ctaLabel='Create Identity'
+        onGetStarted={() => {
+          setShowBarrier(false);
+          router.push('/identity');
+        }}
+        onDismiss={() => {
+          setShowBarrier(false);
+          router.back();
+        }}
+      />
     </>
   );
 }

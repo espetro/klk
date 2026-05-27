@@ -1,4 +1,5 @@
 export * from './city-picker';
+export * from './GuestBarrier';
 export * from './event-card';
 export * from './event-form';
 export * from './event-map-view';

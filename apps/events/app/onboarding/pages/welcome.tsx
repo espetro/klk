@@ -22,11 +22,10 @@ export default function WelcomePage({ onProceed, onSkip }: PageProps) {
 
         <Animated.View entering={FadeInUp.duration(800).delay(400)} className='items-center mb-16'>
           <Text className='text-4xl font-bold text-gray-900 text-center mb-4 tracking-tight leading-tight'>
-            Discover Local{'\n'}Events
+            Discover events{'\n'}in your city.
           </Text>
           <Text className='text-base text-gray-500 text-center leading-relaxed max-w-xs'>
-            Find events happening in your city, create your own, and connect with your community. No
-            accounts, no tracking.
+            Browse what's happening near you — no account required. Private by design.
           </Text>
         </Animated.View>
 
@@ -35,12 +34,12 @@ export default function WelcomePage({ onProceed, onSkip }: PageProps) {
             className='bg-gray-900 rounded-xl px-8 py-5 w-full active:opacity-90'
             onPress={onProceed}
           >
-            <Text className='text-white text-center text-base font-medium'>Proceed</Text>
+            <Text className='text-white text-center text-base font-medium'>Get Started</Text>
           </Pressable>
 
           <View className='flex-row justify-center mt-4'>
             <Pressable onPress={onSkip}>
-              <Text className='text-gray-400 text-sm'>Skip</Text>
+              <Text className='text-gray-400 text-sm'>Skip for now</Text>
             </Pressable>
           </View>
         </Animated.View>

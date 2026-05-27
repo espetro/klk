@@ -21,3 +21,9 @@ export function connectNDK(signer?: NDKSigner): NDK {
   }
   return ndk;
 }
+
+export async function connectNDKGuest(): Promise<NDK> {
+  const ndk = getNDK();
+  await ndk.connect(5000);
+  return ndk;
+}

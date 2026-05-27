@@ -67,6 +67,16 @@ function RootLayoutInner() {
           }}
         />
         <Stack.Screen name='onboarding' options={{ headerShown: false }} />
+        <Stack.Screen
+          name='identity'
+          options={{
+            title: 'Your Identity',
+            presentation: 'formSheet',
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: [0.75, 1.0],
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
         <Stack.Screen name='legal/terms' options={{ title: 'Terms of Service' }} />
         <Stack.Screen name='legal/privacy' options={{ title: 'Privacy Policy' }} />
         <Stack.Screen

@@ -1,9 +1,11 @@
+import { GuestBarrier } from '@/components/GuestBarrier';
 import { GroupCard, HostedFab } from '@/components';
 import { $lastActiveTab, $circlesSearch } from '@/features';
+import { NDKContext } from '@/lib/context/ndk-context';
 import { getAllGroups, GroupRecord } from '@klk/infrastructure';
 import { useStore } from '@nanostores/react';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useContext } from 'react';
 import { FlatList, Text, View } from 'react-native';
 
 function filterGroups(groups: GroupRecord[], searchQuery: string) {
@@ -18,8 +20,10 @@ function filterGroups(groups: GroupRecord[], searchQuery: string) {
 
 export default function CirclesScreen() {
   const router = useRouter();
+  const { signer } = useContext(NDKContext);
   const [groups, setGroups] = useState<GroupRecord[]>([]);
   const search = useStore($circlesSearch);
+  const [showBarrier, setShowBarrier] = useState(false);
 
   useFocusEffect(
     useCallback(function loadAllGroups() {
@@ -30,6 +34,14 @@ export default function CirclesScreen() {
       };
     }, [])
   );
+
+  const handleFabPress = useCallback(() => {
+    if (!signer) {
+      setShowBarrier(true);
+      return;
+    }
+    router.push('/group/new');
+  }, [signer, router]);
 
   const filteredGroups = filterGroups(groups, search);
 
@@ -55,7 +67,19 @@ export default function CirclesScreen() {
         }
       />
 
-      {process.env.EXPO_OS !== 'ios' && <HostedFab onPress={() => router.push('/group/new')} />}
+      {process.env.EXPO_OS !== 'ios' && <HostedFab onPress={handleFabPress} />}
+
+      <GuestBarrier
+        visible={showBarrier}
+        title='Create a circle'
+        description='Circles are private groups. You need an identity to create one and invite others.'
+        ctaLabel='Create Identity'
+        onGetStarted={() => {
+          setShowBarrier(false);
+          router.push('/identity');
+        }}
+        onDismiss={() => setShowBarrier(false)}
+      />
     </View>
   );
 }

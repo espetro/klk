@@ -8,21 +8,16 @@ type PageProps = {
   isLast?: boolean;
 };
 
-export default function EventsPage({ onProceed, onSkip }: PageProps) {
+export default function HowItWorksPage({ onProceed, onSkip }: PageProps) {
   return (
     <View className='flex-1 bg-gray-50 px-8'>
       <View className='flex-1 items-center justify-center'>
-        <Animated.View entering={FadeInUp.duration(800).delay(200)} className='items-center mb-10'>
-          <View className='w-24 h-24 bg-gray-100 rounded-2xl items-center justify-center mb-6'>
-            <Ionicons name='compass-outline' size={48} color='#374151' />
-          </View>
-
-          <Text className='text-4xl font-bold text-gray-900 text-center mb-4 tracking-tight leading-tight'>
-            Browse &{'\n'}Create Events
+        <Animated.View entering={FadeInUp.duration(800).delay(200)} className='items-center mb-8'>
+          <Text className='text-4xl font-bold text-gray-900 text-center mb-3 tracking-tight leading-tight'>
+            See what's{'\n'}possible
           </Text>
           <Text className='text-base text-gray-500 text-center leading-relaxed max-w-xs'>
-            See what's happening around you. From meetups and concerts to workshops and community
-            gatherings.
+            Browse freely. Join in when you're ready.
           </Text>
         </Animated.View>
 
@@ -31,34 +26,40 @@ export default function EventsPage({ onProceed, onSkip }: PageProps) {
           className='w-full max-w-sm mb-12 gap-3'
         >
           <View className='flex-row items-center bg-white rounded-2xl p-4 border border-gray-100'>
-            <View className='w-12 h-12 bg-gray-100 rounded-2xl items-center justify-center mr-4'>
-              <Ionicons name='eye-outline' size={24} color='#374151' />
+            <View className='w-12 h-12 bg-indigo-50 rounded-2xl items-center justify-center mr-4'>
+              <Ionicons name='map-outline' size={24} color='#4f46e5' />
             </View>
             <View className='flex-1'>
-              <Text className='text-base font-semibold text-gray-900 mb-0.5'>Discover</Text>
-              <Text className='text-sm text-gray-500'>Browse public events filtered by city</Text>
-            </View>
-          </View>
-
-          <View className='flex-row items-center bg-white rounded-2xl p-4 border border-gray-100'>
-            <View className='w-12 h-12 bg-gray-100 rounded-2xl items-center justify-center mr-4'>
-              <Ionicons name='create-outline' size={24} color='#374151' />
-            </View>
-            <View className='flex-1'>
-              <Text className='text-base font-semibold text-gray-900 mb-0.5'>Create</Text>
+              <Text className='text-base font-semibold text-gray-900 mb-0.5'>
+                See events near you
+              </Text>
               <Text className='text-sm text-gray-500'>
-                Publish events with time, location, and details
+                Map and calendar views, no signup needed
               </Text>
             </View>
           </View>
 
           <View className='flex-row items-center bg-white rounded-2xl p-4 border border-gray-100'>
-            <View className='w-12 h-12 bg-gray-100 rounded-2xl items-center justify-center mr-4'>
-              <Ionicons name='checkmark-circle-outline' size={24} color='#374151' />
+            <View className='w-12 h-12 bg-indigo-50 rounded-2xl items-center justify-center mr-4'>
+              <Ionicons name='checkmark-circle-outline' size={24} color='#4f46e5' />
             </View>
             <View className='flex-1'>
-              <Text className='text-base font-semibold text-gray-900 mb-0.5'>RSVP</Text>
-              <Text className='text-sm text-gray-500'>One-tap RSVP with live guest count</Text>
+              <Text className='text-base font-semibold text-gray-900 mb-0.5'>RSVP in one tap</Text>
+              <Text className='text-sm text-gray-500'>
+                Save your spot when you find something great
+              </Text>
+            </View>
+          </View>
+
+          <View className='flex-row items-center bg-white rounded-2xl p-4 border border-gray-100'>
+            <View className='w-12 h-12 bg-indigo-50 rounded-2xl items-center justify-center mr-4'>
+              <Ionicons name='add-circle-outline' size={24} color='#4f46e5' />
+            </View>
+            <View className='flex-1'>
+              <Text className='text-base font-semibold text-gray-900 mb-0.5'>Host your own</Text>
+              <Text className='text-sm text-gray-500'>
+                Publish events and invite your community
+              </Text>
             </View>
           </View>
         </Animated.View>
@@ -68,7 +69,7 @@ export default function EventsPage({ onProceed, onSkip }: PageProps) {
             className='bg-gray-900 rounded-xl px-8 py-5 w-full active:opacity-90'
             onPress={onProceed}
           >
-            <Text className='text-white text-center text-base font-medium'>Proceed</Text>
+            <Text className='text-white text-center text-base font-medium'>Continue</Text>
           </Pressable>
 
           <View className='flex-row justify-center mt-4'>

@@ -1,3 +1,4 @@
+import { GuestBarrier } from '@/components/GuestBarrier';
 import { HostedButton as Button } from '@/components/hosted-button';
 import { useRsvps } from '@/features';
 import { useEventDetail } from '@/features/useEventDetail';
@@ -10,7 +11,7 @@ import {
   buildEventCoordinate,
   publishRsvp,
 } from '@klk/infrastructure';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useContext, useEffect, useState } from 'react';
 import { Alert, ScrollView, Text, View } from 'react-native';
 
@@ -27,15 +28,17 @@ function formatDate(ts: number) {
 
 export default function EventDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { ndk, currentUser } = useContext(NDKContext);
+  const { ndk, currentUser, signer } = useContext(NDKContext);
   const { getFlag } = useFeatureFlag();
   const useNewArch = getFlag('useNewArchitecture');
+  const router = useRouter();
 
   const [event, setEvent] = useState<(PublicEventData & { id: string; pubkey: string }) | null>(
     null
   );
   const [coordinate, setCoordinate] = useState('');
   const [rsvping, setRsvping] = useState(false);
+  const [showBarrier, setShowBarrier] = useState(false);
   const rsvps = useRsvps(coordinate);
 
   useEffect(
@@ -54,6 +57,10 @@ export default function EventDetailScreen() {
   const hasRsvpd = rsvps.some((r) => r.pubkey === currentUser?.pubkey);
 
   const handleRsvp = async () => {
+    if (!signer) {
+      setShowBarrier(true);
+      return;
+    }
     if (!ndk || !coordinate || hasRsvpd) return;
     setRsvping(true);
     try {
@@ -126,16 +133,38 @@ export default function EventDetailScreen() {
           />
         </View>
       </ScrollView>
+
+      <GuestBarrier
+        visible={showBarrier}
+        title='RSVP to save your spot'
+        description='Klk uses Nostr — your identity is a keypair that lives on your device. No email or password needed.'
+        ctaLabel='Create Identity'
+        onGetStarted={() => {
+          setShowBarrier(false);
+          router.push('/identity');
+        }}
+        onDismiss={() => setShowBarrier(false)}
+      />
     </>
   );
 }
 
 function NewEventDetail({ eventId }: { eventId: string }) {
-  const { currentUser } = useContext(NDKContext);
+  const { currentUser, signer } = useContext(NDKContext);
+  const router = useRouter();
+  const [showBarrier, setShowBarrier] = useState(false);
   const { event, loading, error, rsvp, rsvping, hasRsvpd } = useEventDetail(
     eventId,
     currentUser ? ({ npub: currentUser.pubkey } as User) : null
   );
+
+  const handleRsvp = () => {
+    if (!signer) {
+      setShowBarrier(true);
+      return;
+    }
+    rsvp();
+  };
 
   if (loading) {
     return (
@@ -189,11 +218,23 @@ function NewEventDetail({ eventId }: { eventId: string }) {
           <Button
             label={hasRsvpd ? "You're going!" : rsvping ? 'RSVP-ing…' : 'RSVP'}
             variant={hasRsvpd || rsvping ? 'outlined' : 'filled'}
-            onPress={rsvp}
+            onPress={handleRsvp}
             disabled={hasRsvpd || rsvping}
           />
         </View>
       </ScrollView>
+
+      <GuestBarrier
+        visible={showBarrier}
+        title='RSVP to save your spot'
+        description='Klk uses Nostr — your identity is a keypair that lives on your device. No email or password needed.'
+        ctaLabel='Create Identity'
+        onGetStarted={() => {
+          setShowBarrier(false);
+          router.push('/identity');
+        }}
+        onDismiss={() => setShowBarrier(false)}
+      />
     </>
   );
 }

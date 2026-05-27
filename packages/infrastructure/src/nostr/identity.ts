@@ -16,6 +16,11 @@ export async function getOrCreateIdentity(): Promise<NDKPrivateKeySigner> {
   return signer;
 }
 
+export async function hasIdentity(): Promise<boolean> {
+  const stored = await getSecure(NSEC_KEY);
+  return stored !== null && stored !== undefined && stored.length > 0;
+}
+
 export async function wipeIdentity(): Promise<void> {
   await deleteSecure(NSEC_KEY);
 }

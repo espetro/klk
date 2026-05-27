@@ -29,11 +29,11 @@ export default function LocationPage({ onProceed, onSkip }: PageProps) {
           </View>
 
           <Text className='text-4xl font-bold text-gray-900 text-center mb-4 tracking-tight leading-tight'>
-            Enable{'\n'}Location
+            Find events{'\n'}near you
           </Text>
           <Text className='text-base text-gray-500 text-center leading-relaxed max-w-xs'>
-            Klk uses your location to show events near you and suggest your city. Your location
-            never leaves your device.
+            Allow location to discover events in your city. You can also choose a city manually
+            later.
           </Text>
         </Animated.View>
 
@@ -62,12 +62,14 @@ export default function LocationPage({ onProceed, onSkip }: PageProps) {
             className='bg-gray-900 rounded-xl px-8 py-5 w-full active:opacity-90'
             onPress={onProceed}
           >
-            <Text className='text-white text-center text-base font-medium'>Proceed</Text>
+            <Text className='text-white text-center text-base font-medium'>
+              {granted ? 'Start Exploring' : 'Continue'}
+            </Text>
           </Pressable>
 
           <View className='flex-row justify-center mt-4'>
             <Pressable onPress={onSkip}>
-              <Text className='text-gray-400 text-sm'>Skip</Text>
+              <Text className='text-gray-400 text-sm'>Skip for now</Text>
             </Pressable>
           </View>
         </Animated.View>
