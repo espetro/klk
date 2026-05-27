@@ -8,7 +8,12 @@
   ],
   "scripts": {
     "build": "turbo build",
-    "dev": "turbo dev",
+    "dev": "bun scripts/dev.ts",
+    "dev:turbo": "turbo dev",
+    "dev:stop": "bun scripts/dev.ts --stop",
+    "dev:status": "bun scripts/dev.ts --status",
+    "dev:ios": "bun scripts/dev.ts --ios",
+    "dev:android": "bun scripts/dev.ts --android",
     "lint": "oxlint . --config oxlint.config.ts",
     "lint:fix": "oxlint . --config oxlint.config.ts --fix",
     "format": "oxfmt .",

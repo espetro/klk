@@ -43,6 +43,33 @@ Verify there's no regressions introduced by running `bun run validate`
   - Introduce no dead code: no unreachable code, unused imports, or half-wired features
 - Conventional commit name and description format
 
+### Parallel Dev Runner
+
+Run both iOS and Android in parallel via tmux:
+
+| Command | What it does |
+|---------|-------------|
+| `bun run dev` | Start all: relay + Metro + iOS + Android |
+| `bun run dev:ios` | Start relay + Metro + iOS only |
+| `bun run dev:android` | Start relay + Metro + Android only |
+| `bun run dev:stop` | Kill the tmux session and all processes |
+| `bun run dev:status` | Check if dev session is running |
+
+**Session name**: `klk-dev` (fixed)
+
+**Tmux controls**:
+- Attach: `tmux attach -t klk-dev`
+- Detach: `Ctrl+b`, then `d`
+- Switch pane: `Ctrl+b`, then arrow keys
+- Scroll: `Ctrl+b`, then `[`
+- Read pane output: `tmux capture-pane -t klk-dev:0.metro -p -S -50`
+
+**Dangling sessions**: If an agent session ends without running `bun run dev:stop`, the tmux session persists. The next run detects and recreates it. Manually kill with `tmux kill-session -t klk-dev`.
+
+**Important**: Metro "connected" does NOT mean the app rendered. Verify with `agent-device` or by checking the simulator/emulator visually.
+
+**Prerequisites**: `brew install tmux` (tmux must be installed)
+
 ## Backward Compatibility
 
 `CLAUDE.md → AGENTS.md` symlinks exist at root and in each package for Claude Code compatibility. Do NOT create new `CLAUDE.md` files.

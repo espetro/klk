@@ -42,6 +42,19 @@ Prerequisites: `nak serve` (relay), `bun ios` (simulator), `gauge run specs/`
 5. Create private group + invite (NIP-59 gift wrap)
 6. Create private group event (AES-256-GCM encrypted)
 
+## Running the App
+
+Use the parallel dev runner from the repo root:
+
+```bash
+bun run dev        # iOS + Android in parallel
+bun run dev:ios    # iOS only
+bun run dev:android # Android only
+bun run dev:stop   # Kill session
+```
+
+See root `AGENTS.md` for full documentation including tmux controls and dangling session handling.
+
 ## Import Aliases
 
 - `@/*` — local files (e.g., `@/features/use-public-events`)
