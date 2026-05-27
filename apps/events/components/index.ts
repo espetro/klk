@@ -4,6 +4,7 @@ export * from './event-form';
 export * from './event-map-view';
 export * from './group-card';
 export * from './hosted-button';
+export * from './hosted-fab';
 export * from './hosted-input';
 export * from './invite-friend-sheet';
 export * from './location-picker';

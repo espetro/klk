@@ -1,6 +1,5 @@
 import { HostedButton } from '@/components/hosted-button';
 import { HostedInput as Input } from '@/components/hosted-input';
-import { FieldGroup } from '@expo/ui';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useState } from 'react';
 import { Platform, Pressable, Text, View } from 'react-native';
@@ -35,52 +34,53 @@ export function EventForm({ onSubmit, submitting, submitLabel = 'Publish' }: Pro
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <FieldGroup>
-        <FieldGroup.Section title='Event'>
-          <Input
-            value={title}
-            onChangeText={setTitle}
-            placeholder='Event title'
-            autoCorrect={false}
-            returnKeyType='done'
-            onSubmitEditing={() => {}}
-          />
-          <Input
-            value={summary}
-            onChangeText={setSummary}
-            placeholder="What's the event about?"
-            multiline
-            numberOfLines={4}
-          />
-        </FieldGroup.Section>
-
-        <FieldGroup.Section title='Schedule'>
-          <Pressable onPress={() => setShowStart(true)}>
-            <Text selectable>{start.toLocaleString()}</Text>
-          </Pressable>
-          <Pressable onPress={() => setShowEnd(true)}>
-            <Text selectable>{end.toLocaleString()}</Text>
-          </Pressable>
-        </FieldGroup.Section>
-
-        <FieldGroup.Section title='Details'>
-          <Input value={location} onChangeText={setLocation} placeholder='Venue / address' />
-          <Input
-            value={image}
-            onChangeText={setImage}
-            placeholder='https://...'
-            autoCapitalize='none'
-          />
-        </FieldGroup.Section>
-
-        <HostedButton
-          variant='filled'
-          disabled={submitting || !title}
-          onPress={handleSubmit}
-          label={submitting ? 'Publishing…' : submitLabel}
+    <View style={{ flex: 1, gap: 16, padding: 16 }}>
+      <View>
+        <Text style={{ fontWeight: '600', marginBottom: 4 }}>Event</Text>
+        <Input
+          value={title}
+          onChangeText={setTitle}
+          placeholder='Event title'
+          autoCorrect={false}
+          returnKeyType='done'
+          onSubmitEditing={() => {}}
         />
-      </FieldGroup>
+        <Input
+          value={summary}
+          onChangeText={setSummary}
+          placeholder="What's the event about?"
+          multiline
+          numberOfLines={4}
+        />
+      </View>
+
+      <View>
+        <Text style={{ fontWeight: '600', marginBottom: 4 }}>Schedule</Text>
+        <Pressable onPress={() => setShowStart(true)}>
+          <Text selectable>{start.toLocaleString()}</Text>
+        </Pressable>
+        <Pressable onPress={() => setShowEnd(true)}>
+          <Text selectable>{end.toLocaleString()}</Text>
+        </Pressable>
+      </View>
+
+      <View>
+        <Text style={{ fontWeight: '600', marginBottom: 4 }}>Details</Text>
+        <Input value={location} onChangeText={setLocation} placeholder='Venue / address' />
+        <Input
+          value={image}
+          onChangeText={setImage}
+          placeholder='https://...'
+          autoCapitalize='none'
+        />
+      </View>
+
+      <HostedButton
+        variant='filled'
+        disabled={submitting || !title}
+        onPress={handleSubmit}
+        label={submitting ? 'Publishing…' : submitLabel}
+      />
 
       {showStart && (
         <DateTimePicker

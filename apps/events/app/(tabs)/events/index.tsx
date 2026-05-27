@@ -1,9 +1,9 @@
-import { EventCard } from '@/components';
+import { EventCard, HostedFab } from '@/components';
 import { $lastActiveTab, $eventsSearch, useCity, usePublicEvents } from '@/features';
 import { useStore } from '@nanostores/react';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback } from 'react';
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 
 interface EventLike {
   title?: string;
@@ -66,12 +66,7 @@ export default function EventsScreen() {
       />
 
       {process.env.EXPO_OS !== 'ios' && (
-        <Pressable
-          onPress={() => router.push('/event/new')}
-          className='absolute bottom-6 right-6 h-14 w-14 items-center justify-center rounded-full bg-primary shadow-lg shadow-black/20'
-        >
-          <Text className='text-white text-2xl font-bold'>+</Text>
-        </Pressable>
+        <HostedFab onPress={() => router.push('/event/new')} />
       )}
     </View>
   );

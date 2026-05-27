@@ -29,6 +29,16 @@ Uses nanostores (not React Context):
 - For iOS, use [SF Symbols](https://github.com/andrewtavis/sf-symbols-online/blob/master/README.md)
 - For Android, use [MD Icons](https://fonts.google.com/icons)
 
+## @expo/ui Host Boundary
+
+`@expo/ui` components are Jetpack Compose (Android) / SwiftUI (iOS) and must be wrapped in `<Host>` from the matching platform package.
+
+**Pattern**: Use platform-split files (`.android.tsx`, `.ios.tsx`) for components using `@expo/ui`. Cross-platform `.tsx` fallbacks must contain zero `@expo/ui` imports — use pure React Native only.
+
+**Why**: A fallback that imports `@expo/ui` without `<Host>` will crash if Metro's platform resolution fails or the file is resolved directly, even if platform-specific files exist.
+
+See `.agents/notepad/2026-05-27-expo-ui-host-boundary.md` for incident details and verification patterns.
+
 ## E2E Testing
 
 Prerequisites: `nak serve` (relay), `bun ios` (simulator), `gauge run specs/`

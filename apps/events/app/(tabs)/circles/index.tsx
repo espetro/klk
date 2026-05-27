@@ -1,11 +1,10 @@
-import { GroupCard } from '@/components';
+import { GroupCard, HostedFab } from '@/components';
 import { $lastActiveTab, $circlesSearch } from '@/features';
 import { getAllGroups, GroupRecord } from '@klk/infrastructure';
-import { useFocusEffect } from 'expo-router';
-import { useRouter } from 'expo-router';
 import { useStore } from '@nanostores/react';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useState, useCallback } from 'react';
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 
 function filterGroups(groups: GroupRecord[], searchQuery: string) {
   if (!searchQuery.trim()) return groups;
@@ -49,18 +48,15 @@ export default function CirclesScreen() {
             <Text className='text-gray-400 text-base'>
               {search ? `No circles found for "${search}"` : 'No circles yet'}
             </Text>
-            {!search && <Text className='text-gray-400 text-sm mt-1'>Create one to invite friends</Text>}
+            {!search && (
+              <Text className='text-gray-400 text-sm mt-1'>Create one to invite friends</Text>
+            )}
           </View>
         }
       />
 
       {process.env.EXPO_OS !== 'ios' && (
-        <Pressable
-          onPress={() => router.push('/group/new')}
-          className='absolute bottom-6 right-6 h-14 w-14 items-center justify-center rounded-full bg-primary shadow-lg shadow-black/20'
-        >
-          <Text className='text-white text-2xl font-bold'>+</Text>
-        </Pressable>
+        <HostedFab onPress={() => router.push('/group/new')} />
       )}
     </View>
   );
