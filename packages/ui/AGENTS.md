@@ -35,3 +35,19 @@ Utility classes via UniWind:
 1. Create in `src/components/`
 2. Export from `src/index.ts`
 3. Prefer extending Expo UI components; use UniWind utility classes for layout/spacing; fallback to React Native Reusables (RNR) components otherwise
+
+## Skeleton Components
+
+Skeletons are implemented with Reanimated `useSharedValue` + `withRepeat(withSequence(withTiming(...)))` for UI-thread safe opacity pulsing. This approach is:
+
+- **Fast**: Runs on the UI thread, no JavaScript bridge overhead
+- **Consistent**: Matches react-native-reusables (RNR) canonical pattern
+- **Lightweight**: No shimmer, no `expo-linear-gradient` dependency
+
+**Why no shimmer**: Shimmer requires `expo-linear-gradient`, which is not currently installed. Opacity pulsing is sufficient and consistent with RNR docs.
+
+**If shimmer is needed later**: Install `expo-linear-gradient` and follow [`reactnativereusables.com/docs/components/skeleton`](https://reactnativereusables.com/docs/components/skeleton).
+
+**Future**: Consider auto-generation from component data shapes via `boneyard.vercel.app`.
+
+**Location**: Core skeleton in `src/components/skeleton.tsx`; composed into `*-skeleton.tsx` files per feature.

@@ -265,6 +265,30 @@ The design system follows a clear visual hierarchy:
 2. **Structure Second**: Cards, layouts, and containers provide organization
 3. **Brand Accent Third**: Terracotta and olive accents provide moments of emphasis
 
+## Opacity Modifiers Caveat
+
+**Tailwind v4 opacity modifiers do not work reliably on CSS custom properties.**
+
+❌ **Don't do this:**
+```tsx
+<View className='bg-action-primary/15' />  // Does NOT work with custom properties
+<View className='bg-bg-elevated/50' />      // Opacity modifier ignored
+```
+
+✅ **Do this instead:**
+```tsx
+import { theme } from '@klk/ui'
+
+// Use inline styles with rgba()
+<View style={{ backgroundColor: 'rgba(196, 91, 58, 0.15)' }} />  // action-primary at 15%
+<View style={{ backgroundColor: 'rgba(245, 240, 232, 0.5)' }} />  // bg-elevated at 50%
+
+// Reference theme values for the hex
+<View style={{ backgroundColor: `rgba(${hexToRgb(theme.actionPrimary)}, 0.15)` }} />
+```
+
+**Why**: Tailwind v4's opacity syntax (`/15`, `/50`) works on static color definitions but not on `var(--color-*)` custom properties. Use inline `style` props with explicit rgba values instead.
+
 ## Best Practices
 
 - Use semantic tokens, not raw hex values, in components
@@ -272,6 +296,7 @@ The design system follows a clear visual hierarchy:
 - Keep background colors warm and neutral to let content shine
 - Use `text-secondary` for supporting information to reduce visual noise
 - Apply `state-highlight` sparingly for focus and hover states
+- For opacity, use inline styles with `rgba()` — opacity modifiers don't work on custom properties
 
 ## Implementation Status
 

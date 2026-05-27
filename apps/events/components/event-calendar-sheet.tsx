@@ -98,15 +98,21 @@ export default function EventCalendarSheet({
 }: EventCalendarSheetProps) {
   const todayStr = new Date().toISOString().split('T')[0] || '';
   const [selectedDate, setSelectedDate] = useState(todayStr);
+  const [filteredDate, setFilteredDate] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const sectionListRef = useRef<SectionList>(null);
 
-  const sections = useMemo(() => groupEventsByDate(events), [events]);
+  const allSections = useMemo(() => groupEventsByDate(events), [events]);
+  const sections = useMemo(() => {
+    if (!filteredDate) return allSections;
+    return allSections.filter((s) => s.title === filteredDate);
+  }, [allSections, filteredDate]);
   const markedDates = useMemo(() => buildMarkedDates(events), [events]);
 
   const handleDateSelect = useCallback(
     (day: string) => {
       setSelectedDate(day);
+      setFilteredDate(day);
       const sectionIndex = sections.findIndex((s) => s.title === day);
       if (sectionIndex !== -1) {
         sectionListRef.current?.scrollToLocation({
@@ -177,6 +183,20 @@ export default function EventCalendarSheet({
     <CalendarProvider date={selectedDate} onDateChanged={handleDateSelect}>
       <View style={{ flex: 1 }}>
         <ExpandableCalendar markedDates={markedDates} firstDay={1} showWeekNumbers disablePan />
+
+        {filteredDate && (
+          <View className='px-4 py-2'>
+            <Pressable
+              onPress={() => setFilteredDate(null)}
+              className='self-start rounded-full bg-bg-elevated px-3 py-1 flex-row items-center gap-1'
+              accessibilityRole='button'
+              accessibilityLabel='Clear date filter'
+            >
+              <Text className='text-text-secondary'>✕</Text>
+              <Text className='text-sm font-medium text-text-secondary'>All dates</Text>
+            </Pressable>
+          </View>
+        )}
 
         <BottomSheetSectionList
           ref={sectionListRef}

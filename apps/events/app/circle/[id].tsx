@@ -1,3 +1,6 @@
+import CalendarMonthIcon from '@expo/material-symbols/calendar_month.xml';
+import MoreHorizIcon from '@expo/material-symbols/more_horiz.xml';
+import { theme } from '@klk/ui';
 import { InviteFriendSheet, EventForm, EventFormValues } from '@/components';
 import { HostedButton as Button } from '@/components/hosted-button';
 import { MemberAvatar } from '@/components/member-avatar';
@@ -5,9 +8,9 @@ import { useCircleEvents } from '@/features';
 import { NDKContext } from '@/lib/context/ndk-context';
 import { getCircle, CircleRecord, publishPrivateEvent } from '@klk/infrastructure';
 import { CircleDetailSkeleton } from '@klk/ui';
-import { useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useContext, useState } from 'react';
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
 
 type Tab = 'events' | 'members' | 'info';
 
@@ -37,6 +40,7 @@ function formatRelativeTime(ts: number): string {
 export default function CircleDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { ndk, signer } = useContext(NDKContext);
+  const router = useRouter();
   const [circle, setCircle] = useState<CircleRecord | null>(null);
   const [inviteVisible, setInviteVisible] = useState(false);
   const [newEventVisible, setNewEventVisible] = useState(false);
@@ -116,7 +120,17 @@ export default function CircleDetailScreen() {
           </Text>
         </View>
         {ndk && signer ? (
-          <Button label='Invite' variant='outlined' onPress={() => setInviteVisible(true)} />
+          <View className='flex-row items-center gap-2'>
+            <Button label='Invite' variant='outlined' onPress={() => setInviteVisible(true)} />
+            <Pressable
+              onPress={() => router.push(`/circle/manage?id=${id}`)}
+              className='h-12 w-12 items-center justify-center rounded-full bg-bg-elevated'
+              accessibilityRole='button'
+              accessibilityLabel='Manage circle'
+            >
+              <Image source={MoreHorizIcon} style={{ width: 24, height: 24, tintColor: theme.textSecondary }} />
+            </Pressable>
+          </View>
         ) : null}
       </View>
 
@@ -160,7 +174,12 @@ export default function CircleDetailScreen() {
                 .map((e) => {
                   const { month, day } = formatDateIcon(e.start);
                   return (
-                    <View key={e.id} className='flex-row items-center gap-3 px-5 py-3'>
+                    <Pressable
+                      key={e.id}
+                      onPress={() => router.push(`/event/${e.id}`)}
+                      className='flex-row items-center gap-3 px-5 py-3 active:bg-bg-elevated/50'
+                      accessibilityRole='button'
+                    >
                       <View className='h-12 w-12 items-center justify-center rounded-xl bg-action-primary/15'>
                         <Text className='text-[9px] font-bold text-action-primary'>{month}</Text>
                         <Text className='text-base font-bold leading-tight text-action-primary'>
@@ -175,7 +194,7 @@ export default function CircleDetailScreen() {
                           {formatRelativeTime(e.start)}
                         </Text>
                       </View>
-                    </View>
+                    </Pressable>
                   );
                 })}
             </View>
@@ -194,7 +213,12 @@ export default function CircleDetailScreen() {
                 .map((e) => {
                   const { month, day } = formatDateIcon(e.start);
                   return (
-                    <View key={e.id} className='flex-row items-center gap-3 px-5 py-3'>
+                    <Pressable
+                      key={e.id}
+                      onPress={() => router.push(`/event/${e.id}`)}
+                      className='flex-row items-center gap-3 px-5 py-3 active:bg-bg-elevated/50'
+                      accessibilityRole='button'
+                    >
                       <View className='h-12 w-12 items-center justify-center rounded-xl bg-bg-elevated'>
                         <Text className='text-[9px] font-bold text-text-secondary'>{month}</Text>
                         <Text className='text-base font-bold leading-tight text-text-secondary'>
@@ -212,7 +236,7 @@ export default function CircleDetailScreen() {
                           {formatRelativeTime(e.start)}
                         </Text>
                       </View>
-                    </View>
+                    </Pressable>
                   );
                 })}
             </View>
@@ -221,7 +245,7 @@ export default function CircleDetailScreen() {
           {/* Empty state */}
           {privateEvents.length === 0 ? (
             <View className='items-center py-16 gap-3'>
-              <Text className='text-3xl'>📅</Text>
+              <Image source={CalendarMonthIcon} style={{ width: 48, height: 48, tintColor: '#5C554D' }} />
               <Text className='text-base font-semibold text-text-primary'>No events yet</Text>
               {ndk && signer ? (
                 <Pressable

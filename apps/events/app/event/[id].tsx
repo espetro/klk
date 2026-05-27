@@ -1,3 +1,9 @@
+import CalendarTodayIcon from '@expo/material-symbols/calendar_today.xml';
+import LocationOnIcon from '@expo/material-symbols/location_on.xml';
+import IosShareIcon from '@expo/material-symbols/ios_share.xml';
+import MoreHorizIcon from '@expo/material-symbols/more_horiz.xml';
+import EditIcon from '@expo/material-symbols/edit.xml';
+import { theme } from '@klk/ui';
 import { GuestBarrier } from '@/components/GuestBarrier';
 import { useRsvps, useEventDetail, useFeatureFlag } from '@/features';
 import { NDKContext } from '@/lib/context/ndk-context';
@@ -91,7 +97,7 @@ function HeroCard({
       className='mx-4 mt-4 items-center justify-center overflow-hidden rounded-2xl bg-bg-elevated'
       style={{ height: 240 }}
     >
-      <Text className='text-5xl mb-3'>📅</Text>
+      <Image source={CalendarTodayIcon} style={{ width: 48, height: 48, tintColor: theme.textSecondary, marginBottom: 12 }} />
       <Text className='text-base font-bold text-text-primary text-center px-6' numberOfLines={3}>
         {title}
       </Text>
@@ -107,6 +113,7 @@ function EventDetailContent({
   rsvping,
   onRsvpToggle,
   onShare,
+  currentUser,
 }: {
   event: PublicEventData & { id: string; pubkey: string };
   rsvps: { pubkey: string; name?: string; picture?: string }[];
@@ -114,8 +121,10 @@ function EventDetailContent({
   rsvping: boolean;
   onRsvpToggle: () => Promise<void>;
   onShare: () => void;
+  currentUser: User | null;
 }) {
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const attendees = rsvps.map((r) => ({
     pubkey: r.pubkey,
     name: r.name,
@@ -147,23 +156,30 @@ function EventDetailContent({
 
         {/* Action buttons */}
         <View className='flex-row items-center gap-3 px-5 pb-5'>
-          <View className='flex-1'>
-            <RSVPButton isGoing={hasRsvpd} onToggle={onRsvpToggle} loading={rsvping} />
-          </View>
+          {event.pubkey === currentUser?.npub ? (
+            <Pressable
+              onPress={() => router.push(`/event/edit/${event.id}`)}
+              className='h-12 w-12 items-center justify-center rounded-full bg-bg-elevated'
+              accessibilityRole='button'
+              accessibilityLabel='Edit event'
+            >
+              <Image source={EditIcon} style={{ width: 24, height: 24, tintColor: theme.textSecondary }} />
+            </Pressable>
+          ) : null}
           <Pressable
             onPress={onShare}
             className='h-12 w-12 items-center justify-center rounded-full bg-bg-elevated'
             accessibilityRole='button'
             accessibilityLabel='Share event'
           >
-            <Text className='text-lg'>↗️</Text>
+            <Image source={IosShareIcon} style={{ width: 24, height: 24, tintColor: theme.textSecondary }} />
           </Pressable>
           <Pressable
             className='h-12 w-12 items-center justify-center rounded-full bg-bg-elevated'
             accessibilityRole='button'
             accessibilityLabel='More options'
           >
-            <Text className='text-lg'>⋯</Text>
+            <Image source={MoreHorizIcon} style={{ width: 24, height: 24, tintColor: theme.textSecondary }} />
           </Pressable>
         </View>
 
@@ -172,7 +188,7 @@ function EventDetailContent({
           <View className='mx-4 mb-4 rounded-2xl bg-bg-elevated/50 p-4'>
             <SectionHeader title='Location' />
             <View className='flex-row items-center gap-2'>
-              <Text className='text-base'>📍</Text>
+              <Image source={LocationOnIcon} style={{ width: 20, height: 20, tintColor: theme.textSecondary }} />
               <Text className='flex-1 text-sm text-text-primary'>{event.location}</Text>
             </View>
           </View>
@@ -323,6 +339,7 @@ export default function EventDetailScreen() {
         rsvping={rsvping}
         onRsvpToggle={handleRsvpToggle}
         onShare={handleShare}
+        currentUser={currentUser}
       />
       <GuestBarrier
         visible={showBarrier}
@@ -439,6 +456,7 @@ function NewEventDetail({ eventId }: { eventId: string }) {
         rsvping={rsvping}
         onRsvpToggle={handleRsvpToggle}
         onShare={handleShare}
+        currentUser={currentUser}
       />
       <GuestBarrier
         visible={showBarrier}

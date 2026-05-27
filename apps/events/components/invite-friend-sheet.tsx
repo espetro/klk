@@ -1,14 +1,14 @@
 import { HostedButton as Button } from '@/components/hosted-button';
 import { HostedInput as Input } from '@/components/hosted-input';
-import { BottomSheet } from '@expo/ui';
 import {
   CircleRecord,
   inviteToCircle,
   NDKMock as NDK,
   NDKPrivateKeySigner,
 } from '@klk/infrastructure';
+import { nip19 } from 'nostr-tools';
 import { useState } from 'react';
-import { Clipboard, Pressable, Text, View } from 'react-native';
+import { Clipboard, Modal, Pressable, Text, View } from 'react-native';
 
 interface Props {
   visible: boolean;
@@ -44,8 +44,8 @@ export function InviteFriendSheet({
     try {
       let pubkey = npub.trim();
       if (pubkey.startsWith('npub')) {
-        const { nip19 } = await import('nostr-tools');
-        pubkey = (nip19.decode(pubkey) as any).data as string;
+        const decoded = nip19.decode(pubkey);
+        pubkey = decoded.data as string;
       }
       await inviteToCircle(ndk, signer, circle, pubkey);
       const updated: CircleRecord = {
@@ -69,42 +69,55 @@ export function InviteFriendSheet({
   const isValidInput = isValidNpub(npub.trim());
 
   return (
-    <BottomSheet isPresented={visible} onDismiss={onClose}>
-      <Text className='text-lg font-bold text-gray-900 mb-4'>Invite a Member</Text>
+    <Modal
+      visible={visible}
+      onRequestClose={onClose}
+      presentationStyle='pageSheet'
+      animationType='slide'
+    >
+      <View className='flex-1 bg-bg-default'>
+        {/* Grabber */}
+        <View className='w-10 h-1 rounded-full bg-bg-elevated self-center mt-3 mb-4' />
 
-      <Pressable
-        onPress={handleCopyCircleId}
-        className='bg-gray-50 rounded-lg p-3 mb-4 flex-row items-center justify-between'
-      >
-        <Text className='text-sm text-gray-600'>Copy Circle ID</Text>
-        <Text className='text-xs text-gray-400 font-mono'>{circle.id.slice(0, 8)}…</Text>
-      </Pressable>
+        {/* Content */}
+        <View className='px-5 pb-5'>
+          <Text className='text-lg font-bold text-text-primary mb-4'>Invite a Member</Text>
 
-      <Text className='text-sm font-medium text-gray-700 mb-2'>Member's npub or public key</Text>
-      <Input
-        value={npub}
-        onChangeText={setNpub}
-        placeholder='npub1… or hex pubkey'
-        autoCapitalize='none'
-        autoCorrect={false}
-        editable={!loading}
-      />
-      {npub && !isValidInput && (
-        <Text className='text-red-500 text-xs mt-1 mb-2'>Invalid npub or public key format</Text>
-      )}
-      {error && <Text className='text-red-500 text-sm mb-2'>{error}</Text>}
+          <Pressable
+            onPress={handleCopyCircleId}
+            className='bg-bg-elevated rounded-lg p-3 mb-4 flex-row items-center justify-between'
+          >
+            <Text className='text-sm text-text-secondary'>Copy Circle ID</Text>
+            <Text className='text-xs text-text-secondary font-mono'>{circle.id.slice(0, 8)}…</Text>
+          </Pressable>
 
-      <View className='mt-4'>
-        <Button
-          label={loading ? 'Sending…' : 'Send Invite'}
-          variant={loading || !isValidInput ? 'outlined' : 'filled'}
-          onPress={handleInvite}
-          disabled={loading || !isValidInput}
-        />
+          <Text className='text-sm font-medium text-text-secondary mb-2'>Member's npub or public key</Text>
+          <Input
+            value={npub}
+            onChangeText={setNpub}
+            placeholder='npub1… or hex pubkey'
+            autoCapitalize='none'
+            autoCorrect={false}
+            editable={!loading}
+          />
+          {npub && !isValidInput && (
+            <Text className='text-red-500 text-xs mt-1 mb-2'>Invalid npub or public key format</Text>
+          )}
+          {error && <Text className='text-red-500 text-sm mb-2'>{error}</Text>}
+
+          <View className='mt-4'>
+            <Button
+              label={loading ? 'Sending…' : 'Send Invite'}
+              variant={loading || !isValidInput ? 'outlined' : 'filled'}
+              onPress={handleInvite}
+              disabled={loading || !isValidInput}
+            />
+          </View>
+          <View className='mt-3'>
+            <Button label='Cancel' variant='text' onPress={onClose} />
+          </View>
+        </View>
       </View>
-      <View className='mt-3'>
-        <Button label='Cancel' variant='text' onPress={onClose} />
-      </View>
-    </BottomSheet>
+    </Modal>
   );
 }

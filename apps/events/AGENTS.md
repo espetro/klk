@@ -6,14 +6,16 @@ Main Expo Router app. File-based routing: files in `app/` = routes.
 
 ```
 app/
-  (tabs)/          Tab bar: Feed, Groups, Profile
-  event/[id].tsx   Event detail (modal)
-  event/new.tsx   Create public event
-  group/[id].tsx   Group detail (modal)
-  group/new.tsx    Create private group
-src/features/      Nanostores: use-public-events, use-rsvps, use-identity
-components/        App-specific components
-tests/             Gauge E2E specs + step implementations
+  (tabs)/              Tab bar: Feed, Circles, Profile
+  event/[id].tsx       Event detail (modal)
+  event/new.tsx        Create public event
+  event/edit/[id].tsx  Edit public event (modal)
+  circle/[id].tsx      Circle detail (modal)
+  circle/new.tsx       Create private circle (modal)
+  circle/manage.tsx    Manage circle name + members (modal)
+src/features/         Nanostores: use-public-events, use-rsvps, use-identity
+components/           App-specific components
+tests/                Gauge E2E specs + step implementations
 ```
 
 ## State Management
@@ -26,8 +28,14 @@ Uses nanostores (not React Context):
 
 ## Icons
 
-- For iOS, use [SF Symbols](https://github.com/andrewtavis/sf-symbols-online/blob/master/README.md)
-- For Android, use [MD Icons](https://fonts.google.com/icons)
+**Emoji icons are banned.** Use Material Symbols instead:
+
+```tsx
+import CalendarMonthIcon from '@expo/material-symbols/calendar_month.xml';
+<Image source={CalendarMonthIcon} style={{ width: 24, height: 24, tintColor: theme.textSecondary }} />
+```
+
+Import via `@expo/material-symbols/<name>.xml` (already a dependency). Browse available icons: [`fonts.google.com/icons`](https://fonts.google.com/icons) (search, select, copy the name in lowercase with underscores).
 
 ## @expo/ui Host Boundary
 

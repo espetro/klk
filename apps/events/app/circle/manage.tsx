@@ -34,10 +34,9 @@ export default function CircleManageScreen() {
       const updated: CircleRecord = { ...circle, name: data.name.trim() };
       await saveCircle(updated);
       setCircle(updated);
-      Alert.alert('Success', 'Circle name updated');
+      router.back();
     } catch (e: any) {
       Alert.alert('Error', e?.message ?? 'Failed to save circle');
-    } finally {
       setLoading(false);
     }
   };

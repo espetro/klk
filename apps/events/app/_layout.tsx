@@ -53,6 +53,17 @@ function RootLayoutInner() {
             title: 'New Event',
             presentation: 'formSheet',
             sheetGrabberVisible: true,
+            sheetAllowedDetents: [0.75, 1.0],
+            contentStyle: { backgroundColor: 'transparent' },
+          }}
+        />
+        <Stack.Screen
+          name='event/edit/[id]'
+          options={{
+            title: 'Edit Event',
+            presentation: 'formSheet',
+            sheetGrabberVisible: true,
+            sheetAllowedDetents: [0.75, 1.0],
             contentStyle: { backgroundColor: 'transparent' },
           }}
         />

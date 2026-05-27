@@ -14,11 +14,10 @@ export default function NewCircleScreen() {
     if (!currentUser) return;
     setLoading(true);
     try {
-      await createCircle(data.name.trim(), currentUser.pubkey);
-      router.back();
+      const newCircle = await createCircle(data.name.trim(), currentUser.pubkey);
+      router.replace(`/circle/${newCircle.id}`);
     } catch (e: any) {
       Alert.alert('Error', e?.message ?? 'Failed to create circle');
-    } finally {
       setLoading(false);
     }
   };

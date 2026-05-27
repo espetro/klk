@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { Animated } from 'react-native';
+import Animated, { useSharedValue, withRepeat, withSequence, withTiming, useAnimatedStyle } from 'react-native-reanimated';
+import { useEffect } from 'react';
 
 import { cn } from '../lib/utils';
 
@@ -11,23 +11,22 @@ interface SkeletonProps {
 }
 
 export function Skeleton({ width, height, borderRadius = 8, className }: SkeletonProps) {
-  const opacity = useRef(new Animated.Value(0.4)).current;
+  const opacity = useSharedValue(1);
 
   useEffect(() => {
-    const animation = Animated.loop(
-      Animated.sequence([
-        Animated.timing(opacity, { toValue: 0.9, duration: 700, useNativeDriver: true }),
-        Animated.timing(opacity, { toValue: 0.4, duration: 700, useNativeDriver: true }),
-      ])
+    opacity.value = withRepeat(
+      withSequence(withTiming(0.35, { duration: 650 }), withTiming(1, { duration: 650 })),
+      -1,
+      false
     );
-    animation.start();
-    return () => animation.stop();
   }, [opacity]);
+
+  const animatedStyle = useAnimatedStyle(() => ({ opacity: opacity.value }));
 
   return (
     <Animated.View
       className={cn('bg-bg-elevated', className)}
-      style={[{ width, height, borderRadius }, { opacity }]}
+      style={[{ width, height, borderRadius }, animatedStyle]}
     />
   );
 }

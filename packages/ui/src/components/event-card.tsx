@@ -1,3 +1,4 @@
+import CalendarMonthIcon from '@expo/material-symbols/calendar_month.xml';
 import { Image, Pressable, View } from 'react-native';
 
 import { cn } from '../lib/utils';
@@ -81,7 +82,7 @@ export function EventCard({ event, onPress, className }: EventCardProps) {
         </View>
       ) : (
         <View className='h-20 w-20 items-center justify-center rounded-xl bg-bg-elevated'>
-          <Text className='text-2xl'>📅</Text>
+          <Image source={CalendarMonthIcon} style={{ width: 28, height: 28, tintColor: '#5C554D' }} />
         </View>
       )}
 
