@@ -25,15 +25,15 @@ App Launch
 
 ### Problems
 
-| Issue | Impact |
-|---|---|
-| **Feature showcase, not outcome** | Users see "Discover, Create, RSVP" — they don't see *actual events happening near them* |
-| **No guest browsing** | Every screen requires NDK context (signer + connected relay). No way to browse before committing |
-| **"Proceed Anonymously" is the only path** | OAuth stubs create false expectation; user thinks they're choosing auth method |
-| **Key generated silently** | No verification screen, no chance to back up nsec, no understanding of identity model |
-| **No city selection during onboarding** | Location permission requested but city defaults to hardcoded value |
-| **Onboarding ends at login** | No progressive engagement, no milestones, no habit loop |
-| **No permission priming** | Location requested via `expo-location` directly — no custom context screen |
+| Issue                                      | Impact                                                                                           |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| **Feature showcase, not outcome**          | Users see "Discover, Create, RSVP" — they don't see _actual events happening near them_          |
+| **No guest browsing**                      | Every screen requires NDK context (signer + connected relay). No way to browse before committing |
+| **"Proceed Anonymously" is the only path** | OAuth stubs create false expectation; user thinks they're choosing auth method                   |
+| **Key generated silently**                 | No verification screen, no chance to back up nsec, no understanding of identity model            |
+| **No city selection during onboarding**    | Location permission requested but city defaults to hardcoded value                               |
+| **Onboarding ends at login**               | No progressive engagement, no milestones, no habit loop                                          |
+| **No permission priming**                  | Location requested via `expo-location` directly — no custom context screen                       |
 
 ---
 
@@ -41,15 +41,17 @@ App Launch
 
 ### 2.1 Primary: Show the Outcome, Not the Features
 
-**Principle**: Before asking the user to generate a key, they must see *why* this app is useful.
+**Principle**: Before asking the user to generate a key, they must see _why_ this app is useful.
 
 **Implementation**:
+
 - **Guest mode**: App opens directly to a live feed of public events
 - Real events from their city/region (or global defaults)
 - No login required to browse list, calendar, or map views
 - Read-only NDK connection (no signer) for public event subscription
 
 **Reference apps** (from Mobbin research):
+
 - **Loom** — "Record & share screen or cam" with live demo animation
 - **Duolingo** — Try a lesson before signup
 - **Speak** — "Speak 1,000 phrases in your first week" with lesson preview
@@ -127,16 +129,16 @@ export async function connectNDKGuest(): Promise<NDK> {
 
 ### 3.3 Guest Mode Restrictions
 
-| Feature | Guest | Authenticated |
-|---|---|---|
-| Browse public events | ✅ | ✅ |
-| Calendar view | ✅ | ✅ |
-| Map view | ✅ | ✅ |
-| View public circles | ✅ (city + global) | ✅ (all) |
-| RSVP to event | ❌ (prompt to create identity) | ✅ |
-| Create event | ❌ (prompt to create identity) | ✅ |
-| Create/join private circles | ❌ | ✅ |
-| Send messages | ❌ | ✅ |
+| Feature                     | Guest                          | Authenticated |
+| --------------------------- | ------------------------------ | ------------- |
+| Browse public events        | ✅                             | ✅            |
+| Calendar view               | ✅                             | ✅            |
+| Map view                    | ✅                             | ✅            |
+| View public circles         | ✅ (city + global)             | ✅ (all)      |
+| RSVP to event               | ❌ (prompt to create identity) | ✅            |
+| Create event                | ❌ (prompt to create identity) | ✅            |
+| Create/join private circles | ❌                             | ✅            |
+| Send messages               | ❌                             | ✅            |
 
 ### 3.4 UI Patterns for Guest Barriers
 
@@ -169,20 +171,24 @@ When a guest taps a restricted action:
 Instead of a linear flow, prompts appear **contextually** as the user interacts:
 
 #### Prompt A: "See something you like?"
+
 - **Trigger**: User scrolls 3+ events or taps an event detail
 - **Content**: "Create your identity to RSVP and host your own events"
 - **CTA**: "Get Started" / "Later"
 - **Dismissal**: Can be dismissed; re-shows after 3 more sessions
 
 #### Prompt B: Location Permission
+
 - **Trigger**: User taps "Map" view or manually changes city
 - **Content**: Custom screen explaining why location helps (see Mobbin: Klook, Beli)
 - **CTA**: "Allow Location" / "Choose City Manually"
 - **No**: App works with manual city picker
 
 #### Prompt C: Key Generation (The "Verification" Screen)
+
 - **Trigger**: User taps any restricted action (RSVP, Create, Join Circle)
 - **Content**:
+
   ```
   Your Identity on Klk
 
@@ -197,6 +203,7 @@ Instead of a linear flow, prompts appear **contextually** as the user interacts:
 
   [I've Saved My nsec] [Copy nsec]
   ```
+
 - **Why**: Educates the user about the protocol, creates accountability for key backup, and feels like "verification" rather than "login"
 
 ### 4.3 Phase 2: First Actions (Aha Moment)
@@ -225,6 +232,7 @@ See Section 6 for full habit/gamification strategy.
 **Reference**: Klook, Beli, Waymo (from Mobbin)
 
 **Screen design**:
+
 ```
 ┌─────────────────────────────┐
 │  [Map illustration]         │
@@ -242,6 +250,7 @@ See Section 6 for full habit/gamification strategy.
 ```
 
 **Flow**:
+
 1. Show custom screen (above)
 2. User taps "Allow Location"
 3. App calls `expo-location.requestForegroundPermissionsAsync()`
@@ -254,6 +263,7 @@ See Section 6 for full habit/gamification strategy.
 **Trigger**: After user's first RSVP or first event creation
 
 **Screen design**:
+
 ```
 ┌─────────────────────────────┐
 │  [Bell illustration]        │
@@ -292,19 +302,19 @@ Milestones are **celebrated moments** that create positive reinforcement and soc
 
 #### Milestone Triggers
 
-| Milestone | Trigger | Reward | UI |
-|---|---|---|---|
-| **First Open** | App launched | Welcome toast | "Welcome to Klk 🎉" |
-| **First Event Viewed** | Tapped event detail | — | "Tap RSVP to save your spot" contextual hint |
-| **Identity Created** | Generated nsec | — | "Your identity: npub1..." screen |
-| **First RSVP** | Published kind-31925 | Confetti animation | "You're going! 🎉" + share CTA |
-| **First Event Created** | Published kind-31923 | Confetti + glow | "Your event is live! 🔥" |
-| **First Circle Joined** | Decrypted gift wrap | — | "You're in! 🙌" |
-| **First Circle Created** | Generated symkey | — | "Circle ready. Invite friends!" |
-| **3-Day Streak** | Opened app 3 days in a row | Badge | "3-day streak 🔥 Keep exploring!" |
-| **7-Day Streak** | 7 days | Badge + theme unlock? | "Week warrior! 🏆" |
-| **10 RSVPs** | Cumulative | Badge | "Social butterfly 🦋" |
-| **5 Events Hosted** | Cumulative | Badge | "Community builder 🏗️" |
+| Milestone                | Trigger                    | Reward                | UI                                           |
+| ------------------------ | -------------------------- | --------------------- | -------------------------------------------- |
+| **First Open**           | App launched               | Welcome toast         | "Welcome to Klk 🎉"                          |
+| **First Event Viewed**   | Tapped event detail        | —                     | "Tap RSVP to save your spot" contextual hint |
+| **Identity Created**     | Generated nsec             | —                     | "Your identity: npub1..." screen             |
+| **First RSVP**           | Published kind-31925       | Confetti animation    | "You're going! 🎉" + share CTA               |
+| **First Event Created**  | Published kind-31923       | Confetti + glow       | "Your event is live! 🔥"                     |
+| **First Circle Joined**  | Decrypted gift wrap        | —                     | "You're in! 🙌"                              |
+| **First Circle Created** | Generated symkey           | —                     | "Circle ready. Invite friends!"              |
+| **3-Day Streak**         | Opened app 3 days in a row | Badge                 | "3-day streak 🔥 Keep exploring!"            |
+| **7-Day Streak**         | 7 days                     | Badge + theme unlock? | "Week warrior! 🏆"                           |
+| **10 RSVPs**             | Cumulative                 | Badge                 | "Social butterfly 🦋"                        |
+| **5 Events Hosted**      | Cumulative                 | Badge                 | "Community builder 🏗️"                       |
 
 #### Milestone UI Patterns
 
@@ -324,25 +334,25 @@ Future iterations can add:
 
 ### 6.4 Re-engagement Hooks
 
-| Hook | Trigger | Channel |
-|---|---|---|
-| **Weekly digest** | Sunday AM | Push notification: "3 events this week in [City]" |
-| **RSVP reminder** | 24h before event | Push: "[Event] is tomorrow!" |
-| **Event update** | Event edited | Push: "[Event] details updated" |
-| **New event in city** | Real-time | Push: "New event near you: [Title]" |
-| **Streak at risk** | Day 2 without open | Push: "Don't lose your 3-day streak 🔥" |
-| **Circle activity** | New message/event | Push: "New activity in [Circle]" |
+| Hook                  | Trigger            | Channel                                           |
+| --------------------- | ------------------ | ------------------------------------------------- |
+| **Weekly digest**     | Sunday AM          | Push notification: "3 events this week in [City]" |
+| **RSVP reminder**     | 24h before event   | Push: "[Event] is tomorrow!"                      |
+| **Event update**      | Event edited       | Push: "[Event] details updated"                   |
+| **New event in city** | Real-time          | Push: "New event near you: [Title]"               |
+| **Streak at risk**    | Day 2 without open | Push: "Don't lose your 3-day streak 🔥"           |
+| **Circle activity**   | New message/event  | Push: "New activity in [Circle]"                  |
 
 ### 6.5 Empty States as Onboarding
 
 Every empty state is an opportunity to teach:
 
-| Screen | Empty State | CTA |
-|---|---|---|
-| Events Feed | "No events in [City] yet" | "Be the first to create one!" |
-| Circles | "No circles yet" | "Create a private group" |
-| RSVPs | "You haven't RSVP'd to anything" | "Browse events near you" |
-| Profile | "Your profile is empty" | "Share your npub with friends" |
+| Screen      | Empty State                      | CTA                            |
+| ----------- | -------------------------------- | ------------------------------ |
+| Events Feed | "No events in [City] yet"        | "Be the first to create one!"  |
+| Circles     | "No circles yet"                 | "Create a private group"       |
+| RSVPs       | "You haven't RSVP'd to anything" | "Browse events near you"       |
+| Profile     | "Your profile is empty"          | "Share your npub with friends" |
 
 ---
 
@@ -369,6 +379,7 @@ export const MOCK_EVENTS: PublicEvent[] = [
 ```
 
 **Usage**:
+
 - If `NODE_ENV === 'development'` and relay returns empty, inject mocks
 - Visual indicator: "[Demo Data]" badge on mock events
 
@@ -382,6 +393,7 @@ For production, seed the relay with **global public events**:
 - City-tagged so they appear in relevant feeds
 
 **Implementation**:
+
 - Admin tool or script to publish seed events
 - Events have long duration (e.g., "Barcelona Summer Festival" spanning weeks)
 - Updated seasonally
@@ -452,30 +464,30 @@ For production, seed the relay with **global public events**:
 
 ### 9.1 Show Outcome, Not Features
 
-| App | Pattern | Application for Klk |
-|---|---|---|
-| **Loom** | Animated walkthrough of the product | Live event feed as the first screen |
-| **Duolingo** | Try a lesson before signup | Browse events → prompt to RSVP |
-| **Speak** | "1,000 phrases in your first week" | "5 events near you this week" |
-| **Headspace** | 2-min guided tour video | Optional "How Klk Works" tooltip |
-| **Pangea** | "See where everyone is" | Map view with event pins |
+| App           | Pattern                             | Application for Klk                 |
+| ------------- | ----------------------------------- | ----------------------------------- |
+| **Loom**      | Animated walkthrough of the product | Live event feed as the first screen |
+| **Duolingo**  | Try a lesson before signup          | Browse events → prompt to RSVP      |
+| **Speak**     | "1,000 phrases in your first week"  | "5 events near you this week"       |
+| **Headspace** | 2-min guided tour video             | Optional "How Klk Works" tooltip    |
+| **Pangea**    | "See where everyone is"             | Map view with event pins            |
 
 ### 9.2 Custom Permission Screens
 
-| App | Pattern | Application for Klk |
-|---|---|---|
-| **Klook** | "One last step..." with illustration | Location primer with map illustration |
-| **Beli** | "Use Beli anywhere" with map graphic | Location primer with city discovery |
-| **Lyft** | "Track your ride with push notifications" | Notification primer with event reminder |
-| **Pillow** | "Don't Miss Important Reports" | Notification primer with sleep → event context |
+| App        | Pattern                                   | Application for Klk                            |
+| ---------- | ----------------------------------------- | ---------------------------------------------- |
+| **Klook**  | "One last step..." with illustration      | Location primer with map illustration          |
+| **Beli**   | "Use Beli anywhere" with map graphic      | Location primer with city discovery            |
+| **Lyft**   | "Track your ride with push notifications" | Notification primer with event reminder        |
+| **Pillow** | "Don't Miss Important Reports"            | Notification primer with sleep → event context |
 
 ### 9.3 Founder/Brand Notes
 
-| App | Pattern | Application for Klk |
-|---|---|---|
-| **Centr** | Chris Hemsworth personal video welcome | Optional: protocol explanation note |
-| **Craft** | "We asked users to come up with a tagline" | User testimonials about events |
-| **timespent** | Founder letter explaining the "why" | "Why Nostr?" educational tooltip |
+| App           | Pattern                                    | Application for Klk                 |
+| ------------- | ------------------------------------------ | ----------------------------------- |
+| **Centr**     | Chris Hemsworth personal video welcome     | Optional: protocol explanation note |
+| **Craft**     | "We asked users to come up with a tagline" | User testimonials about events      |
+| **timespent** | Founder letter explaining the "why"        | "Why Nostr?" educational tooltip    |
 
 ---
 
@@ -545,15 +557,15 @@ packages/infrastructure/
 
 ## 11. Success Metrics
 
-| Metric | Baseline | Target |
-|---|---|---|
-| Onboarding completion rate | N/A (no funnel) | >60% see events within 5s |
-| Day-1 retention | N/A | >40% return |
-| Day-7 retention | N/A | >20% return |
-| First RSVP rate | N/A | >30% of openers |
-| First event creation | N/A | >10% of openers |
-| Location permission grant | N/A | >50% |
-| Notification permission grant | N/A | >30% |
+| Metric                        | Baseline        | Target                    |
+| ----------------------------- | --------------- | ------------------------- |
+| Onboarding completion rate    | N/A (no funnel) | >60% see events within 5s |
+| Day-1 retention               | N/A             | >40% return               |
+| Day-7 retention               | N/A             | >20% return               |
+| First RSVP rate               | N/A             | >30% of openers           |
+| First event creation          | N/A             | >10% of openers           |
+| Location permission grant     | N/A             | >50%                      |
+| Notification permission grant | N/A             | >30%                      |
 
 ---
 
@@ -614,5 +626,5 @@ packages/infrastructure/
 
 ---
 
-*Document created: 2026-05-27*  
-*Next step: Review and prioritize Phase 1 implementation*
+_Document created: 2026-05-27_  
+_Next step: Review and prioritize Phase 1 implementation_

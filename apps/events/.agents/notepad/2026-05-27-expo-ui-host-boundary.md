@@ -56,6 +56,7 @@ event-form.ios.tsx
 ## Verification
 
 When adding a new `@expo/ui` component:
+
 1. Create `.android.tsx` and `.ios.tsx` platform-specific files
 2. Do NOT create a `.tsx` fallback — Metro will fail to resolve (that's correct)
 3. If a cross-platform fallback is needed, use pure React Native only (no `@expo/ui`)

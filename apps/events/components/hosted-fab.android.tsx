@@ -7,10 +7,7 @@ interface HostedFabProps {
 
 export function HostedFab({ onPress }: HostedFabProps) {
   return (
-    <Host
-      matchContents
-      style={{ position: 'absolute', bottom: 24, right: 24 }}
-    >
+    <Host matchContents style={{ position: 'absolute', bottom: 24, right: 24 }}>
       <FloatingActionButton onClick={onPress}>
         <FloatingActionButton.Icon>
           <Icon source={AddIcon} />

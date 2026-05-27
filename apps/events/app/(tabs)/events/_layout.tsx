@@ -1,14 +1,14 @@
-import { Stack } from "expo-router";
-import { useStore } from "@nanostores/react";
-import { $eventsSearch } from "@/features";
-import { Input } from "@klk/ui";
-import { View } from "react-native";
+import { $eventsSearch } from '@/features';
+import { Input } from '@klk/ui';
+import { useStore } from '@nanostores/react';
+import { Stack } from 'expo-router';
+import { View } from 'react-native';
 
 function SearchHeader() {
   const search = useStore($eventsSearch);
 
   return (
-    <View style={{ flex: 1, paddingRight: process.env.EXPO_OS === 'ios' ? 52 : 0 }}>
+    <View style={{ flex: 1, paddingTop: 10, paddingBottom: 10 }}>
       <Input
         placeholder='Search events...'
         value={search}
@@ -23,12 +23,12 @@ export default function EventsLayout() {
   return (
     <Stack>
       <Stack.Screen
-        name="index"
+        name='index'
         options={{
           headerTitle: () => <SearchHeader />,
         }}
       >
-        <Stack.Header style={{ shadowColor: "transparent" }} />
+        <Stack.Header style={{ shadowColor: 'transparent' }} />
       </Stack.Screen>
     </Stack>
   );

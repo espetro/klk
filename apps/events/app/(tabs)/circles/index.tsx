@@ -55,9 +55,7 @@ export default function CirclesScreen() {
         }
       />
 
-      {process.env.EXPO_OS !== 'ios' && (
-        <HostedFab onPress={() => router.push('/group/new')} />
-      )}
+      {process.env.EXPO_OS !== 'ios' && <HostedFab onPress={() => router.push('/group/new')} />}
     </View>
   );
 }

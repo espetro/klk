@@ -1,7 +1,7 @@
-import { PublicEventData, Coordinates } from "@klk/infrastructure";
-import MapView, { Marker } from "react-native-maps";
-import React, { useRef, useCallback, useMemo } from "react";
-import { View, type ViewStyle } from "react-native";
+import { PublicEventData, Coordinates } from '@klk/infrastructure';
+import React, { useRef, useCallback, useMemo } from 'react';
+import { View, type ViewStyle } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 
 type EventWithId = PublicEventData & { id: string; pubkey: string };
 
@@ -29,14 +29,14 @@ export const EventMapView = React.memo(function EventMapView({
     function handleMarkerPress(event: EventWithId) {
       onEventPress?.(event);
     },
-    [onEventPress],
+    [onEventPress]
   );
 
   const markers = useMemo(() => {
     return events
-      .filter((e) => e.location !== null && e.location !== undefined && e.location.includes(","))
+      .filter((e) => e.location !== null && e.location !== undefined && e.location.includes(','))
       .map((event) => {
-        const parts = event.location.split(",").map((s) => parseFloat(s.trim()));
+        const parts = event.location.split(',').map((s) => parseFloat(s.trim()));
         if (parts.length < 2 || parts.some(isNaN)) {
           return null;
         }
@@ -52,12 +52,10 @@ export const EventMapView = React.memo(function EventMapView({
           >
             <View
               className={`rounded-full items-center justify-center shadow-sm ${
-                isSelected
-                  ? "bg-indigo-600 w-9 h-9 border-4 border-white"
-                  : "bg-indigo-600 w-7 h-7"
+                isSelected ? 'bg-indigo-600 w-9 h-9 border-4 border-white' : 'bg-indigo-600 w-7 h-7'
               }`}
             >
-              <View className="bg-white w-2.5 h-2.5 rounded-full" />
+              <View className='bg-white w-2.5 h-2.5 rounded-full' />
             </View>
           </Marker>
         );

@@ -47,17 +47,18 @@ Verify there's no regressions introduced by running `bun run validate`
 
 Run both iOS and Android in parallel via tmux:
 
-| Command | What it does |
-|---------|-------------|
-| `bun run dev` | Start all: relay + Metro + iOS + Android |
-| `bun run dev:ios` | Start relay + Metro + iOS only |
-| `bun run dev:android` | Start relay + Metro + Android only |
-| `bun run dev:stop` | Kill the tmux session and all processes |
-| `bun run dev:status` | Check if dev session is running |
+| Command               | What it does                             |
+| --------------------- | ---------------------------------------- |
+| `bun run dev`         | Start all: relay + Metro + iOS + Android |
+| `bun run dev:ios`     | Start relay + Metro + iOS only           |
+| `bun run dev:android` | Start relay + Metro + Android only       |
+| `bun run dev:stop`    | Kill the tmux session and all processes  |
+| `bun run dev:status`  | Check if dev session is running          |
 
 **Session name**: `klk-dev` (fixed)
 
 **Tmux controls**:
+
 - Attach: `tmux attach -t klk-dev`
 - Detach: `Ctrl+b`, then `d`
 - Switch pane: `Ctrl+b`, then arrow keys

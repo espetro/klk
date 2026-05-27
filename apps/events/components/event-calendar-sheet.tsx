@@ -1,11 +1,15 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { BottomSheetSectionList } from '@gorhom/bottom-sheet';
+import { PublicEventData } from '@klk/infrastructure';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { View, Text, SectionList, SectionListRenderItem } from 'react-native';
 import { CalendarProvider, ExpandableCalendar } from 'react-native-calendars';
-import { BottomSheetSectionList } from '@gorhom/bottom-sheet';
-import { EventCard } from './event-card';
-import { PublicEventData } from '@klk/infrastructure';
 
-type EventWithId = PublicEventData & { id: string; pubkey: string };
+import { EventCard } from './event-card';
+
+interface EventWithId extends PublicEventData {
+  id: string;
+  pubkey: string;
+}
 
 interface DaySection {
   title: string;
@@ -59,7 +63,7 @@ function formatDateHeader(dateString: string): string {
   });
 }
 
-export function EventCalendarSheet({ events }: EventCalendarSheetProps) {
+export default function EventCalendarSheet({ events }: EventCalendarSheetProps) {
   const todayStr = new Date().toISOString().split('T')[0] || '';
   const [selectedDate, setSelectedDate] = useState(todayStr);
   const sectionListRef = useRef<SectionList>(null);
@@ -79,7 +83,7 @@ export function EventCalendarSheet({ events }: EventCalendarSheetProps) {
         });
       }
     },
-    [sections],
+    [sections]
   );
 
   const renderSectionHeader = ({ section }: any) => (
@@ -99,12 +103,7 @@ export function EventCalendarSheet({ events }: EventCalendarSheetProps) {
   return (
     <CalendarProvider date={selectedDate} onDateChanged={handleDateSelect}>
       <View style={{ flex: 1 }}>
-        <ExpandableCalendar
-          markedDates={markedDates}
-          firstDay={1}
-          showWeekNumbers
-          disablePan
-        />
+        <ExpandableCalendar markedDates={markedDates} firstDay={1} showWeekNumbers disablePan />
 
         <BottomSheetSectionList
           ref={sectionListRef}

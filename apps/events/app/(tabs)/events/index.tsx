@@ -1,5 +1,11 @@
 import { EventMapScreen } from '@/components';
-import { $lastActiveTab, $eventsSearch, useCity, usePublicEvents, useCityCoordinates } from '@/features';
+import {
+  $lastActiveTab,
+  $eventsSearch,
+  useCity,
+  usePublicEvents,
+  useCityCoordinates,
+} from '@/features';
 import { useStore } from '@nanostores/react';
 import { useFocusEffect } from 'expo-router';
 import { useCallback } from 'react';
@@ -42,11 +48,5 @@ export default function EventsScreen() {
 
   const filteredEvents = filterEvents(events, search);
 
-  return (
-    <EventMapScreen
-      events={filteredEvents}
-      city={city}
-      selectedCity={coordinates}
-    />
-  );
+  return <EventMapScreen events={filteredEvents} city={city} selectedCity={coordinates} />;
 }

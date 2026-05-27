@@ -7,7 +7,12 @@ export interface ButtonProps {
   onPress?: () => void;
 }
 
-export function HostedButton({ label, variant = 'filled', disabled = false, onPress }: ButtonProps) {
+export function HostedButton({
+  label,
+  variant = 'filled',
+  disabled = false,
+  onPress,
+}: ButtonProps) {
   const baseStyle: ViewStyle = {
     paddingVertical: 12,
     paddingHorizontal: 16,
@@ -20,7 +25,11 @@ export function HostedButton({ label, variant = 'filled', disabled = false, onPr
     variant === 'filled'
       ? { backgroundColor: disabled ? '#ccc' : '#007AFF' }
       : variant === 'outlined'
-        ? { borderWidth: 1, borderColor: disabled ? '#ccc' : '#007AFF', backgroundColor: 'transparent' }
+        ? {
+            borderWidth: 1,
+            borderColor: disabled ? '#ccc' : '#007AFF',
+            backgroundColor: 'transparent',
+          }
         : { backgroundColor: 'transparent' };
 
   const containerStyle: ViewStyle = { ...baseStyle, ...variantStyle };

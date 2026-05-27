@@ -1,5 +1,5 @@
-import { CityPicker, EventMapView } from "@/components";
-import { $city, useCity, useCityCoordinates, usePublicEvents } from "@/features";
+import { CityPicker, EventMapView } from '@/components';
+import { $city, useCity, useCityCoordinates, usePublicEvents } from '@/features';
 
 function handleCityChange(newCity: string) {
   $city.set({ ...$city.get(), name: newCity });

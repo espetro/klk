@@ -24,8 +24,8 @@
     "seed": "bun run scripts/seed.ts"
   },
   "devDependencies": {
-    "@nostr-dev-kit/ndk": "^3.0.3",
     "@babel/core": "7.29.0",
+    "@nostr-dev-kit/ndk": "^3.0.3",
     "@types/bun": "1.3.14",
     "@types/node": "25.9.1",
     "babel-plugin-react-compiler": "^1.0.0",

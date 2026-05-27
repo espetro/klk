@@ -1,8 +1,8 @@
-import PersonIcon from '@expo/material-symbols/person.xml';
-import { Stack, router } from 'expo-router';
-import { useStore } from '@nanostores/react';
 import { $circlesSearch } from '@/features';
+import PersonIcon from '@expo/material-symbols/person.xml';
 import { Input } from '@klk/ui';
+import { useStore } from '@nanostores/react';
+import { Stack, router } from 'expo-router';
 import { View } from 'react-native';
 
 type IconType = Parameters<typeof Stack.Toolbar.Button>[number]['icon'];
@@ -13,7 +13,14 @@ function SearchHeader() {
   const search = useStore($circlesSearch);
 
   return (
-    <View style={{ flex: 1, paddingRight: process.env.EXPO_OS === 'ios' ? 52 : 0 }}>
+    <View
+      style={{
+        flex: 1,
+        paddingTop: 10,
+        paddingBottom: 10,
+        paddingRight: process.env.EXPO_OS === 'ios' ? 52 : 0,
+      }}
+    >
       <Input
         placeholder='Search circles...'
         value={search}

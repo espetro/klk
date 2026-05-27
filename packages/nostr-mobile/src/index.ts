@@ -1,9 +1,6 @@
 // Re-export NDK core (NDK default class + essential exports)
 export { default } from '@nostr-dev-kit/ndk';
-export {
-  NDKEvent,
-  NDKPrivateKeySigner,
-} from '@nostr-dev-kit/ndk';
+export { NDKEvent, NDKPrivateKeySigner } from '@nostr-dev-kit/ndk';
 export type {
   NDKCacheAdapter,
   NDKFilter,

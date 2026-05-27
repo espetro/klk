@@ -8,6 +8,7 @@ Replaced the no-op mock at `packages/infrastructure/src/__mocks__/@nostr-dev-kit
 with a real greenfield package `packages/nostr-mobile` (`@klk/nostr-mobile`).
 
 Key files created:
+
 - `packages/nostr-mobile/src/index.ts` — re-exports NDK class + selected named exports
 - `packages/nostr-mobile/src/ndk.ts` — `createNDK()` factory, `NDKPrivateKeySigner` re-export
 - `packages/nostr-mobile/src/cache/sqlite.ts` — `KlkSQLiteCacheAdapter` implementing `NDKCacheAdapter`
@@ -20,6 +21,7 @@ Key files created:
 automatic. If omitted, Metro throws `Unable to resolve module @klk/nostr-mobile`.
 
 **Fix:** add the entry to `apps/events/metro.config.cjs`:
+
 ```js
 '@klk/nostr-mobile': path.resolve(__dirname, '..', '..', 'packages', 'nostr-mobile', 'package.json'),
 ```
@@ -30,19 +32,20 @@ Any future `@klk/*` workspace package needs the same registration.
 
 ## Learning 2: Real NDK API differences vs the mock
 
-| Point | Mock behaviour | Real NDK behaviour |
-|-------|---------------|-------------------|
-| `ndk.getUser({ pubkey })` | returned `Promise<NDKUser>` | **synchronous** — returns `NDKUser` directly. Remove all `await`. |
-| `NDKFilter.kinds` | required `as any` for kind 1059 | accepts numeric literals — remove the cast |
-| `NDKCacheAdapter.initialize(ndk)` | `initialize()` with no args | takes `(ndk: NDK)` — signature must match |
-| `NDKCacheAdapter.query(sub)` | void / called `sub.eventReceived` directly | must return `NDKEvent[] \| Promise<NDKEvent[]>` |
-| `NDKCacheAdapter.setEvent(e, filters, relay)` | relay was `string \| undefined` | relay is `NDKRelay \| undefined` |
+| Point                                         | Mock behaviour                             | Real NDK behaviour                                                |
+| --------------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------- |
+| `ndk.getUser({ pubkey })`                     | returned `Promise<NDKUser>`                | **synchronous** — returns `NDKUser` directly. Remove all `await`. |
+| `NDKFilter.kinds`                             | required `as any` for kind 1059            | accepts numeric literals — remove the cast                        |
+| `NDKCacheAdapter.initialize(ndk)`             | `initialize()` with no args                | takes `(ndk: NDK)` — signature must match                         |
+| `NDKCacheAdapter.query(sub)`                  | void / called `sub.eventReceived` directly | must return `NDKEvent[] \| Promise<NDKEvent[]>`                   |
+| `NDKCacheAdapter.setEvent(e, filters, relay)` | relay was `string \| undefined`            | relay is `NDKRelay \| undefined`                                  |
 
 ---
 
 ## Learning 3: `NDKPool.connect()` hangs forever without a timeout
 
 When no `timeoutMs` is passed, `NDKPool.connect()` creates:
+
 ```js
 const timeoutPromise = new Promise(() => {}); // never resolves
 await Promise.race([allConnectedPromise, timeoutPromise]);
@@ -53,6 +56,7 @@ If the relay is unreachable (e.g. `ws://localhost:10547` on Android emulator),
 indefinitely, `SplashScreen.hideAsync()` is never called, app stays black forever.
 
 **Fix:** always pass a timeout:
+
 ```ts
 await instance.connect(5000); // 5s is enough; app continues even if relay is down
 ```
@@ -75,7 +79,11 @@ import { Button, type ButtonProps } from '@expo/ui';
 import { Host } from '@expo/ui/jetpack-compose';
 
 export function HostedButton(props: ButtonProps) {
-  return <Host matchContents><Button {...props} /></Host>;
+  return (
+    <Host matchContents>
+      <Button {...props} />
+    </Host>
+  );
 }
 ```
 
