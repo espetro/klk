@@ -2,6 +2,8 @@ export * from './city-picker';
 export * from './event-card';
 export * from './event-form';
 export * from './event-map-view';
+export * from './event-map-screen';
+export * from './event-calendar-sheet';
 export * from './group-card';
 export * from './hosted-button';
 export * from './hosted-fab';

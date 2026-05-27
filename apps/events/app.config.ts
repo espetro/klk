@@ -37,6 +37,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-font',
     'expo-secure-store',
     '@maplibre/maplibre-react-native',
+    'react-native-maps',
     [
       'expo-splash-screen',
       {
