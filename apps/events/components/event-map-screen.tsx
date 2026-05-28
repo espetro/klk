@@ -1,8 +1,7 @@
 import BottomSheet, { BottomSheetProps } from '@gorhom/bottom-sheet';
 import { PublicEventData, Coordinates } from '@klk/infrastructure';
 import { useRouter } from 'expo-router';
-import { useCallback } from 'react';
-import { View } from 'react-native';
+import { PropsWithChildren, useCallback } from 'react';
 
 import EventCalendarSheet from './event-calendar-sheet';
 import { EventMapView } from './event-map-view';
@@ -13,7 +12,7 @@ type SnapPoints = NonNullable<BottomSheetProps['snapPoints']>;
 
 const SNAP_POINTS: SnapPoints = ['15%', '60%', '90%'];
 
-interface EventMapScreenProps {
+interface EventMapScreenProps extends PropsWithChildren {
   events: EventWithId[];
   city: string;
   selectedCity: Coordinates | null;
@@ -29,6 +28,7 @@ export function EventMapScreen({
   loading,
   error,
   onRefresh,
+  children,
 }: EventMapScreenProps) {
   const router = useRouter();
 
@@ -40,13 +40,15 @@ export function EventMapScreen({
   );
 
   return (
-    <View style={{ flex: 1 }}>
+    <>
       <EventMapView
         events={events}
         selectedCity={selectedCity}
         onEventPress={handleEventPress}
         style={{ flex: 1 }}
       />
+
+      {children}
 
       <BottomSheet snapPoints={SNAP_POINTS} index={1} style={{ flex: 1 }}>
         <EventCalendarSheet
@@ -57,6 +59,6 @@ export function EventMapScreen({
           onEventPress={handleEventPress}
         />
       </BottomSheet>
-    </View>
+    </>
   );
 }

@@ -1,12 +1,11 @@
-import CalendarTodayIcon from '@expo/material-symbols/calendar_today.xml';
-import LocationOnIcon from '@expo/material-symbols/location_on.xml';
-import IosShareIcon from '@expo/material-symbols/ios_share.xml';
-import MoreHorizIcon from '@expo/material-symbols/more_horiz.xml';
-import EditIcon from '@expo/material-symbols/edit.xml';
-import { theme } from '@klk/ui';
 import { GuestBarrier } from '@/components/GuestBarrier';
 import { useRsvps, useEventDetail, useFeatureFlag } from '@/features';
 import { NDKContext } from '@/lib/context/ndk-context';
+import CalendarTodayIcon from '@expo/material-symbols/calendar_today.xml';
+import EditIcon from '@expo/material-symbols/edit.xml';
+import IosShareIcon from '@expo/material-symbols/ios_share.xml';
+import LocationOnIcon from '@expo/material-symbols/location_on.xml';
+import MoreHorizIcon from '@expo/material-symbols/more_horiz.xml';
 import { User } from '@klk/core';
 import {
   parsePublicEvent,
@@ -14,7 +13,7 @@ import {
   buildEventCoordinate,
   publishRsvp,
 } from '@klk/infrastructure';
-import { AttendeeList, RSVPButton, EventDetailSkeleton } from '@klk/ui';
+import { theme, AttendeeList, RSVPButton, EventDetailSkeleton } from '@klk/ui';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useContext, useEffect, useState } from 'react';
 import { Alert, Image, Pressable, ScrollView, Share, Text, View } from 'react-native';
@@ -97,7 +96,10 @@ function HeroCard({
       className='mx-4 mt-4 items-center justify-center overflow-hidden rounded-2xl bg-bg-elevated'
       style={{ height: 240 }}
     >
-      <Image source={CalendarTodayIcon} style={{ width: 48, height: 48, tintColor: theme.textSecondary, marginBottom: 12 }} />
+      <Image
+        source={CalendarTodayIcon}
+        style={{ width: 48, height: 48, tintColor: theme.textSecondary, marginBottom: 12 }}
+      />
       <Text className='text-base font-bold text-text-primary text-center px-6' numberOfLines={3}>
         {title}
       </Text>
@@ -163,7 +165,10 @@ function EventDetailContent({
               accessibilityRole='button'
               accessibilityLabel='Edit event'
             >
-              <Image source={EditIcon} style={{ width: 24, height: 24, tintColor: theme.textSecondary }} />
+              <Image
+                source={EditIcon}
+                style={{ width: 24, height: 24, tintColor: theme.textSecondary }}
+              />
             </Pressable>
           ) : null}
           <Pressable
@@ -172,14 +177,20 @@ function EventDetailContent({
             accessibilityRole='button'
             accessibilityLabel='Share event'
           >
-            <Image source={IosShareIcon} style={{ width: 24, height: 24, tintColor: theme.textSecondary }} />
+            <Image
+              source={IosShareIcon}
+              style={{ width: 24, height: 24, tintColor: theme.textSecondary }}
+            />
           </Pressable>
           <Pressable
             className='h-12 w-12 items-center justify-center rounded-full bg-bg-elevated'
             accessibilityRole='button'
             accessibilityLabel='More options'
           >
-            <Image source={MoreHorizIcon} style={{ width: 24, height: 24, tintColor: theme.textSecondary }} />
+            <Image
+              source={MoreHorizIcon}
+              style={{ width: 24, height: 24, tintColor: theme.textSecondary }}
+            />
           </Pressable>
         </View>
 
@@ -188,7 +199,10 @@ function EventDetailContent({
           <View className='mx-4 mb-4 rounded-2xl bg-bg-elevated/50 p-4'>
             <SectionHeader title='Location' />
             <View className='flex-row items-center gap-2'>
-              <Image source={LocationOnIcon} style={{ width: 20, height: 20, tintColor: theme.textSecondary }} />
+              <Image
+                source={LocationOnIcon}
+                style={{ width: 20, height: 20, tintColor: theme.textSecondary }}
+              />
               <Text className='flex-1 text-sm text-text-primary'>{event.location}</Text>
             </View>
           </View>

@@ -1,4 +1,4 @@
-import { EventMapScreen } from '@/components';
+import { EventMapScreen, GuestBarrier, HostedFab } from '@/components';
 import {
   $lastActiveTab,
   $eventsSearch,
@@ -7,9 +7,11 @@ import {
   useCityCoordinates,
 } from '@/features';
 import { AllEvent } from '@/features/use-all-events';
+import { NDKContext } from '@/lib/context/ndk-context';
 import { useStore } from '@nanostores/react';
-import { useFocusEffect } from 'expo-router';
-import { useCallback } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useContext, useState } from 'react';
+import { View } from 'react-native';
 
 function filterEvents(events: AllEvent[], searchQuery: string): AllEvent[] {
   if (!searchQuery.trim()) {
@@ -27,10 +29,25 @@ function filterEvents(events: AllEvent[], searchQuery: string): AllEvent[] {
 }
 
 export default function EventsScreen() {
+  const [showBarrier, setShowBarrier] = useState(false);
+
+  const router = useRouter();
+  const search = useStore($eventsSearch);
+
   const city = useCity();
+  const { signer } = useContext(NDKContext);
   const coordinates = useCityCoordinates();
   const { events, loading, error, refresh } = useAllEvents();
-  const search = useStore($eventsSearch);
+
+  const filteredEvents = filterEvents(events, search);
+
+  const handleFabPress = useCallback(() => {
+    if (!signer) {
+      setShowBarrier(true);
+      return;
+    }
+    router.push('/circle/new');
+  }, [signer, router]);
 
   useFocusEffect(
     useCallback(() => {
@@ -41,16 +58,29 @@ export default function EventsScreen() {
     }, [])
   );
 
-  const filteredEvents = filterEvents(events, search);
-
   return (
-    <EventMapScreen
-      events={filteredEvents}
-      city={city}
-      selectedCity={coordinates}
-      loading={loading}
-      error={error}
-      onRefresh={refresh}
-    />
+    <View className='flex-1'>
+      <EventMapScreen
+        events={filteredEvents}
+        city={city}
+        selectedCity={coordinates}
+        loading={loading}
+        error={error}
+        onRefresh={refresh}
+      >
+        {process.env.EXPO_OS !== 'ios' && <HostedFab onPress={handleFabPress} />}
+        <GuestBarrier
+          visible={showBarrier}
+          title='Create an event'
+          description='You need an identity to create an event and invite others.'
+          ctaLabel='Create Identity'
+          onGetStarted={() => {
+            setShowBarrier(false);
+            router.push('/identity');
+          }}
+          onDismiss={() => setShowBarrier(false)}
+        />
+      </EventMapScreen>
+    </View>
   );
 }

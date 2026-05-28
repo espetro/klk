@@ -1,13 +1,12 @@
-import CalendarMonthIcon from '@expo/material-symbols/calendar_month.xml';
-import MoreHorizIcon from '@expo/material-symbols/more_horiz.xml';
-import { theme } from '@klk/ui';
 import { InviteFriendSheet, EventForm, EventFormValues } from '@/components';
 import { HostedButton as Button } from '@/components/hosted-button';
 import { MemberAvatar } from '@/components/member-avatar';
 import { useCircleEvents } from '@/features';
 import { NDKContext } from '@/lib/context/ndk-context';
+import CalendarMonthIcon from '@expo/material-symbols/calendar_month.xml';
+import MoreHorizIcon from '@expo/material-symbols/more_horiz.xml';
 import { getCircle, CircleRecord, publishPrivateEvent } from '@klk/infrastructure';
-import { CircleDetailSkeleton } from '@klk/ui';
+import { theme, CircleDetailSkeleton } from '@klk/ui';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useContext, useState } from 'react';
 import { Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
@@ -128,7 +127,10 @@ export default function CircleDetailScreen() {
               accessibilityRole='button'
               accessibilityLabel='Manage circle'
             >
-              <Image source={MoreHorizIcon} style={{ width: 24, height: 24, tintColor: theme.textSecondary }} />
+              <Image
+                source={MoreHorizIcon}
+                style={{ width: 24, height: 24, tintColor: theme.textSecondary }}
+              />
             </Pressable>
           </View>
         ) : null}
@@ -245,7 +247,10 @@ export default function CircleDetailScreen() {
           {/* Empty state */}
           {privateEvents.length === 0 ? (
             <View className='items-center py-16 gap-3'>
-              <Image source={CalendarMonthIcon} style={{ width: 48, height: 48, tintColor: '#5C554D' }} />
+              <Image
+                source={CalendarMonthIcon}
+                style={{ width: 48, height: 48, tintColor: '#5C554D' }}
+              />
               <Text className='text-base font-semibold text-text-primary'>No events yet</Text>
               {ndk && signer ? (
                 <Pressable
