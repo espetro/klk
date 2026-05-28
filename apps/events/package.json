@@ -8,6 +8,7 @@
     "ios": "expo run:ios",
     "android": "expo run:android",
     "web": "expo start --web",
+    "android:sha1": "cd android && ./gradlew signingReport 2>&1 | grep -A 10 '^> Task :app:signingReport' | grep 'SHA1:' | sed 's/SHA1: //' | tr -d ':'",
     "lint": "oxlint .",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
