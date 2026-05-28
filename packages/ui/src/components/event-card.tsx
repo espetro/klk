@@ -82,7 +82,10 @@ export function EventCard({ event, onPress, className }: EventCardProps) {
         </View>
       ) : (
         <View className='h-20 w-20 items-center justify-center rounded-xl bg-bg-elevated'>
-          <Image source={CalendarMonthIcon} style={{ width: 28, height: 28, tintColor: '#5C554D' }} />
+          <Image
+            source={CalendarMonthIcon}
+            style={{ width: 28, height: 28, tintColor: '#5C554D' }}
+          />
         </View>
       )}
 

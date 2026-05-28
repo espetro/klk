@@ -1,5 +1,11 @@
-import Animated, { useSharedValue, withRepeat, withSequence, withTiming, useAnimatedStyle } from 'react-native-reanimated';
 import { useEffect } from 'react';
+import Animated, {
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
+  useAnimatedStyle,
+} from 'react-native-reanimated';
 
 import { cn } from '../lib/utils';
 
