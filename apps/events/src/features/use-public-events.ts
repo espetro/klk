@@ -29,7 +29,9 @@ const MAX_RETRIES = 3;
 const BASE_DELAY_MS = 1000;
 
 function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
 
 async function loadCachedEvents(city: string): Promise<PublicEvent[]> {
@@ -122,10 +124,13 @@ export function usePublicEvents(): UsePublicEventsResult {
   );
 
   const parsed: PublicEvent[] = useMemo(() => {
-    if (USE_FIXTURES) return FIXTURE_EVENTS;
+    if (USE_FIXTURES) {
+      return FIXTURE_EVENTS;
+    }
+
     return (
       events
-        .map(parsePublicEvent)
+        .map((_) => parsePublicEvent(_))
         .filter((e) => e.start > 0)
         .slice()
         // eslint-disable-next-line unicorn/no-array-sort
@@ -144,7 +149,9 @@ export function usePublicEvents(): UsePublicEventsResult {
 
   const refresh = useCallback(
     function refreshSubscription() {
-      if (USE_FIXTURES) return;
+      if (USE_FIXTURES) {
+        return;
+      }
       setAttemptCount(0);
       startSubscription();
     },
