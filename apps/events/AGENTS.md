@@ -32,7 +32,10 @@ Uses nanostores (not React Context):
 
 ```tsx
 import CalendarMonthIcon from '@expo/material-symbols/calendar_month.xml';
-<Image source={CalendarMonthIcon} style={{ width: 24, height: 24, tintColor: theme.textSecondary }} />
+<Image
+  source={CalendarMonthIcon}
+  style={{ width: 24, height: 24, tintColor: theme.textSecondary }}
+/>;
 ```
 
 Import via `@expo/material-symbols/<name>.xml` (already a dependency). Browse available icons: [`fonts.google.com/icons`](https://fonts.google.com/icons) (search, select, copy the name in lowercase with underscores).

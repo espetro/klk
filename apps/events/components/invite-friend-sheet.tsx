@@ -91,7 +91,9 @@ export function InviteFriendSheet({
             <Text className='text-xs text-text-secondary font-mono'>{circle.id.slice(0, 8)}…</Text>
           </Pressable>
 
-          <Text className='text-sm font-medium text-text-secondary mb-2'>Member's npub or public key</Text>
+          <Text className='text-sm font-medium text-text-secondary mb-2'>
+            Member's npub or public key
+          </Text>
           <Input
             value={npub}
             onChangeText={setNpub}
@@ -101,7 +103,9 @@ export function InviteFriendSheet({
             editable={!loading}
           />
           {npub && !isValidInput && (
-            <Text className='text-red-500 text-xs mt-1 mb-2'>Invalid npub or public key format</Text>
+            <Text className='text-red-500 text-xs mt-1 mb-2'>
+              Invalid npub or public key format
+            </Text>
           )}
           {error && <Text className='text-red-500 text-sm mb-2'>{error}</Text>}
 

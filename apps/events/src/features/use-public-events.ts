@@ -60,7 +60,9 @@ export function usePublicEvents(): UsePublicEventsResult {
 
   const startSubscription = useCallback(
     async function startSubscription() {
-      if (USE_FIXTURES || !ndk || !city) return;
+      if (USE_FIXTURES || !ndk || !city) {
+        return;
+      }
       setLoading(true);
       setError(null);
 
