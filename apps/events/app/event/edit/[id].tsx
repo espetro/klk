@@ -16,7 +16,9 @@ export default function EditEventScreen() {
 
   useEffect(
     function loadEvent() {
-      if (!ndk || !id) return;
+      if (!ndk || !id) {
+        return;
+      }
       setLoading(true);
       ndk.fetchEvent(id).then((e) => {
         if (!e) {
@@ -32,7 +34,9 @@ export default function EditEventScreen() {
   );
 
   const handleSubmit = async (values: EventFormValues) => {
-    if (!ndk || !event) return;
+    if (!ndk || !event) {
+      return;
+    }
     setSubmitting(true);
     try {
       await publishPublicEvent(ndk, {

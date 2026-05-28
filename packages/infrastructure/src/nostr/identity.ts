@@ -11,7 +11,9 @@ export async function getOrCreateIdentity(): Promise<NDKPrivateKeySigner> {
   }
   const signer = NDKPrivateKeySigner.generate();
   const nsec = signer.privateKey;
-  if (!nsec) throw new Error('Failed to generate private key');
+  if (!nsec) {
+    throw new Error('Failed to generate private key');
+  }
   await setSecure(NSEC_KEY, nsec);
   return signer;
 }

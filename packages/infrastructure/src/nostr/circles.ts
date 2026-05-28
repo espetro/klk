@@ -73,7 +73,9 @@ export function processIncomingGiftWraps(ndk: NDK, myPubkey: string): void {
   const sub = ndk.subscribe({ kinds: [1059], '#p': [myPubkey] }, { closeOnEose: false });
   sub.on('event', async (event: NDKEvent) => {
     try {
-      if (!ndk.signer) return;
+      if (!ndk.signer) {
+        return;
+      }
       const decrypted = await (ndk.signer as NDKPrivateKeySigner).decrypt(
         ndk.getUser({ pubkey: event.pubkey }),
         event.content,

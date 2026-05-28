@@ -20,7 +20,9 @@ import { Alert, Image, Pressable, ScrollView, Share, Text, View } from 'react-na
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function formatDateRange(startTs: number, endTs?: number) {
-  if (!startTs) return 'TBD';
+  if (!startTs) {
+    return 'TBD';
+  }
   const start = new Date(startTs * 1000);
   const now = new Date();
   const isToday = start.toDateString() === now.toDateString();
@@ -45,7 +47,9 @@ function formatDateRange(startTs: number, endTs?: number) {
     hour12: true,
   });
 
-  if (!endTs) return `${dateStr}, ${startTime}`;
+  if (!endTs) {
+    return `${dateStr}, ${startTime}`;
+  }
 
   const endTime = new Date(endTs * 1000).toLocaleTimeString('en-US', {
     hour: 'numeric',
@@ -271,9 +275,13 @@ export default function EventDetailScreen() {
 
   useEffect(
     function loadEventDetail() {
-      if (!ndk || !id) return;
+      if (!ndk || !id) {
+        return;
+      }
       ndk.fetchEvent(id).then((e) => {
-        if (!e) return;
+        if (!e) {
+          return;
+        }
         const parsed = parsePublicEvent(e);
         setEvent(parsed);
         setCoordinate(buildEventCoordinate(e));
@@ -289,9 +297,13 @@ export default function EventDetailScreen() {
       setShowBarrier(true);
       return;
     }
-    if (!ndk || !coordinate) return;
+    if (!ndk || !coordinate) {
+      return;
+    }
 
-    if (hasRsvpd) return; // Only support RSVP-ing, no un-RSVP yet
+    if (hasRsvpd) {
+      return;
+    } // Only support RSVP-ing, no un-RSVP yet
 
     setRsvping(true);
     try {
@@ -306,7 +318,9 @@ export default function EventDetailScreen() {
   };
 
   const handleShare = async () => {
-    if (!event) return;
+    if (!event) {
+      return;
+    }
     try {
       await Share.share({
         message: `${event.title}\n${formatDateRange(event.start, event.end || undefined)}\n${event.location || ''}`,
@@ -388,7 +402,9 @@ function NewEventDetail({ eventId }: { eventId: string }) {
   };
 
   const handleShare = async () => {
-    if (!event) return;
+    if (!event) {
+      return;
+    }
     try {
       await Share.share({
         message: `${event.title}\n${formatDateRange(event.start, event.end || undefined)}\n${event.location || ''}`,

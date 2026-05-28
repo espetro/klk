@@ -39,7 +39,9 @@ export default function AddTab() {
     : 'Publish events to your city feed. You need an identity to host.';
 
   const handleEventSubmit = async (values: EventFormValues) => {
-    if (!ndk || !signer) return;
+    if (!ndk || !signer) {
+      return;
+    }
     setSubmittingEvent(true);
     try {
       await publishPublicEvent(ndk, {
@@ -60,7 +62,9 @@ export default function AddTab() {
   };
 
   const handleCircleCreate = async () => {
-    if (!circleName.trim() || !currentUser) return;
+    if (!circleName.trim() || !currentUser) {
+      return;
+    }
     setSubmittingCircle(true);
     try {
       await createCircle(circleName.trim(), currentUser.pubkey);

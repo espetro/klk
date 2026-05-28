@@ -34,7 +34,9 @@ export function useEventDetail(eventId: string, user: User | null): UseEventDeta
 
   useEffect(
     function loadEventDetail() {
-      if (!eventId) return;
+      if (!eventId) {
+        return;
+      }
       setLoading(true);
       setError(null);
 
@@ -67,7 +69,9 @@ export function useEventDetail(eventId: string, user: User | null): UseEventDeta
 
   const rsvp = useCallback(
     async function handleRsvp() {
-      if (!user || !eventId || hasRsvpd) return;
+      if (!user || !eventId || hasRsvpd) {
+        return;
+      }
       setRsvping(true);
       setRsvpError(null);
 

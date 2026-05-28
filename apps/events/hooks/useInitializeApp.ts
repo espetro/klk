@@ -25,7 +25,9 @@ export default function useInitializeApp() {
   const ndkRef = useRef<NDK | null>(null);
 
   const attachIdentity = useCallback(async function attachIdentity() {
-    if (!ndkRef.current) return;
+    if (!ndkRef.current) {
+      return;
+    }
     const s = await getOrCreateIdentity();
     ndkRef.current.signer = s;
     const user = await s.user();

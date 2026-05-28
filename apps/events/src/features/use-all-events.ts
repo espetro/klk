@@ -53,7 +53,9 @@ export function useAllEvents(): UseAllEventsResult {
 
   useEffect(
     function subscribeToCircleEvents() {
-      if (!ndk) return;
+      if (!ndk) {
+        return;
+      }
       setCircleLoading(true);
       setCircleError(null);
 
@@ -64,7 +66,9 @@ export function useAllEvents(): UseAllEventsResult {
         try {
           const { getAllCircles } = await import('@klk/infrastructure');
           const circles = await getAllCircles();
-          if (cancelled) return;
+          if (cancelled) {
+            return;
+          }
 
           const allCircleEvents: AllEvent[] = [];
           for (const circle of circles) {

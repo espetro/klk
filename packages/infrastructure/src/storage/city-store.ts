@@ -17,7 +17,9 @@ export const DEFAULT_CITY_SETTINGS: CitySettings = {
 
 export async function loadCitySettings(): Promise<CitySettings> {
   const raw = await getSecure(CITY_KEY);
-  if (!raw) return DEFAULT_CITY_SETTINGS;
+  if (!raw) {
+    return DEFAULT_CITY_SETTINGS;
+  }
   try {
     const parsed = JSON.parse(raw);
     return {

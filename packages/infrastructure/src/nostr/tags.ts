@@ -10,10 +10,10 @@ export function slugifyCity(name: string): string {
   return name
     .toLowerCase()
     .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9\-]/g, '')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
+    .replaceAll(/\s+/gu, '-')
+    .replaceAll(/[^a-z0-9-]/gu, '')
+    .replaceAll(/-+/gu, '-')
+    .replaceAll(/^-|-$/gu, '');
 }
 
 export function cityTag(name: string): [string, string] {

@@ -9,7 +9,9 @@ import { useState, useCallback, useContext } from 'react';
 import { FlatList, Text, View } from 'react-native';
 
 function filterCircles(circles: CircleRecord[], searchQuery: string) {
-  if (!searchQuery.trim()) return circles;
+  if (!searchQuery.trim()) {
+    return circles;
+  }
 
   const query = searchQuery.toLowerCase();
   return circles.filter((circle) => {

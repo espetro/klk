@@ -10,11 +10,11 @@ export class ExpoStorageAdapter implements IStorageService {
 
   setItem<T>(key: string, _value: T): Promise<Result<void, StorageError>> {
     console.warn(`[ExpoStorageAdapter] setItem("${key}", ...) — STUB, no-op`);
-    return Promise.resolve(ok(undefined));
+    return Promise.resolve(ok());
   }
 
   removeItem(key: string): Promise<Result<void, StorageError>> {
     console.warn(`[ExpoStorageAdapter] removeItem("${key}") — STUB, no-op`);
-    return Promise.resolve(ok(undefined));
+    return Promise.resolve(ok());
   }
 }

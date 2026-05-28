@@ -14,7 +14,9 @@ export default function NewEventScreen() {
   const router = useRouter();
 
   const handleSubmit = async (values: EventFormValues) => {
-    if (!ndk) return;
+    if (!ndk) {
+      return;
+    }
     setSubmitting(true);
     try {
       await publishPublicEvent(ndk, {

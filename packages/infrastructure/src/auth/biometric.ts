@@ -13,7 +13,9 @@ export async function isBiometricAvailable(): Promise<boolean> {
 
 export async function getBiometricType(): Promise<LocalAuthentication.AuthenticationType | null> {
   const hasHardware = await LocalAuthentication.hasHardwareAsync();
-  if (!hasHardware) return null;
+  if (!hasHardware) {
+    return null;
+  }
   return await LocalAuthentication.supportedAuthenticationTypesAsync().then(
     (types) => types[0] ?? null
   );

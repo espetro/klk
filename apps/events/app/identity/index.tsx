@@ -31,7 +31,9 @@ export default function IdentityScreen() {
   }, []);
 
   const copyPrivateKey = useCallback(() => {
-    if (!privateKey) return;
+    if (!privateKey) {
+      return;
+    }
     Clipboard.setString(privateKey);
     Alert.alert('Copied', 'Private key copied to clipboard. Store it somewhere safe.');
   }, [privateKey]);

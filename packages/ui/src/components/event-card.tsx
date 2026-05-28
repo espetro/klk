@@ -32,7 +32,9 @@ function formatTime(startTs: number, endTs?: number): string {
     minute: '2-digit',
     hour12: true,
   });
-  if (!endTs) return start;
+  if (!endTs) {
+    return start;
+  }
   const end = new Date(endTs * 1000).toLocaleTimeString('en-US', {
     hour: 'numeric',
     minute: '2-digit',
@@ -42,7 +44,9 @@ function formatTime(startTs: number, endTs?: number): string {
 }
 
 function RsvpBadge({ status }: { status: RsvpStatus }) {
-  if (!status) return null;
+  if (!status) {
+    return null;
+  }
 
   const config: Record<Exclude<RsvpStatus, null>, { label: string; className: string }> = {
     going: { label: 'Going', className: 'bg-state-highlight/15 text-state-highlight' },

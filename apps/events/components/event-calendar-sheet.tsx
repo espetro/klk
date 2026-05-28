@@ -104,7 +104,10 @@ export default function EventCalendarSheet({
 
   const allSections = useMemo(() => groupEventsByDate(events), [events]);
   const sections = useMemo(() => {
-    if (!filteredDate) return allSections;
+    if (!filteredDate) {
+      return allSections;
+    }
+
     return allSections.filter((s) => s.title === filteredDate);
   }, [allSections, filteredDate]);
   const markedDates = useMemo(() => buildMarkedDates(events), [events]);

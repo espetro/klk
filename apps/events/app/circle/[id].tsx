@@ -26,13 +26,21 @@ function formatRelativeTime(ts: number): string {
   const diff = ts - now;
   if (diff > 0) {
     const days = Math.floor(diff / 86400);
-    if (days === 0) return 'Today';
-    if (days === 1) return 'Tomorrow';
+    if (days === 0) {
+      return 'Today';
+    }
+    if (days === 1) {
+      return 'Tomorrow';
+    }
     return `In ${days} days`;
   }
   const days = Math.floor(-diff / 86400);
-  if (days === 0) return 'Today';
-  if (days === 1) return 'Yesterday';
+  if (days === 0) {
+    return 'Today';
+  }
+  if (days === 1) {
+    return 'Yesterday';
+  }
   return `${days} days ago`;
 }
 
@@ -50,14 +58,18 @@ export default function CircleDetailScreen() {
   useFocusEffect(
     useCallback(
       function loadCircle() {
-        if (id) getCircle(id).then(setCircle);
+        if (id) {
+          getCircle(id).then(setCircle);
+        }
       },
       [id]
     )
   );
 
   const handlePublishPrivateEvent = async (values: EventFormValues) => {
-    if (!ndk || !circle) return;
+    if (!ndk || !circle) {
+      return;
+    }
     setSubmitting(true);
     try {
       await publishPrivateEvent(ndk, circle, {

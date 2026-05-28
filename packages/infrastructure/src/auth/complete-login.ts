@@ -39,6 +39,8 @@ export async function isOnboardingComplete(): Promise<boolean> {
 
 export async function getOAuthProvider(): Promise<OAuthProvider | null> {
   const provider = await getSecure(OAUTH_PROVIDER_KEY);
-  if (provider === 'apple' || provider === 'google') return provider;
+  if (provider === 'apple' || provider === 'google') {
+    return provider;
+  }
   return null;
 }

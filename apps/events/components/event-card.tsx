@@ -8,7 +8,9 @@ interface Props {
 }
 
 function formatDate(ts: number) {
-  if (!ts) return 'TBD';
+  if (!ts) {
+    return 'TBD';
+  }
   return new Date(ts * 1000).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',

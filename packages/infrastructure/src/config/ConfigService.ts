@@ -16,7 +16,7 @@ export class ConfigService implements IConfigService {
   setFlag(name: FeatureFlag, value: boolean): Result<void, ConfigError> {
     try {
       this.flags.set(name, value);
-      return ok(undefined);
+      return ok();
     } catch {
       return err(new ConfigError(`Failed to set flag: ${name}`));
     }

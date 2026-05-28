@@ -11,7 +11,9 @@ export default function NewCircleScreen() {
   const router = useRouter();
 
   const handleCreate = async (data: { name: string }) => {
-    if (!currentUser) return;
+    if (!currentUser) {
+      return;
+    }
     setLoading(true);
     try {
       const newCircle = await createCircle(data.name.trim(), currentUser.pubkey);

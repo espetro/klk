@@ -20,8 +20,12 @@ interface Props {
 }
 
 function isValidNpub(str: string): boolean {
-  if (str.startsWith('npub1') && str.length > 50) return true;
-  if (/^[0-9a-f]{64}$/.test(str)) return true;
+  if (str.startsWith('npub1') && str.length > 50) {
+    return true;
+  }
+  if (/^[0-9a-f]{64}$/.test(str)) {
+    return true;
+  }
   return false;
 }
 
@@ -38,7 +42,9 @@ export function InviteFriendSheet({
   const [error, setError] = useState<string | null>(null);
 
   const handleInvite = async () => {
-    if (!npub.trim()) return;
+    if (!npub.trim()) {
+      return;
+    }
     setLoading(true);
     setError(null);
     try {

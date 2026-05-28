@@ -21,7 +21,9 @@ const AVATAR_OVERLAP = 10;
 const MAX_VISIBLE_AVATARS = 5;
 
 function truncateNpub(npub: string): string {
-  if (npub.length <= 16) return npub;
+  if (npub.length <= 16) {
+    return npub;
+  }
   return `${npub.slice(0, 8)}…${npub.slice(-4)}`;
 }
 

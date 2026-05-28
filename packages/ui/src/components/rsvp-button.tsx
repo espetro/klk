@@ -24,7 +24,9 @@ export function RSVPButton({ isGoing, onToggle, loading }: RSVPButtonProps) {
   }
 
   const handlePress = async () => {
-    if (loading || isRollingBack) return;
+    if (loading || isRollingBack) {
+      return;
+    }
 
     const previousState = optimisticGoing;
     const newState = !previousState;

@@ -88,7 +88,9 @@ export function EventForm({ onSubmit, submitting, submitLabel = 'Publish' }: Pro
           mode='datetime'
           onChange={(_, d) => {
             setShowStart(Platform.OS === 'ios');
-            if (d) setStart(d);
+            if (d) {
+              setStart(d);
+            }
           }}
         />
       )}
@@ -98,7 +100,9 @@ export function EventForm({ onSubmit, submitting, submitLabel = 'Publish' }: Pro
           mode='datetime'
           onChange={(_, d) => {
             setShowEnd(Platform.OS === 'ios');
-            if (d) setEnd(d);
+            if (d) {
+              setEnd(d);
+            }
           }}
         />
       )}

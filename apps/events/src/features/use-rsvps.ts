@@ -8,7 +8,9 @@ export function useRsvps(eventCoordinate: string) {
 
   useEffect(
     function subscribeToRsvps() {
-      if (!ndk || !eventCoordinate) return;
+      if (!ndk || !eventCoordinate) {
+        return;
+      }
       setRsvps([]);
       const sub = ndk.subscribe(
         { kinds: [31925 as any], '#a': [eventCoordinate] },

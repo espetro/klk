@@ -13,7 +13,9 @@ export function useCircleEvents(circle: CircleRecord | null) {
 
   useEffect(
     function subscribeToCircleEvents() {
-      if (!ndk || !circle) return;
+      if (!ndk || !circle) {
+        return;
+      }
       setEvents([]);
       const sub = ndk.subscribe(
         { kinds: [30078 as any], '#g': [circle.id] },

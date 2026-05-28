@@ -28,7 +28,9 @@ export default function CircleManageScreen() {
   const isOwner = circle && currentUser && circle.members[0] === currentUser.pubkey;
 
   const handleSaveName = async (data: { name: string }) => {
-    if (!circle) return;
+    if (!circle) {
+      return;
+    }
     setLoading(true);
     try {
       const updated: CircleRecord = { ...circle, name: data.name.trim() };
@@ -42,7 +44,9 @@ export default function CircleManageScreen() {
   };
 
   const handleRemoveMember = (pubkey: string) => {
-    if (!circle) return;
+    if (!circle) {
+      return;
+    }
     Alert.alert('Remove Member', 'Remove this member from the circle?', [
       { text: 'Cancel', style: 'cancel' },
       {
@@ -68,7 +72,9 @@ export default function CircleManageScreen() {
   };
 
   const handleLeaveOrDelete = () => {
-    if (!circle) return;
+    if (!circle) {
+      return;
+    }
     const action = isOwner ? 'Delete' : 'Leave';
     const message = isOwner
       ? 'Delete this circle? This cannot be undone.'

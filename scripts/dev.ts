@@ -1,10 +1,10 @@
 #!/usr/bin/env bun
 
-process.title = 'klk-dev';
-
 import { resolve } from 'node:path';
 
 import { spawn as bunSpawn } from 'bun';
+
+process.title = 'klk-dev';
 
 const repoRoot = resolve(import.meta.dir, '..');
 

@@ -23,5 +23,5 @@ export async function rsvpEvent(
     return err(result.error);
   }
 
-  return ok(undefined);
+  return ok();
 }
