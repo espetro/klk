@@ -35,6 +35,8 @@ apps/events/ios/Pods/
 apps/events/tmp/
 apps/events/tests/screenshots
 .claude/settings.local.json
+# Workspace-specific symlinks to .agents/skills
+.claude/skills/
 
 # Unblock project-tracked paths that global gitignore excludes
 !.claude/
