@@ -1,0 +1,18 @@
+# Overlay 11a — Circle Created Toast
+# Shown immediately after successful circle creation, over screen 12.
+# Full re-draw not needed — only bottom region changes.
+
+  ┌─────────────────────────────────────────┐
+  │                                         │
+  │  (screen 12 content behind)             │
+  │                                         │
+  │                                         │
+  │                                         │
+  │  ┌─────────────────────────────────┐    │
+  │  │  ✓  Circle created              │    │  <- Toast (green, bottom)
+  │  └─────────────────────────────────┘    │  <- auto-dismisses ~2s
+  │                                         │
+  └─────────────────────────────────────────┘
+
+  State: NOT currently implemented. Circle create navigates silently.
+  M1 gap: add toast/snackbar after router.replace(`/circle/${newCircle.id}`).

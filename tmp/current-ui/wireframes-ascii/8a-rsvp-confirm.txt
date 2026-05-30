@@ -1,0 +1,33 @@
+# Overlay 8a — RSVP Confirmation
+# Shown in event detail (screens 8 or 13) after tapping the RSVP button.
+# Only the action button region changes.
+
+  ┌─────────────────────────────────────────┐
+  │  ...                                    │
+  │                                         │
+  │  ○ ○  (attendee avatars)                │
+  │                                         │
+  │  HOST                                   │
+  │  ○                                      │
+  │                                         │
+  │  BEFORE tap:                            │
+  │  ┌─────────────────────────────────┐    │
+  │  │         Not Going               │    │  <- Outlined button (default)
+  │  └─────────────────────────────────┘    │
+  │                                         │
+  │  AFTER successful RSVP:                 │
+  │  ┌─────────────────────────────────┐    │
+  │  │           Going ✓               │    │  <- Filled button (success state)
+  │  └─────────────────────────────────┘    │
+  │                                         │
+  │  DURING submit:                         │
+  │  ┌─────────────────────────────────┐    │
+  │  │         …                       │    │  <- spinner / disabled
+  │  └─────────────────────────────────┘    │
+  │                                         │
+  └─────────────────────────────────────────┘
+
+  State: "Not Going" is the INITIAL button label (before any RSVP).
+  M1 gap: confirm button label reflects live RSVP state from useRsvps().
+         If currentUser.pubkey is in rsvps[], show "Going ✓"; else "Not Going".
+         Currently unknown whether event/[id].tsx reads rsvps to set button state.

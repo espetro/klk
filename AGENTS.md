@@ -71,6 +71,35 @@ Run both iOS and Android in parallel via tmux:
 
 **Prerequisites**: `brew install tmux` (tmux must be installed)
 
+## Hard Freeze (in effect until M1 ships — target 2026-06-04)
+
+**No renames, no architectural refactors, no formatter config changes, no Expo SDK upgrades, no native dep upgrades.**
+Bug fixes and M1 hardening only. If you're about to write a `refactor:` or `style:` commit — stop and check with the user first.
+
+See `docs/roadmap.md` for the full M1 scope and non-goals.
+
+## Known Traps — Tripwire List
+
+Fuzzy search the notepad before touching any of these areas:
+
+```
+demongrep search "<what you're about to do>" .agents/notepad/
+```
+
+**Load-bearing traps (don't touch without reading the notepad first):**
+
+1. **expo-modules-core / expo-image patches** → read `.agents/notepad/2026-05-25-expo-modules-core-reified-fix.md` and `2026-05-25-expo-image-android-build-fix.md` before touching patches or any Kotlin `reifiedOperationMarker` / `typeDescriptorOf` call sites.
+2. **`ndk.connect()`** → always pass `timeoutMs`. See `.agents/notepad/2026-05-25-klk-nostr-mobile-implementation.md`.
+3. **`@expo/ui` BottomSheet** → use RN `Modal` for new sheets. The `@expo/ui BottomSheet` was flipped and reverted twice this cycle. See `.agents/notepad/2026-05-28-no-expo-ui-bottomsheet.md`.
+4. **Android-only native components (FAB, FieldGroup, etc.)** → `null` stub for Metro cross-platform resolution only; never use a Pressable fake. See `.agents/notepad/2026-05-28-no-cross-platform-fake-native.md`.
+5. **Any repo-wide rename** → hard freeze. Requires user sign-off + 3 confirmed usages minimum. See `.agents/notepad/2026-05-28-no-rename-without-evidence.md`.
+
+**Naming:** Private groups are *Circles*, not Groups. Do NOT rename.
+
+**MapLibre:** Existing code stays. Do NOT use MapLibre for new map work — use `react-native-maps` or `expo-maps`.
+
+**`@expo/ui` Host boundary:** `@expo/ui` components must be wrapped in `<Host>` from the matching platform package. Use platform-split files (`.android.tsx`, `.ios.tsx`) for any component using `@expo/ui`. See `apps/events/AGENTS.md` and `.agents/notepad/2026-05-27-expo-ui-host-boundary.md`.
+
 ## Backward Compatibility
 
 `CLAUDE.md → AGENTS.md` symlinks exist at root and in each package for Claude Code compatibility. Do NOT create new `CLAUDE.md` files.

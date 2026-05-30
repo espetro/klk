@@ -1,0 +1,33 @@
+# Overlay 18a — Invite Sent Confirmation
+# Shown after InviteFriendSheet successfully calls inviteToCircle().
+# Sheet closes; this toast appears over screen 12.
+
+  ┌─────────────────────────────────────────┐
+  │                                         │
+  │  (screen 12 content behind)             │
+  │  member count updated: N member(s)      │
+  │                                         │
+  │                                         │
+  │  ┌─────────────────────────────────┐    │
+  │  │  ✓  Invite sent                 │    │  <- Toast (green, bottom)
+  │  └─────────────────────────────────┘    │  <- auto-dismisses ~2s
+  │                                         │
+  └─────────────────────────────────────────┘
+
+  State: NOT currently implemented. Sheet closes silently (onClose() called).
+  M1 gap: emit toast from parent after onCircleUpdated fires.
+
+# Sub-overlay 18a-circle-id-copied — "Circle ID copied" inline feedback
+# Triggered by tapping "Copy Circle ID" pressable in invite sheet.
+
+  ┌─────────────────────────────────────────┐
+  │  ...                                    │
+  │                                         │
+  │  Copy Circle ID                         │
+  │  7b1af92a...              [Copied ✓]    │  <- label changes for ~1.5s
+  │                                         │
+  │  ...                                    │
+  └─────────────────────────────────────────┘
+
+  State: NOT implemented. Clipboard.setString fires but no UI feedback.
+  M1 gap: local state toggle on the copy pressable.

@@ -24,6 +24,8 @@ web-build/
 expo-env.d.ts
 # @end expo-cli
 .osgrep
+.demongrep.db/
+.fastembed_cache/
 
 # iOS build artifacts and dependencies
 apps/events/ios/build/
@@ -33,3 +35,9 @@ apps/events/ios/Pods/
 apps/events/tmp/
 apps/events/tests/screenshots
 .claude/settings.local.json
+
+# Unblock project-tracked paths that global gitignore excludes
+!.claude/
+!.claude/settings.json
+!tmp/
+!tmp/current-ui/

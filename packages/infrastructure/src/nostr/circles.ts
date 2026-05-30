@@ -4,6 +4,7 @@ import * as Crypto from 'expo-crypto';
 
 import { CircleRecord, getCircle, saveCircle } from '../storage/circles-store';
 import { PublicEventData } from './events';
+import { NkdKind } from './kinds';
 
 function uint8ToHex(buf: Uint8Array): string {
   return Array.from(buf)
@@ -129,7 +130,7 @@ export async function publishPrivateEvent(
 
   const eventId = uint8ToHex(await Crypto.getRandomBytesAsync(16));
   const event = new NDKEvent(ndk);
-  event.kind = 30078;
+  event.kind = NkdKind.AppSpecificData;
   event.content = encrypted;
   event.tags = [
     ['d', `circle-event:${circle.id}:${eventId}`],
