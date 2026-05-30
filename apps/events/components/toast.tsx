@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Animated, Text } from 'react-native';
+import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export interface ToastMessage {
@@ -8,54 +8,40 @@ export interface ToastMessage {
 }
 
 export function Toast({ toastMessage }: { toastMessage: ToastMessage | null }) {
-  const [opacity] = useState(new Animated.Value(0));
+  const [visible, setVisible] = useState(false);
   const insets = useSafeAreaInsets();
 
   useEffect(() => {
     if (!toastMessage) {
-      Animated.timing(opacity, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
+      setVisible(false);
       return;
     }
 
-    Animated.sequence([
-      Animated.timing(opacity, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-      Animated.delay(2700),
-      Animated.timing(opacity, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, [toastMessage, opacity]);
+    setVisible(true);
+    const timer = setTimeout(() => {
+      setVisible(false);
+    }, 3000);
 
-  if (!toastMessage) {
+    return () => clearTimeout(timer);
+  }, [toastMessage]);
+
+  if (!toastMessage || !visible) {
     return null;
   }
 
   return (
-    <Animated.View
-      style={[
-        {
-          opacity,
-          position: 'absolute',
-          bottom: Math.max(insets.bottom, 16),
-          left: 16,
-          right: 16,
-          backgroundColor: '#000',
-          borderRadius: 8,
-          paddingHorizontal: 16,
-          paddingVertical: 12,
-          zIndex: 1000,
-        },
-      ]}
+    <View
+      style={{
+        position: 'absolute',
+        bottom: Math.max(insets.bottom, 16),
+        left: 16,
+        right: 16,
+        backgroundColor: '#000',
+        borderRadius: 8,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        zIndex: 1000,
+      }}
       pointerEvents='none'
     >
       <Text
@@ -68,6 +54,6 @@ export function Toast({ toastMessage }: { toastMessage: ToastMessage | null }) {
       >
         {toastMessage.message}
       </Text>
-    </Animated.View>
+    </View>
   );
 }
