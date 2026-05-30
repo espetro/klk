@@ -2,14 +2,14 @@
 import 'react-native-get-random-values';
 // eslint-disable-next-line import/no-unassigned-import
 import '../global.css';
-import useInitializeApp from '@/hooks/useInitializeApp';
-import { NDKContext } from '@/lib/context/ndk-context';
 import { Toast } from '@/components/toast';
 import { $toast } from '@/features';
+import useInitializeApp from '@/hooks/useInitializeApp';
+import { NDKContext } from '@/lib/context/ndk-context';
+import { useStore } from '@nanostores/react';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { useStore } from '@nanostores/react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 SplashScreen.preventAutoHideAsync();

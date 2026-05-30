@@ -2,7 +2,6 @@ import { useOnboarding } from '@/features';
 import {
   connectNDKGuest,
   getOrCreateIdentity,
-  hasIdentity,
   isOnboardingComplete,
   processIncomingGiftWraps,
   NDKMock as NDK,
@@ -49,16 +48,12 @@ export default function useInitializeApp() {
           setOnboardingComplete(complete);
           setOnboardingChecked(true);
 
-          // Attach signer only if the user already has a stored identity
-          const identified = await hasIdentity();
-          if (identified) {
-            const s = await getOrCreateIdentity();
-            instance.signer = s;
-            const user = await s.user();
-            setSigner(s);
-            setCurrentUser(user);
-            processIncomingGiftWraps(instance, user.pubkey);
-          }
+          const s = await getOrCreateIdentity();
+          instance.signer = s;
+          const user = await s.user();
+          setSigner(s);
+          setCurrentUser(user);
+          processIncomingGiftWraps(instance, user.pubkey);
         } catch (error) {
           console.error('RootLayout init error:', error);
           setOnboardingComplete(false);

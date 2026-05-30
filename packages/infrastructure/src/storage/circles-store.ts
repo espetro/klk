@@ -35,7 +35,7 @@ export async function getCircle(id: string): Promise<CircleRecord | null> {
 export async function getAllCircles(): Promise<CircleRecord[]> {
   const ids = await getIndex();
   const circles = await Promise.all(ids.map((_) => getCircle(_)));
-  return circles.filter(Boolean);
+  return circles.filter((c): c is CircleRecord => c !== null);
 }
 
 export async function deleteCircle(id: string): Promise<void> {

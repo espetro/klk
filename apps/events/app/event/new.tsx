@@ -30,7 +30,12 @@ export default function NewEventScreen() {
       });
       router.back();
     } catch (error) {
-      Alert.alert('Error', error instanceof Error ? (error.message ?? 'Failed to publish event') : 'Failed to publish event');
+      Alert.alert(
+        'Error',
+        error instanceof Error
+          ? (error.message ?? 'Failed to publish event')
+          : 'Failed to publish event'
+      );
     } finally {
       setSubmitting(false);
     }

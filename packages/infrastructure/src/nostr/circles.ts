@@ -42,18 +42,13 @@ export async function inviteToCircle(
   circle: CircleRecord,
   recipientPubkey: string
 ): Promise<void> {
+  const updatedMembers = [...new Set([...circle.members, recipientPubkey])];
   const payload = JSON.stringify({
     id: circle.id,
     name: circle.name,
     symKey: circle.symKey,
-    members: circle.members,
+    members: updatedMembers,
   });
-
-  const inner = new NDKEvent(ndk);
-  inner.kind = 14;
-  inner.content = payload;
-  inner.tags = [['p', recipientPubkey]];
-  inner.created_at = Math.floor(Date.now() / 1000);
 
   const sealed = await signer.encrypt(ndk.getUser({ pubkey: recipientPubkey }), payload, 'nip44');
 
@@ -65,7 +60,7 @@ export async function inviteToCircle(
 
   const updated: CircleRecord = {
     ...circle,
-    members: [...new Set([...circle.members, recipientPubkey])],
+    members: updatedMembers,
   };
   await saveCircle(updated);
 }

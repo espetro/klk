@@ -1,5 +1,5 @@
 import { NDKContext } from '@/lib/context/ndk-context';
-import { parsePublicEvent, publishPublicEvent } from '@klk/infrastructure';
+import { parsePublicEvent, publishPublicEvent, type PublicEventData } from '@klk/infrastructure';
 import { EventForm, EventDetailSkeleton } from '@klk/ui';
 import type { EventFormValues } from '@klk/ui';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
@@ -9,7 +9,9 @@ import { Alert } from 'react-native';
 export default function EditEventScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { ndk } = useContext(NDKContext);
-  const [event, setEvent] = useState<Record<string, unknown> | null>(null);
+  const [event, setEvent] = useState<(PublicEventData & { id: string; pubkey: string }) | null>(
+    null
+  );
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
@@ -50,7 +52,12 @@ export default function EditEventScreen() {
       });
       router.back();
     } catch (error) {
-      Alert.alert('Error', error instanceof Error ? (error.message ?? 'Failed to update event') : 'Failed to update event');
+      Alert.alert(
+        'Error',
+        error instanceof Error
+          ? (error.message ?? 'Failed to update event')
+          : 'Failed to update event'
+      );
     } finally {
       setSubmitting(false);
     }

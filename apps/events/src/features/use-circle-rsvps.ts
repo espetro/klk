@@ -1,10 +1,5 @@
 import { NDKContext } from '@/lib/context/ndk-context';
-import {
-  CircleRecord,
-  aesGcmDecrypt,
-  NDKEvent,
-  NkdKind,
-} from '@klk/infrastructure';
+import { CircleRecord, aesGcmDecrypt, NDKEvent, NkdKind } from '@klk/infrastructure';
 import { useContext, useEffect, useState } from 'react';
 
 export interface CircleRsvp {
@@ -12,10 +7,7 @@ export interface CircleRsvp {
   status: string;
 }
 
-export function useCircleRsvps(
-  circle: CircleRecord | null,
-  eventId: string | null
-): CircleRsvp[] {
+export function useCircleRsvps(circle: CircleRecord | null, eventId: string | null): CircleRsvp[] {
   const { ndk } = useContext(NDKContext);
   const [rsvps, setRsvps] = useState<CircleRsvp[]>([]);
 
@@ -35,7 +27,9 @@ export function useCircleRsvps(
           const data = JSON.parse(plain) as { status?: string };
           setRsvps((prev) => {
             const exists = prev.find((x) => x.pubkey === e.pubkey);
-            return exists ? prev : [...prev, { pubkey: e.pubkey, status: data.status ?? 'accepted' }];
+            return exists
+              ? prev
+              : [...prev, { pubkey: e.pubkey, status: data.status ?? 'accepted' }];
           });
         } catch {}
       });

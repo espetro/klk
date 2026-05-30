@@ -1,5 +1,5 @@
-import { atom } from 'nanostores';
 import type { ToastMessage } from '@/components/toast';
+import { atom } from 'nanostores';
 
 export const $toast = atom<ToastMessage | null>(null);
 

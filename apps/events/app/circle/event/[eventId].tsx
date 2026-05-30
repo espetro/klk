@@ -6,12 +6,7 @@ import IosShareIcon from '@expo/material-symbols/ios_share.xml';
 import LocationOnIcon from '@expo/material-symbols/location_on.xml';
 import MoreHorizIcon from '@expo/material-symbols/more_horiz.xml';
 import { User } from '@klk/core';
-import {
-  getCircle,
-  CircleRecord,
-  PublicEventData,
-  publishPrivateRsvp,
-} from '@klk/infrastructure';
+import { getCircle, CircleRecord, PublicEventData, publishPrivateRsvp } from '@klk/infrastructure';
 import { theme, AttendeeList, RSVPButton, EventDetailSkeleton } from '@klk/ui';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useContext, useEffect, useState } from 'react';
