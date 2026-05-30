@@ -2,6 +2,7 @@ import { HostedButton as Button } from '@/components/hosted-button';
 import { HostedInput as Input } from '@/components/hosted-input';
 import { CITIES, DistanceRange, DISTANCE_RANGES } from '@klk/infrastructure';
 import * as Location from 'expo-location';
+import { err, ok } from 'neverthrow';
 import { useState, useCallback } from 'react';
 import { View, Text, ScrollView, Alert } from 'react-native';
 
@@ -11,6 +12,30 @@ export interface LocationSelection {
   lon?: number;
   distance: DistanceRange;
 }
+
+const fetchCurrentLocation = async () => {
+  try {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+
+    if (status !== 'granted') {
+      return err([
+        'Permission denied',
+        'Location permission is required to use this feature.',
+      ] as const);
+    }
+
+    const location = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.Low,
+    });
+
+    return ok({
+      lat: location.coords.latitude,
+      lon: location.coords.longitude,
+    });
+  } catch {
+    return err(['Error', 'Unable to get your current location.'] as const);
+  }
+};
 
 export interface LocationPickerProps {
   value: LocationSelection;
@@ -62,35 +87,21 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
     [onChange, value]
   );
 
-  const handleUseCurrentLocation = useCallback(
-    async function handleUseCurrentLocation() {
-      setIsLocating(true);
-      try {
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          Alert.alert('Permission denied', 'Location permission is required to use this feature.');
-          return;
-        }
+  const handleUseCurrentLocation = async () => {
+    setIsLocating(true);
+    const response = await fetchCurrentLocation();
 
-        const location = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.Low,
-        });
-
-        onChange({
-          city: 'current',
-          lat: location.coords.latitude,
-          lon: location.coords.longitude,
-          distance: value.distance,
-        });
+    response.match(
+      (location) => {
+        onChange({ ...location, city: 'current', distance: value.distance });
         setSearchQuery('Current location');
-      } catch {
-        Alert.alert('Error', 'Unable to get your current location.');
-      } finally {
-        setIsLocating(false);
+      },
+      ([title, message]) => {
+        Alert.alert(title, message);
       }
-    },
-    [onChange, value.distance]
-  );
+    );
+    setIsLocating(false);
+  };
 
   return (
     <View className='bg-white rounded-xl p-4 shadow-sm border border-gray-100'>
