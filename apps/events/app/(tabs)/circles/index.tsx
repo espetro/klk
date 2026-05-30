@@ -55,7 +55,7 @@ export default function CirclesScreen() {
         renderItem={({ item }) => <CircleCard circle={item} />}
         contentContainerStyle={{
           padding: 16,
-          paddingBottom: process.env.EXPO_OS !== 'ios' ? 80 : 16,
+          paddingBottom: process.env.EXPO_OS === 'ios' ? 16 : 80,
         }}
         ListEmptyComponent={
           <View className='items-center mt-20'>

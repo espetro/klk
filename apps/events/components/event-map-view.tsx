@@ -40,7 +40,7 @@ export const EventMapView = React.memo(function EventMapView({
       .map((event) => {
         const location = event.location;
         const parts = location.split(',').map((s) => parseFloat(s.trim()));
-        if (parts.length < 2 || parts.some(isNaN)) {
+        if (parts.length < 2 || parts.some((_) => isNaN(_))) {
           return null;
         }
         const longitude = parts[0]!;
