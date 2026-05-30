@@ -20,8 +20,6 @@ jobs:
   build-ios:
     runs-on: ubuntu-latest
     if: github.event.inputs.platforms != 'android'
-    outputs:
-      status: ${{ job.status }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -63,8 +61,6 @@ jobs:
   build-android:
     runs-on: ubuntu-latest
     if: github.event.inputs.platforms != 'ios'
-    outputs:
-      status: ${{ job.status }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -92,7 +88,7 @@ jobs:
         run: eas build --platform android --wait
 
       - name: Submit Android to Play Internal Testing
-        if: success() && secrets.GOOGLE_SERVICE_ACCOUNT_JSON != ''
+        if: success()
         working-directory: apps/events
         run: eas submit --platform android --wait
         env:
