@@ -1,7 +1,6 @@
 import { ExpoConfig, ConfigContext } from 'expo/config';
-import * as v from 'valibot';
 
-const androidGoogleMapsApiKey = v.parse(v.string(), process.env.GOOGLE_MAPS_API_KEY);
+const androidGoogleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY ?? '';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
