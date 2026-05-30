@@ -2,6 +2,8 @@ import BottomSheet, { BottomSheetProps } from '@gorhom/bottom-sheet';
 import { PublicEventData, Coordinates } from '@klk/infrastructure';
 import { useRouter } from 'expo-router';
 import { PropsWithChildren, useCallback } from 'react';
+import { Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import EventCalendarSheet from './event-calendar-sheet';
 import { EventMapView } from './event-map-view';
@@ -31,6 +33,7 @@ export function EventMapScreen({
   children,
 }: EventMapScreenProps) {
   const router = useRouter();
+  const { bottom: safeAreaBottom } = useSafeAreaInsets();
 
   const handleEventPress = useCallback(
     (event: EventWithId) => {
@@ -38,6 +41,9 @@ export function EventMapScreen({
     },
     [router]
   );
+
+  const TAB_BAR_HEIGHT_IOS = 49;
+  const bottomInset = Platform.OS === 'ios' ? safeAreaBottom + TAB_BAR_HEIGHT_IOS : safeAreaBottom;
 
   return (
     <>
@@ -50,7 +56,7 @@ export function EventMapScreen({
 
       {children}
 
-      <BottomSheet snapPoints={SNAP_POINTS} index={1} style={{ flex: 1 }}>
+      <BottomSheet snapPoints={SNAP_POINTS} index={1} bottomInset={bottomInset}>
         <EventCalendarSheet
           events={events}
           loading={loading}
