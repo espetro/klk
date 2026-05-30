@@ -9,7 +9,7 @@ import { $toast } from '@/features';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { useAtom } from 'nanostores/react';
+import { useAtom } from '@nanostores/react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 SplashScreen.preventAutoHideAsync();
