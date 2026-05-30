@@ -1,4 +1,5 @@
 import { NDKContext } from '@/lib/context/ndk-context';
+import { showToast } from '@/features';
 import { createCircle } from '@klk/infrastructure';
 import { CircleForm } from '@klk/ui';
 import { Stack, useRouter } from 'expo-router';
@@ -18,6 +19,7 @@ export default function NewCircleScreen() {
     try {
       const newCircle = await createCircle(data.name.trim(), currentUser.pubkey);
       router.replace(`/circle/${newCircle.id}`);
+      showToast('Circle created ✓');
     } catch (error) {
       Alert.alert(
         'Error',

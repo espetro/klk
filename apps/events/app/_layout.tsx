@@ -4,9 +4,12 @@ import 'react-native-get-random-values';
 import '../global.css';
 import useInitializeApp from '@/hooks/useInitializeApp';
 import { NDKContext } from '@/lib/context/ndk-context';
+import { Toast } from '@/components/toast';
+import { $toast } from '@/features';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
+import { useAtom } from 'nanostores/react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 SplashScreen.preventAutoHideAsync();
@@ -14,6 +17,7 @@ SplashScreen.preventAutoHideAsync();
 function RootLayoutInner() {
   const router = useRouter();
   const segments = useSegments();
+  const [toastMessage] = useAtom($toast);
 
   const { ready, onboardingChecked, onboardingComplete, ...contextValue } = useInitializeApp();
 
@@ -111,6 +115,7 @@ function RootLayoutInner() {
           }}
         />
       </Stack>
+      <Toast toastMessage={toastMessage} />
     </NDKContext.Provider>
   );
 }

@@ -1,15 +1,16 @@
 import { InviteFriendSheet, EventForm, EventFormValues } from '@/components';
 import { HostedButton as Button } from '@/components/hosted-button';
 import { MemberAvatar } from '@/components/member-avatar';
-import { useCircleEvents } from '@/features';
+import { useCircleEvents, showToast } from '@/features';
 import { NDKContext } from '@/lib/context/ndk-context';
 import CalendarMonthIcon from '@expo/material-symbols/calendar_month.xml';
+import ContentCopyIcon from '@expo/material-symbols/content_copy.xml';
 import MoreHorizIcon from '@expo/material-symbols/more_horiz.xml';
 import { getCircle, CircleRecord, publishPrivateEvent } from '@klk/infrastructure';
 import { theme, CircleDetailSkeleton } from '@klk/ui';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useContext, useState } from 'react';
-import { Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, Clipboard, Image, Pressable, ScrollView, Text, View } from 'react-native';
 
 type Tab = 'events' | 'members' | 'info';
 
@@ -137,6 +138,20 @@ export default function CircleDetailScreen() {
         {ndk && signer ? (
           <View className='flex-row items-center gap-2'>
             <Button label='Invite' variant='outlined' onPress={() => setInviteVisible(true)} />
+            <Pressable
+              onPress={() => {
+                Clipboard.setString(circle.id);
+                showToast('Copied ✓');
+              }}
+              className='h-12 w-12 items-center justify-center rounded-full bg-bg-elevated'
+              accessibilityRole='button'
+              accessibilityLabel='Copy circle ID'
+            >
+              <Image
+                source={ContentCopyIcon}
+                style={{ width: 24, height: 24, tintColor: theme.textSecondary }}
+              />
+            </Pressable>
             <Pressable
               onPress={() => router.push(`/circle/manage?id=${id}`)}
               className='h-12 w-12 items-center justify-center rounded-full bg-bg-elevated'
@@ -335,7 +350,10 @@ export default function CircleDetailScreen() {
           ndk={ndk}
           signer={signer}
           circle={circle}
-          onCircleUpdated={(c) => setCircle(c)}
+          onCircleUpdated={(c) => {
+            setCircle(c);
+            showToast('Invited ✓');
+          }}
         />
       ) : null}
     </ScrollView>
