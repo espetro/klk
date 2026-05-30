@@ -14,6 +14,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   userInterfaceStyle: 'automatic',
   backgroundColor: '#ffffff',
   assetBundlePatterns: ['**/*'],
+  extra: {
+    eas: {
+      projectId: process.env.EXPO_PROJECT_ID || 'set-me-via-eas-init',
+    },
+  },
   ios: {
     supportsTablet: true,
     bundleIdentifier: 'dev.klk.app',
