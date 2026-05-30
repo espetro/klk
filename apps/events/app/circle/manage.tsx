@@ -37,8 +37,11 @@ export default function CircleManageScreen() {
       await saveCircle(updated);
       setCircle(updated);
       router.back();
-    } catch (e: any) {
-      Alert.alert('Error', e?.message ?? 'Failed to save circle');
+    } catch (error) {
+      Alert.alert(
+        'Error',
+        error instanceof Error ? (error?.message ?? 'Failed to save circle') : 'Unknown error'
+      );
       setLoading(false);
     }
   };
@@ -61,8 +64,13 @@ export default function CircleManageScreen() {
             };
             await saveCircle(updated);
             setCircle(updated);
-          } catch (e: any) {
-            Alert.alert('Error', e?.message ?? 'Failed to remove member');
+          } catch (error) {
+            Alert.alert(
+              'Error',
+              error instanceof Error
+                ? (error?.message ?? 'Failed to remove member')
+                : 'Unknown error'
+            );
           } finally {
             setLoading(false);
           }
@@ -90,8 +98,12 @@ export default function CircleManageScreen() {
           try {
             await deleteCircle(circle.id);
             router.replace('/(tabs)/circles');
-          } catch (e: any) {
-            Alert.alert('Error', e?.message ?? `Failed to ${action.toLowerCase()} circle`);
+          } catch (_error) {
+            if (_error instanceof Error) {
+              Alert.alert('Error', _error?.message ?? `Failed to ${action.toLowerCase()} circle`);
+            } else {
+              Alert.alert('Error', 'Unknown error');
+            }
             setLoading(false);
           }
         },

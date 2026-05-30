@@ -18,8 +18,11 @@ export default function NewCircleScreen() {
     try {
       const newCircle = await createCircle(data.name.trim(), currentUser.pubkey);
       router.replace(`/circle/${newCircle.id}`);
-    } catch (e: any) {
-      Alert.alert('Error', e?.message ?? 'Failed to create circle');
+    } catch (error) {
+      Alert.alert(
+        'Error',
+        error instanceof Error ? (error?.message ?? 'Failed to create circle') : 'Unknown error'
+      );
       setLoading(false);
     }
   };

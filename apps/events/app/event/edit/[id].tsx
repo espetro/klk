@@ -9,7 +9,7 @@ import { Alert } from 'react-native';
 export default function EditEventScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { ndk } = useContext(NDKContext);
-  const [event, setEvent] = useState<any>(null);
+  const [event, setEvent] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
@@ -49,8 +49,8 @@ export default function EditEventScreen() {
         city: event.city || '',
       });
       router.back();
-    } catch (e: any) {
-      Alert.alert('Error', e?.message ?? 'Failed to update event');
+    } catch (error) {
+      Alert.alert('Error', error instanceof Error ? (error.message ?? 'Failed to update event') : 'Failed to update event');
     } finally {
       setSubmitting(false);
     }

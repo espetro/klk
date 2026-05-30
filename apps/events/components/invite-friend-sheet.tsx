@@ -23,7 +23,7 @@ function isValidNpub(str: string): boolean {
   if (str.startsWith('npub1') && str.length > 50) {
     return true;
   }
-  if (/^[0-9a-f]{64}$/.test(str)) {
+  if (/^[0-9a-f]{64}$/u.test(str)) {
     return true;
   }
   return false;
@@ -61,8 +61,12 @@ export function InviteFriendSheet({
       onCircleUpdated(updated);
       setNpub('');
       onClose();
-    } catch (e: any) {
-      setError(e?.message ?? 'Failed to invite');
+    } catch (_error) {
+      if (_error instanceof Error) {
+        return setError(_error?.message ?? 'Failed to invite');
+      }
+
+      setError(`Unknown error: ${_error}`);
     } finally {
       setLoading(false);
     }
@@ -98,7 +102,7 @@ export function InviteFriendSheet({
           </Pressable>
 
           <Text className='text-sm font-medium text-text-secondary mb-2'>
-            Member's npub or public key
+            Member&apos;s npub or public key
           </Text>
           <Input
             value={npub}

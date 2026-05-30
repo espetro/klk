@@ -29,8 +29,8 @@ export default function NewEventScreen() {
         city,
       });
       router.back();
-    } catch (e: any) {
-      Alert.alert('Error', e?.message ?? 'Failed to publish event');
+    } catch (error) {
+      Alert.alert('Error', error instanceof Error ? (error.message ?? 'Failed to publish event') : 'Failed to publish event');
     } finally {
       setSubmitting(false);
     }
