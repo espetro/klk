@@ -13,9 +13,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   userInterfaceStyle: 'automatic',
   backgroundColor: '#ffffff',
   assetBundlePatterns: ['**/*'],
+  owner: 'joq',
   extra: {
     eas: {
-      projectId: process.env.EXPO_PROJECT_ID || 'set-me-via-eas-init',
+      projectId: 'c13d8abd-45f9-4d5b-9697-ff95e76c4490',
     },
   },
   ios: {
