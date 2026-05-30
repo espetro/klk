@@ -194,7 +194,7 @@ export default function CircleDetailScreen() {
                   return (
                     <Pressable
                       key={e.id}
-                      onPress={() => router.push(`/event/${e.id}`)}
+                      onPress={() => router.push(`/circle/event/${e.id}?circleId=${id}`)}
                       className='flex-row items-center gap-3 px-5 py-3 active:bg-bg-elevated/50'
                       accessibilityRole='button'
                     >
@@ -233,7 +233,7 @@ export default function CircleDetailScreen() {
                   return (
                     <Pressable
                       key={e.id}
-                      onPress={() => router.push(`/event/${e.id}`)}
+                      onPress={() => router.push(`/circle/event/${e.id}?circleId=${id}`)}
                       className='flex-row items-center gap-3 px-5 py-3 active:bg-bg-elevated/50'
                       accessibilityRole='button'
                     >

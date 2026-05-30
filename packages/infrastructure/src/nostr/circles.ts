@@ -139,3 +139,23 @@ export async function publishPrivateEvent(
   await event.publish();
   return event;
 }
+
+export async function publishPrivateRsvp(
+  ndk: NDK,
+  circle: CircleRecord,
+  eventId: string
+): Promise<NDKEvent> {
+  const payload = JSON.stringify({ status: 'accepted' });
+  const symKey = hexToUint8(circle.symKey);
+  const encrypted = await aesGcmEncrypt(symKey, payload);
+
+  const rsvp = new NDKEvent(ndk);
+  rsvp.kind = NkdKind.AppSpecificData;
+  rsvp.content = encrypted;
+  rsvp.tags = [
+    ['g', circle.id],
+    ['e', eventId],
+  ];
+  await rsvp.publish();
+  return rsvp;
+}

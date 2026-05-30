@@ -1,5 +1,4 @@
-import { GuestBarrier } from '@/components/GuestBarrier';
-import { useRsvps, useEventDetail, useFeatureFlag } from '@/features';
+import { useCircleEvent, useCircleRsvps } from '@/features';
 import { NDKContext } from '@/lib/context/ndk-context';
 import CalendarTodayIcon from '@expo/material-symbols/calendar_today.xml';
 import EditIcon from '@expo/material-symbols/edit.xml';
@@ -8,14 +7,14 @@ import LocationOnIcon from '@expo/material-symbols/location_on.xml';
 import MoreHorizIcon from '@expo/material-symbols/more_horiz.xml';
 import { User } from '@klk/core';
 import {
-  parsePublicEvent,
+  getCircle,
+  CircleRecord,
   PublicEventData,
-  buildEventCoordinate,
-  publishRsvp,
+  publishPrivateRsvp,
 } from '@klk/infrastructure';
 import { theme, AttendeeList, RSVPButton, EventDetailSkeleton } from '@klk/ui';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { Alert, Image, Pressable, ScrollView, Share, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -258,263 +257,75 @@ function EventDetailContent({
   );
 }
 
-export default function EventDetailScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+export default function CircleEventDetailScreen() {
+  const { eventId, circleId } = useLocalSearchParams<{ eventId: string; circleId: string }>();
   const { ndk, currentUser, signer } = useContext(NDKContext);
-  const { getFlag } = useFeatureFlag();
-  const useNewArch = getFlag('useNewArchitecture');
-  const router = useRouter();
 
-  const [event, setEvent] = useState<(PublicEventData & { id: string; pubkey: string }) | null>(
-    null
-  );
-  const [coordinate, setCoordinate] = useState('');
+  const [circle, setCircle] = useState<CircleRecord | null>(null);
   const [rsvping, setRsvping] = useState(false);
-  const [showBarrier, setShowBarrier] = useState(false);
-  const rsvps = useRsvps(coordinate);
+  const decryptedEvent = useCircleEvent(circle, eventId ?? null);
+  const rsvps = useCircleRsvps(circle, eventId ?? null);
 
   useEffect(
-    function loadEventDetail() {
-      if (!ndk || !id) {
-        return;
+    function loadCircle() {
+      if (circleId) {
+        getCircle(circleId).then(setCircle);
       }
-      ndk.fetchEvent(id).then((e) => {
-        if (!e) {
-          return;
-        }
-        const parsed = parsePublicEvent(e);
-        setEvent(parsed);
-        setCoordinate(buildEventCoordinate(e));
-      });
     },
-    [ndk, id]
+    [circleId]
   );
 
+  const rsvpsFormatted = rsvps.map((r) => ({ pubkey: r.pubkey }));
   const hasRsvpd = rsvps.some((r) => r.pubkey === currentUser?.pubkey);
 
   const handleRsvpToggle = async () => {
     if (!signer) {
-      setShowBarrier(true);
       return;
     }
-    if (!ndk || !coordinate) {
+    if (!ndk || !decryptedEvent || !circle || !eventId) {
       return;
     }
-
-    // Only support RSVP-ing, no un-RSVP yet
-    if (hasRsvpd) {
-      return;
-    }
-
     setRsvping(true);
     try {
-      await publishRsvp(ndk, coordinate);
-    } catch (e: unknown) {
-      const message = e instanceof Error ? e.message : 'RSVP failed';
-      Alert.alert('Error', message);
-      throw e;
+      await publishPrivateRsvp(ndk, circle, eventId);
+    } catch (error) {
+      if (error instanceof Error) {
+        return Alert.alert('Error', error?.message ?? 'Failed to RSVP');
+      }
+      Alert.alert('Error', 'Unknown error');
     } finally {
       setRsvping(false);
     }
   };
 
-  const handleShare = async () => {
-    if (!event) {
+  const handleShare = useCallback(async () => {
+    if (!decryptedEvent) {
       return;
     }
     try {
       await Share.share({
-        message: `${event.title}\n${formatDateRange(event.start, event.end || undefined)}\n${event.location || ''}`,
+        message: `Join "${decryptedEvent.title}" at ${decryptedEvent.location || 'TBD'}`,
       });
     } catch {
-      // user cancelled
+      // Ignore share cancellation
     }
-  };
+  }, [decryptedEvent]);
 
-  if (useNewArch && id) {
-    return <NewEventDetail eventId={id} />;
-  }
-
-  if (!event) {
-    return (
-      <>
-        <Stack.Screen
-          options={{
-            presentation: 'formSheet',
-            sheetGrabberVisible: true,
-            sheetAllowedDetents: [0.75, 1.0],
-            contentStyle: { backgroundColor: 'transparent' },
-          }}
-        />
-        <EventDetailSkeleton />
-      </>
-    );
+  if (!circle || !decryptedEvent) {
+    return <EventDetailSkeleton />;
   }
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          presentation: 'formSheet',
-          sheetGrabberVisible: true,
-          sheetAllowedDetents: [0.75, 1.0],
-          contentStyle: { backgroundColor: 'transparent' },
-        }}
-      />
+      <Stack.Screen options={{ headerShown: false }} />
       <EventDetailContent
-        event={event}
-        rsvps={rsvps}
+        event={decryptedEvent}
+        rsvps={rsvpsFormatted}
         hasRsvpd={hasRsvpd}
         rsvping={rsvping}
         onRsvpToggle={handleRsvpToggle}
         onShare={handleShare}
         currentUser={currentUser}
-      />
-      <GuestBarrier
-        visible={showBarrier}
-        title='RSVP to save your spot'
-        description='Klk uses Nostr — your identity is a keypair that lives on your device. No email or password needed.'
-        ctaLabel='Create Identity'
-        onGetStarted={() => {
-          setShowBarrier(false);
-          router.push('/identity');
-        }}
-        onDismiss={() => setShowBarrier(false)}
-      />
-    </>
-  );
-}
-
-function NewEventDetail({ eventId }: { eventId: string }) {
-  const { currentUser, signer, ndk } = useContext(NDKContext);
-  const router = useRouter();
-  const [showBarrier, setShowBarrier] = useState(false);
-  const [coordinate, setCoordinate] = useState('');
-  const { event, loading, error, rsvp, rsvping, hasRsvpd } = useEventDetail(
-    eventId,
-    currentUser ? ({ npub: currentUser.pubkey } as User) : null
-  );
-  const rsvps = useRsvps(coordinate);
-
-  useEffect(
-    function fetchEventCoordinate() {
-      if (!ndk || !eventId) {
-        return;
-      }
-      ndk.fetchEvent(eventId).then((e) => {
-        if (e) {
-          setCoordinate(buildEventCoordinate(e));
-        }
-      });
-    },
-    [ndk, eventId]
-  );
-
-  const handleRsvpToggle = async () => {
-    if (!signer) {
-      setShowBarrier(true);
-      return;
-    }
-    await rsvp();
-  };
-
-  const handleShare = async () => {
-    if (!event) {
-      return;
-    }
-    try {
-      await Share.share({
-        message: `${event.title}\n${formatDateRange(event.start, event.end || undefined)}\n${event.location || ''}`,
-      });
-    } catch {
-      // user cancelled
-    }
-  };
-
-  if (loading) {
-    return (
-      <>
-        <Stack.Screen
-          options={{
-            presentation: 'formSheet',
-            sheetGrabberVisible: true,
-            sheetAllowedDetents: [0.75, 1.0],
-            contentStyle: { backgroundColor: 'transparent' },
-          }}
-        />
-        <EventDetailSkeleton />
-      </>
-    );
-  }
-
-  if (error || !event) {
-    return (
-      <>
-        <Stack.Screen
-          options={{
-            presentation: 'formSheet',
-            sheetGrabberVisible: true,
-            sheetAllowedDetents: [0.75, 1.0],
-            contentStyle: { backgroundColor: 'transparent' },
-          }}
-        />
-        <View className='flex-1 items-center justify-center gap-4 bg-bg-default'>
-          <Text className='text-center text-sm text-text-secondary'>
-            {error ?? 'Event not found'}
-          </Text>
-          <Pressable
-            onPress={() => router.back()}
-            className='rounded-full bg-bg-elevated px-5 py-2.5'
-            accessibilityRole='button'
-          >
-            <Text className='text-sm font-semibold text-text-primary'>Go back</Text>
-          </Pressable>
-        </View>
-      </>
-    );
-  }
-
-  const legacyEvent: PublicEventData & { id: string; pubkey: string } = {
-    id: event.id,
-    pubkey: event.pubkey,
-    title: event.title,
-    start: event.start,
-    end: event.end || 0,
-    location: event.location || '',
-    summary: event.summary || '',
-    image: undefined,
-    city: '',
-  };
-
-  return (
-    <>
-      <Stack.Screen
-        options={{
-          presentation: 'formSheet',
-          sheetGrabberVisible: true,
-          sheetAllowedDetents: [0.75, 1.0],
-          contentStyle: { backgroundColor: 'transparent' },
-        }}
-      />
-      <EventDetailContent
-        event={legacyEvent}
-        rsvps={rsvps}
-        hasRsvpd={hasRsvpd}
-        rsvping={rsvping}
-        onRsvpToggle={handleRsvpToggle}
-        onShare={handleShare}
-        currentUser={currentUser}
-      />
-      <GuestBarrier
-        visible={showBarrier}
-        title='RSVP to save your spot'
-        description='Klk uses Nostr — your identity is a keypair that lives on your device. No email or password needed.'
-        ctaLabel='Create Identity'
-        onGetStarted={() => {
-          setShowBarrier(false);
-          router.push('/identity');
-        }}
-        onDismiss={() => setShowBarrier(false)}
       />
     </>
   );

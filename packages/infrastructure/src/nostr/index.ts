@@ -6,6 +6,7 @@ export {
   inviteToCircle,
   processIncomingGiftWraps,
   publishPrivateEvent,
+  publishPrivateRsvp,
   aesGcmDecrypt,
 } from './circles';
 export { publishRsvp, buildEventCoordinate } from './rsvp';
