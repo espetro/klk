@@ -1,4 +1,7 @@
+// oxlint-disable max-classes-per-file
+
 export type NostrErrorCode = 'TIMEOUT' | 'RELAY_ERROR' | 'PARSE_ERROR';
+
 export class NostrError extends Error {
   readonly code: NostrErrorCode;
   constructor(code: NostrErrorCode, message: string) {
@@ -9,6 +12,7 @@ export class NostrError extends Error {
 }
 
 export type PublishErrorCode = 'INVALID_EVENT' | 'RELAY_REJECTED';
+
 export class PublishError extends Error {
   readonly code: PublishErrorCode;
   constructor(code: PublishErrorCode, message: string) {
