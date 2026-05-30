@@ -82,8 +82,12 @@ export default function CircleDetailScreen() {
         city: '',
       });
       setNewEventVisible(false);
-    } catch (e: any) {
-      Alert.alert('Error', e?.message ?? 'Failed to publish event');
+    } catch (_error) {
+      if (_error instanceof Error) {
+        return Alert.alert('Error', _error?.message ?? 'Failed to publish event');
+      }
+
+      Alert.alert('Erorr', 'Unknown error');
     } finally {
       setSubmitting(false);
     }
@@ -127,7 +131,7 @@ export default function CircleDetailScreen() {
         <View className='flex-1'>
           <Text className='text-xl font-bold text-text-primary'>{circle.name}</Text>
           <Text className='mt-0.5 text-sm text-text-secondary'>
-            {circle.members.length} member{circle.members.length !== 1 ? 's' : ''}
+            {circle.members.length} member{circle.members.length !== 1 && 's'}
           </Text>
         </View>
         {ndk && signer ? (
@@ -176,7 +180,7 @@ export default function CircleDetailScreen() {
       {activeTab === 'events' ? (
         <View>
           {/* Section: Upcoming */}
-          {privateEvents.filter((e) => e.start > Math.floor(Date.now() / 1000)).length > 0 ? (
+          {privateEvents.some((_) => _.start > Math.floor(Date.now() / 1000)) ? (
             <View>
               <View className='px-5 py-2'>
                 <Text className='text-xs font-semibold uppercase tracking-wider text-text-secondary'>
@@ -215,7 +219,7 @@ export default function CircleDetailScreen() {
           ) : null}
 
           {/* Section: Past */}
-          {privateEvents.filter((e) => e.start <= Math.floor(Date.now() / 1000)).length > 0 ? (
+          {privateEvents.some((_) => _.start <= Math.floor(Date.now() / 1000)) ? (
             <View>
               <View className='px-5 py-2'>
                 <Text className='text-xs font-semibold uppercase tracking-wider text-text-secondary'>
@@ -319,7 +323,7 @@ export default function CircleDetailScreen() {
       {activeTab === 'info' ? (
         <View className='px-5 pb-5'>
           <Text className='text-sm text-text-secondary'>
-            Private circle · {circle.members.length} member{circle.members.length !== 1 ? 's' : ''}
+            Private circle · {circle.members.length} member{circle.members.length !== 1 && 's'}
           </Text>
         </View>
       ) : null}
