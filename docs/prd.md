@@ -33,25 +33,25 @@ value proposition is validated and M2 (public relay interop) can begin.
 All 19 screens are implemented and documented with ASCII wireframes in
 `tmp/current-ui/wireframes-ascii/`. The M1 PMF path runs through screens 10–18.
 
-| # | Screen | File |
-|---|--------|------|
-| 1–5 | Onboarding | `app/onboarding/` |
-| 6 | Events Home (map + list) | `app/(tabs)/add/index.tsx` |
-| 7 | Events Listing | `app/(tabs)/circles/index.tsx` |
-| 8 | Event Detail (public) | `app/event/[id].tsx` |
-| 9 | Create Public Event | `app/event/new.tsx` |
-| 10 | Circles Listing | `app/(tabs)/circles/index.tsx` |
-| 11 | Create Circle | `app/circle/new.tsx` |
-| 12 | Circle Detail — Events tab | `app/circle/[id].tsx` |
-| 13 | Circle Event Detail | `app/event/[id].tsx` (via circle) |
-| 14 | Circle Members tab | `app/circle/[id].tsx` |
-| 15 | Circle Info tab | `app/circle/[id].tsx` |
-| 16 | Create Event from Circle | `app/circle/[id].tsx` (inline form) |
-| 17 | Circle Admin / Manage | `app/circle/manage.tsx` |
-| 18 | Invite Member | `components/invite-friend-sheet.tsx` |
-| 19 | Profile | `app/(tabs)/` |
+| #   | Screen                     | File                                 |
+| --- | -------------------------- | ------------------------------------ |
+| 1–5 | Onboarding                 | `app/onboarding/`                    |
+| 6   | Events Home (map + list)   | `app/(tabs)/add/index.tsx`           |
+| 7   | Events Listing             | `app/(tabs)/circles/index.tsx`       |
+| 8   | Event Detail (public)      | `app/event/[id].tsx`                 |
+| 9   | Create Public Event        | `app/event/new.tsx`                  |
+| 10  | Circles Listing            | `app/(tabs)/circles/index.tsx`       |
+| 11  | Create Circle              | `app/circle/new.tsx`                 |
+| 12  | Circle Detail — Events tab | `app/circle/[id].tsx`                |
+| 13  | Circle Event Detail        | `app/event/[id].tsx` (via circle)    |
+| 14  | Circle Members tab         | `app/circle/[id].tsx`                |
+| 15  | Circle Info tab            | `app/circle/[id].tsx`                |
+| 16  | Create Event from Circle   | `app/circle/[id].tsx` (inline form)  |
+| 17  | Circle Admin / Manage      | `app/circle/manage.tsx`              |
+| 18  | Invite Member              | `components/invite-friend-sheet.tsx` |
+| 19  | Profile                    | `app/(tabs)/`                        |
 
-**PMF flow thread:** see `tmp/current-ui/wireframes-ascii/0-flows.txt`.
+**PMF flow thread:** see `tmp/current-ui/wireframes-ascii/0-flows.md`.
 
 **Ephemeral state overlays:**
 

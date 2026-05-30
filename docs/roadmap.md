@@ -7,7 +7,7 @@ Single source of truth for the next half-month (updated 2026-05-30).
 ## M1 — PMF Probe (target: 2026-06-04)
 
 **Goal:** Ship a TestFlight + Android internal-track build where the
-*create circle → invite 3 people → post event → RSVP* flow works end-to-end
+_create circle → invite 3 people → post event → RSVP_ flow works end-to-end
 against the bundled Nostr relay without hand-holding.
 
 **Success metric:** 5 dogfooders complete the flow independently.
