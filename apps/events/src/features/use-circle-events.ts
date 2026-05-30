@@ -1,5 +1,11 @@
 import { NDKContext } from '@/lib/context/ndk-context';
-import { CircleRecord, aesGcmDecrypt, PublicEventData, NDKEvent } from '@klk/infrastructure';
+import {
+  CircleRecord,
+  aesGcmDecrypt,
+  PublicEventData,
+  NDKEvent,
+  NkdKind,
+} from '@klk/infrastructure';
 import { useContext, useEffect, useState } from 'react';
 
 export interface DecryptedCircleEvent extends PublicEventData {
@@ -13,12 +19,12 @@ export function useCircleEvents(circle: CircleRecord | null) {
 
   useEffect(
     function subscribeToCircleEvents() {
-      if (!ndk || !circle) {
+      if (!ndk || !circle?.id) {
         return;
       }
       setEvents([]);
       const sub = ndk.subscribe(
-        { kinds: [30078 as any], '#g': [circle.id] },
+        { kinds: [NkdKind.AppSpecificData as number], '#g': [circle.id] },
         { closeOnEose: false }
       );
       sub.on('event', async (e: NDKEvent) => {
@@ -35,7 +41,7 @@ export function useCircleEvents(circle: CircleRecord | null) {
         sub.stop();
       };
     },
-    [ndk, circle?.id]
+    [ndk, circle?.symKey, circle?.id]
   );
 
   return events;

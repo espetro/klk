@@ -1,5 +1,5 @@
 import { NDKContext } from '@/lib/context/ndk-context';
-import { NDKEvent } from '@klk/infrastructure';
+import { KlkKind, NDKEvent } from '@klk/infrastructure';
 import { useContext, useEffect, useState } from 'react';
 
 export function useRsvps(eventCoordinate: string) {
@@ -13,7 +13,7 @@ export function useRsvps(eventCoordinate: string) {
       }
       setRsvps([]);
       const sub = ndk.subscribe(
-        { kinds: [31925 as any], '#a': [eventCoordinate] },
+        { kinds: [KlkKind.RSVP as number], '#a': [eventCoordinate] },
         { closeOnEose: false }
       );
       sub.on('event', (e: NDKEvent) => {

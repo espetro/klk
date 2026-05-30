@@ -1,5 +1,11 @@
 import { NDKContext, NDKContextValue } from '@/lib/context/ndk-context';
-import { CircleRecord, aesGcmDecrypt, PublicEventData, NDKEvent } from '@klk/infrastructure';
+import {
+  CircleRecord,
+  aesGcmDecrypt,
+  PublicEventData,
+  NDKEvent,
+  NkdKind,
+} from '@klk/infrastructure';
 import { useContext, useEffect, useMemo, useState } from 'react';
 
 import { usePublicEvents } from './use-public-events';
@@ -19,7 +25,10 @@ function getDecryptedCircleEvents(
 ): Promise<AllEvent[]> {
   return new Promise((resolve) => {
     const results: AllEvent[] = [];
-    const sub = ndk.subscribe({ kinds: [30078 as any], '#g': [circle.id] }, { closeOnEose: false });
+    const sub = ndk.subscribe(
+      { kinds: [NkdKind.AppSpecificData as number], '#g': [circle.id] },
+      { closeOnEose: false }
+    );
     sub.on('event', async (e: NDKEvent) => {
       try {
         const plain = await aesGcmDecrypt(circle.symKey, e.content);
