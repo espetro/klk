@@ -60,7 +60,7 @@ export default function OnboardingPager() {
       <View className='flex-row justify-center pb-8 gap-2'>
         {PAGES.map((_, i) => (
           <View
-            key={i}
+            key={_.name}
             className={`h-1.5 rounded-full ${
               currentIndex === i ? 'w-6 bg-gray-900' : 'w-1.5 bg-gray-300'
             }`}

@@ -301,9 +301,10 @@ export default function EventDetailScreen() {
       return;
     }
 
+    // Only support RSVP-ing, no un-RSVP yet
     if (hasRsvpd) {
       return;
-    } // Only support RSVP-ing, no un-RSVP yet
+    }
 
     setRsvping(true);
     try {

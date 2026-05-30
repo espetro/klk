@@ -8,9 +8,5 @@ function handleCityChange(newCity: string) {
 export default function MapScreen() {
   const city = useCity();
 
-  return (
-    <>
-      <CityPicker current={city} onChange={handleCityChange} />
-    </>
-  );
+  return <CityPicker current={city} onChange={handleCityChange} />;
 }

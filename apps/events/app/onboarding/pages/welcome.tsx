@@ -25,7 +25,7 @@ export default function WelcomePage({ onProceed, onSkip }: PageProps) {
             Discover events{'\n'}in your city.
           </Text>
           <Text className='text-base text-gray-500 text-center leading-relaxed max-w-xs'>
-            Browse what's happening near you — no account required. Private by design.
+            {`Browse what's happening near you — no account required. Private by design.`}
           </Text>
         </Animated.View>
 

@@ -14,10 +14,10 @@ export default function HowItWorksPage({ onProceed, onSkip }: PageProps) {
       <View className='flex-1 items-center justify-center'>
         <Animated.View entering={FadeInUp.duration(800).delay(200)} className='items-center mb-8'>
           <Text className='text-4xl font-bold text-gray-900 text-center mb-3 tracking-tight leading-tight'>
-            See what's{'\n'}possible
+            See what&apos;s{'\n'}possible
           </Text>
           <Text className='text-base text-gray-500 text-center leading-relaxed max-w-xs'>
-            Browse freely. Join in when you're ready.
+            Browse freely. Join in when you&apos;re ready.
           </Text>
         </Animated.View>
 

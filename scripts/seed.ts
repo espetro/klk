@@ -1,3 +1,4 @@
+// oxlint-disable no-await-in-loop
 import { createHash } from 'node:crypto';
 
 import NDK, { NDKEvent, NDKPrivateKeySigner } from '@nostr-dev-kit/ndk';
@@ -25,9 +26,9 @@ async function runSeed() {
     // Connect to relay with 5 second timeout
     const connected = await Promise.race([
       ndk.connect(5000),
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Relay connection timeout')), 5000)
-      ),
+      new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Relay connection timeout')), 5000);
+      }),
     ]);
 
     if (!connected) {
@@ -39,8 +40,10 @@ async function runSeed() {
     console.log('Publishing events...');
     for (let i = 1; i <= 5; i++) {
       const city = CITIES[(i - 1) % CITIES.length];
-      const startTs = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60 * i; // 7 days from now + i
-      const endTs = startTs + 2 * 60 * 60; // 2 hours duration
+      // 7 days from now + i
+      const startTs = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60 * i;
+      // 2 hours duration
+      const endTs = startTs + 2 * 60 * 60;
 
       const event = new NDKEvent(ndk, {
         kind: 31923,
@@ -90,4 +93,4 @@ async function runSeed() {
   }
 }
 
-runSeed();
+await runSeed();
