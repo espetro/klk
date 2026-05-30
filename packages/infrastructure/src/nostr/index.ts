@@ -1,7 +1,6 @@
 // Re-export all nostr adapter functionality
 export { NostrEventRepository } from './NostrEventRepository';
-export { publishPublicEvent, parsePublicEvent } from './events';
-export type { PublicEventData } from './events';
+export { type PublicEventData, publishPublicEvent, parsePublicEvent } from './events';
 export {
   createCircle,
   inviteToCircle,
@@ -12,9 +11,15 @@ export {
 export { publishRsvp, buildEventCoordinate } from './rsvp';
 export { getNDK, connectNDK, connectNDKGuest, RELAY_URL, RELAYS } from './ndk';
 export { getOrCreateIdentity, hasIdentity, wipeIdentity } from './identity';
-export { KlkKind } from './kinds';
-export type { KlkKindValue } from './kinds';
+export { KlkKind, NkdKind, type AppNdkKind } from './kinds';
 export { CITIES, cityTag, cityTagValue, slugifyCity } from './tags';
-export { haversineDistance, resolveAddress, reverseGeocodeCity, geocodeCityName } from './geo';
-export type { Coordinates, DistanceRange } from './geo';
-export { DISTANCE_RANGES, DEFAULT_DISTANCE_RANGE } from './geo';
+export {
+  DISTANCE_RANGES,
+  DEFAULT_DISTANCE_RANGE,
+  type Coordinates,
+  type DistanceRange,
+  haversineDistance,
+  resolveAddress,
+  reverseGeocodeCity,
+  geocodeCityName,
+} from './geo';
