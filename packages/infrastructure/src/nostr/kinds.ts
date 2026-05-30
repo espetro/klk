@@ -1,11 +1,154 @@
+// oxlint-disable typescript/no-duplicate-enum-values
 // Typed NDK event kind constants for Klk
 // NDK's NDKKind enum doesn't include NIP-52 custom kinds, so we define our own.
 
-export const KlkKind = {
-  /** NIP-52 calendar event (public city event) */
-  PublicEvent: 31923,
-  /** NIP-52 RSVP */
-  RSVP: 31925,
-} as const;
+/**
+ * Replicates NDKKind since it's only exported as a type, not as enum
+ * @see {@link import("@klk/nostr-mobile").NDKKind}
+ */
+export enum NkdKind {
+  Metadata = 0,
+  Text = 1,
+  RecommendRelay = 2,
+  Contacts = 3,
+  EncryptedDirectMessage = 4,
+  EventDeletion = 5,
+  Repost = 6,
+  Reaction = 7,
+  BadgeAward = 8,
+  GroupChat = 9,
+  Thread = 11,
+  GroupReply = 12,
+  GiftWrapSeal = 13,
+  PrivateDirectMessage = 14,
+  Image = 20,
+  Video = 21,
+  ShortVideo = 22,
+  Story = 23,
+  Vanish = 62,
+  CashuWalletBackup = 375,
+  GiftWrap = 1059,
+  GenericRepost = 16,
+  ChannelCreation = 40,
+  ChannelMetadata = 41,
+  ChannelMessage = 42,
+  ChannelHideMessage = 43,
+  ChannelMuteUser = 44,
+  WikiMergeRequest = 818,
+  GenericReply = 1111,
+  Media = 1063,
+  DraftCheckpoint = 1234,
+  Task = 1934,
+  Report = 1984,
+  Label = 1985,
+  DVMReqTextExtraction = 5000,
+  DVMReqTextSummarization = 5001,
+  DVMReqTextTranslation = 5002,
+  DVMReqTextGeneration = 5050,
+  DVMReqImageGeneration = 5100,
+  DVMReqTextToSpeech = 5250,
+  DVMReqDiscoveryNostrContent = 5300,
+  DVMReqDiscoveryNostrPeople = 5301,
+  DVMReqTimestamping = 5900,
+  DVMEventSchedule = 5905,
+  DVMJobFeedback = 7000,
+  Subscribe = 7001,
+  Unsubscribe = 7002,
+  SubscriptionReceipt = 7003,
+  CashuReserve = 7373,
+  CashuQuote = 7374,
+  CashuToken = 7375,
+  CashuWalletTx = 7376,
+  GroupAdminAddUser = 9000,
+  GroupAdminRemoveUser = 9001,
+  GroupAdminEditMetadata = 9002,
+  GroupAdminEditStatus = 9006,
+  GroupAdminCreateGroup = 9007,
+  GroupAdminRequestJoin = 9021,
+  MuteList = 10000,
+  PinList = 10001,
+  RelayList = 10002,
+  BookmarkList = 10003,
+  CommunityList = 10004,
+  PublicChatList = 10005,
+  BlockRelayList = 10006,
+  SearchRelayList = 10007,
+  SimpleGroupList = 10009,
+  InterestList = 10015,
+  CashuMintList = 10019,
+  EmojiList = 10030,
+  DirectMessageReceiveRelayList = 10050,
+  BlossomList = 10063,
+  NostrWaletConnectInfo = 13194,
+  TierList = 17000,
+  CashuWallet = 17375,
+  FollowSet = 30000,
+  /** @deprecated but left for backwards compatibility */
+  CategorizedPeopleList = 30000,
+  /** @deprecated but left for backwards compatibility */
+  CategorizedBookmarkList = 30001,
+  RelaySet = 30002,
+  /** @deprecated but left for backwards compatibility */
+  CategorizedRelayList = 30002,
+  BookmarkSet = 30003,
+  /** @deprecated Use ArticleCurationSet instead */
+  CurationSet = 30004,
+  ArticleCurationSet = 30004,
+  VideoCurationSet = 30005,
+  ImageCurationSet = 30006,
+  InterestSet = 30015,
+  /** @deprecated but left for backwards compatibility */
+  InterestsList = 30015,
+  ProjectTemplate = 30717,
+  EmojiSet = 30030,
+  ModularArticle = 30040,
+  ModularArticleItem = 30041,
+  Wiki = 30818,
+  Draft = 31234,
+  Project = 31933,
+  SubscriptionTier = 37001,
+  EcashMintRecommendation = 38000,
+  CashuMintAnnouncement = 38172,
+  FedimintMintAnnouncement = 38173,
+  HighlightSet = 39802,
+  /** @deprecated but left for backwards compatibility */
+  CategorizedHighlightList = 39802,
+  Nutzap = 9321,
+  ZapRequest = 9734,
+  Zap = 9735,
+  Highlight = 9802,
+  ClientAuth = 22242,
+  NostrWalletConnectReq = 23194,
+  NostrWalletConnectRes = 23195,
+  NostrConnect = 24133,
+  BlossomUpload = 24242,
+  HttpAuth = 27235,
+  ProfileBadge = 30008,
+  BadgeDefinition = 30009,
+  MarketStall = 30017,
+  MarketProduct = 30018,
+  Article = 30023,
+  AppSpecificData = 30078,
+  Classified = 30402,
+  HorizontalVideo = 34235,
+  VerticalVideo = 34236,
+  /** NIP-29 */
+  GroupMetadata = 39000,
+  /** NIP-29 */
+  GroupAdmins = 39001,
+  /** NIP-29 */
+  GroupMembers = 39002,
+  FollowPack = 39089,
+  MediaFollowPack = 39092,
+  AppRecommendation = 31989,
+  AppHandler = 31990,
+}
 
-export type KlkKindValue = (typeof KlkKind)[keyof typeof KlkKind];
+export enum KlkKind {
+  /** NIP-52 calendar event (public city event) */
+  PublicEvent = 31923,
+  /** NIP-52 RSVP */
+  RSVP = 31925,
+}
+
+export type AppNdkKind = NkdKind | KlkKind;
