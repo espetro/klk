@@ -1,0 +1,8 @@
+{
+  "name": "@klk/relay",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "validate": "bun run ../../scripts/validate.ts"
+  }
+}

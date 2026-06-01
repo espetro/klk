@@ -1,0 +1,22 @@
+[Unit]
+Description=Klk Nostr relay (strfry)
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+ContainerName=klk-relay
+Image=localhost/klk-relay:latest
+PublishPort=127.0.0.1:3100:7777
+Exec=relay --config /app/strfry.conf
+# Persistent DB outside the repo; conf + plugin bind-mounted from the checkout.
+Volume=%h/klk-relay-data/strfry-db:/app/strfry-db:Z
+Volume=%h/klk/apps/relay/strfry.conf:/app/strfry.conf:ro
+Volume=%h/klk/apps/relay/write-policy:/write-policy:ro
+PodmanArgs=--cpus=1.5 --memory=1536m
+
+[Service]
+Restart=always
+TimeoutStartSec=60
+
+[Install]
+WantedBy=default.target

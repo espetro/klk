@@ -93,6 +93,35 @@ docker compose up -d
 
 ---
 
+## Klk Relay (rootless Podman + Quadlet + Cloudflare Tunnel)
+
+Klk ships a pre-configured `strfry` relay in `apps/relay/` designed for production self-hosting on a VPS behind a Cloudflare Tunnel.
+
+**Key features:**
+- strfry + Node.js write-policy plugin (hot-reloading allowlist)
+- Rootless Podman + Quadlet (systemd-native, daemonless, auto-restart)
+- Bound to `127.0.0.1:3100` (TLS handled by Cloudflare)
+- Persistent storage outside the repo
+- Metrics + maintenance cron
+
+**Setup** (~15 min):
+
+1. Check out the repo at `~/klk` on your VPS
+2. Follow the [deployment checklist](../apps/relay/README.md)
+3. Allow your keys: `./apps/relay/bin/klk-allow.sh npub1...`
+4. Seed test data: `KLK_RELAY_URL=wss://nostr.illo.fyi bun run seed`
+
+**Configure in EAS:**
+
+```bash
+eas env:create --name EXPO_PUBLIC_RELAY_URL --value wss://nostr.illo.fyi \
+  --environment production --visibility sensitive
+eas env:create --name EXPO_PUBLIC_RELAY_URL --value wss://nostr.illo.fyi \
+  --environment preview --visibility sensitive
+```
+
+---
+
 ## TLS + Nginx Reverse Proxy
 
 Nostr relays require WebSocket (`ws://`) locally but **must** use `wss://` in production. Use Nginx + Let's Encrypt:
@@ -121,25 +150,36 @@ Obtain a certificate: `certbot --nginx -d relay.yourdomain.com`
 
 ## Connecting Klk to Your Relay
 
-Edit `lib/nostr/ndk.ts`:
+Set `EXPO_PUBLIC_RELAY_URL` at build time — no source edits required:
 
-```ts
-export const RELAY_URL = 'wss://relay.yourdomain.com';
-export const RELAYS = [RELAY_URL];
+```bash
+# Local dev (.env.local, gitignored)
+EXPO_PUBLIC_RELAY_URL=wss://relay.yourdomain.com
+
+# EAS build (server-managed, keeps URL out of git)
+eas env:create --name EXPO_PUBLIC_RELAY_URL --value wss://relay.yourdomain.com \
+  --environment production --visibility sensitive
 ```
 
-Then rebuild the app:
+The relay URL lives in `packages/infrastructure/src/nostr/ndk.ts`. When
+`EXPO_PUBLIC_RELAY_URL` is unset (local dev), it falls back to the local `nak`
+relay (`ws://localhost:10547` on iOS, `ws://10.0.2.2:10547` on Android).
+
+Rebuild to pick up the new URL:
 
 ```bash
 bun ios   # or: bun android
 ```
 
-Runtime relay switching (no rebuild required) is planned for a future release.
+> Note: in-app relay switching is not yet supported. Colleagues who want to
+> point at a different relay must rebuild with their own `EXPO_PUBLIC_RELAY_URL`.
 
 ### Adding multiple relays (federation)
 
+Edit `packages/infrastructure/src/nostr/ndk.ts` and extend `RELAYS`:
+
 ```ts
-export const RELAYS = ['wss://relay.yourdomain.com', 'wss://relay.damus.io'];
+export const RELAYS = [RELAY_URL, 'wss://relay.damus.io'];
 ```
 
 NDK will subscribe to and publish on all listed relays automatically.
