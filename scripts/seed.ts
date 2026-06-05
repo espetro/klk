@@ -2,6 +2,7 @@
 import { createHash } from 'node:crypto';
 
 import NDK, { NDKEvent, NDKPrivateKeySigner } from '@nostr-dev-kit/ndk';
+import { cityTag, dTag, titleTag, startTag, endTag, locationTag, summaryTag, gTag } from '../packages/infrastructure/src/nostr/tags';
 
 const CITIES = [
   { slug: 'barcelona', label: 'Barcelona' },
@@ -11,7 +12,8 @@ const CITIES = [
   { slug: 'berlin', label: 'Berlin' },
 ];
 
-const RELAY_URL = 'ws://localhost:10547';
+const RELAY_URL =
+  process.env.KLK_RELAY_URL ?? process.env.EXPO_PUBLIC_RELAY_URL ?? 'ws://localhost:10547';
 
 async function runSeed() {
   try {
@@ -49,13 +51,13 @@ async function runSeed() {
         kind: 31923,
         content: '',
         tags: [
-          ['d', `event-${i}`],
-          ['title', `Sample Event ${i}`],
-          ['start', String(startTs)],
-          ['end', String(endTs)],
-          ['location', `${city.label}, Sample Venue`],
-          ['summary', `This is a sample event in ${city.label} for testing.`],
-          ['t', `city:${city.slug}`],
+          dTag(`event-${i}`),
+          titleTag(`Sample Event ${i}`),
+          startTag(startTs),
+          endTag(endTs),
+          locationTag(`${city.label}, Sample Venue`),
+          summaryTag(`This is a sample event in ${city.label} for testing.`),
+          cityTag(city.slug),
         ],
       });
 
@@ -73,10 +75,10 @@ async function runSeed() {
         kind: 30078,
         content: '',
         tags: [
-          ['d', `circle-${i}`],
+          dTag(`circle-${i}`),
           ['name', `${city.label} Community`],
           ['description', `A public circle for ${city.label} residents.`],
-          ['t', `city:${city.slug}`],
+          cityTag(city.slug),
         ],
       });
 

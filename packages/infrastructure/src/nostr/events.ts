@@ -1,7 +1,7 @@
 import NDK, { NDKEvent } from '@klk/nostr-mobile';
 
 import { KlkKind } from './kinds';
-import { cityTag } from './tags';
+import { cityTag, dTag, titleTag, startTag, endTag, locationTag, summaryTag, imageTag, parseCitySlug } from './tags';
 
 export interface PublicEventData {
   title: string;
@@ -19,16 +19,16 @@ export async function publishPublicEvent(ndk: NDK, data: PublicEventData): Promi
   const summary: string = data.summary ?? '';
   event.content = summary;
   event.tags = [
-    ['d', `${Date.now()}`],
-    ['title', data.title],
-    ['start', `${data.start}`],
-    ['end', `${data.end}`],
-    ['location', data.location ?? ''],
-    ['summary', summary],
+    dTag(`${Date.now()}`),
+    titleTag(data.title),
+    startTag(data.start),
+    endTag(data.end),
+    locationTag(data.location ?? ''),
+    summaryTag(summary),
     cityTag(data.city),
   ];
   if (data.image) {
-    event.tags.push(['image', data.image]);
+    event.tags.push(imageTag(data.image));
   }
   await event.publish();
   return event;
@@ -39,7 +39,6 @@ export function parsePublicEvent(
 ): PublicEventData & { id: string; pubkey: string } {
   const tags = event.tags ?? [];
   const tag = (name: string) => tags.find(([t]) => t === name)?.[1] ?? '';
-  const cityTagValue = tags.find(([t, v]) => t === 't' && v?.startsWith('city:'));
   return {
     id: event.id ?? event.tagId(),
     pubkey: event.pubkey,
@@ -49,6 +48,6 @@ export function parsePublicEvent(
     location: tag('location'),
     summary: tag('summary'),
     image: tag('image') || undefined,
-    city: cityTagValue?.[1]?.replace('city:', '') ?? '',
+    city: parseCitySlug(tags),
   };
 }

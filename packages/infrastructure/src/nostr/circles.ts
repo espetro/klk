@@ -5,6 +5,7 @@ import * as Crypto from 'expo-crypto';
 import { CircleRecord, getCircle, saveCircle } from '../storage/circles-store';
 import { PublicEventData } from './events';
 import { NkdKind } from './kinds';
+import { dTag, pTag, gTag, eTag } from './tags';
 
 function uint8ToHex(buf: Uint8Array): string {
   return Array.from(buf)
@@ -55,7 +56,7 @@ export async function inviteToCircle(
   const wrap = new NDKEvent(ndk);
   wrap.kind = 1059;
   wrap.content = sealed;
-  wrap.tags = [['p', recipientPubkey]];
+  wrap.tags = [pTag(recipientPubkey)];
   await wrap.publish();
 
   const updated: CircleRecord = {
@@ -128,8 +129,8 @@ export async function publishPrivateEvent(
   event.kind = NkdKind.AppSpecificData;
   event.content = encrypted;
   event.tags = [
-    ['d', `circle-event:${circle.id}:${eventId}`],
-    ['g', circle.id],
+    dTag(`circle-event:${circle.id}:${eventId}`),
+    gTag(circle.id),
   ];
   await event.publish();
   return event;
@@ -148,8 +149,8 @@ export async function publishPrivateRsvp(
   rsvp.kind = NkdKind.AppSpecificData;
   rsvp.content = encrypted;
   rsvp.tags = [
-    ['g', circle.id],
-    ['e', eventId],
+    gTag(circle.id),
+    eTag(eventId),
   ];
   await rsvp.publish();
   return rsvp;

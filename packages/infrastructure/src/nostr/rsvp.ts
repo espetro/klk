@@ -1,13 +1,16 @@
 import NDK, { NDKEvent } from '@klk/nostr-mobile';
 
-export async function publishRsvp(ndk: NDK, eventCoordinate: string): Promise<NDKEvent> {
+import { KlkKind } from './kinds';
+import { aTag, dTag, eventCoordinate, statusTag } from './tags';
+
+export async function publishRsvp(ndk: NDK, coord: string): Promise<NDKEvent> {
   const rsvp = new NDKEvent(ndk);
-  rsvp.kind = 31925;
+  rsvp.kind = KlkKind.RSVP;
   rsvp.content = '';
   rsvp.tags = [
-    ['a', eventCoordinate],
-    ['status', 'accepted'],
-    ['d', `${Date.now()}`],
+    aTag(coord),
+    statusTag('accepted'),
+    dTag(`${Date.now()}`),
   ];
   await rsvp.publish();
   return rsvp;
@@ -15,5 +18,5 @@ export async function publishRsvp(ndk: NDK, eventCoordinate: string): Promise<ND
 
 export function buildEventCoordinate(event: NDKEvent): string {
   const d = event.tags.find(([t]) => t === 'd')?.[1] ?? '';
-  return `${event.kind}:${event.pubkey}:${d}`;
+  return eventCoordinate(event.kind!, event.pubkey, d);
 }
