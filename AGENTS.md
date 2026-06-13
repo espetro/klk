@@ -6,6 +6,10 @@ AI agent context for the Klk monorepo (Nostr events app).
 
 Klk is a Nostr-native events app built with Expo + React Native. Users discover and create public/private events, join city feeds, and manage private groups with end-to-end encryption.
 
+### Backlog
+
+We use a [GitHub project](https://github.com/users/espetro/projects/9) as project backlog.
+
 ## Key Documentation
 
 | Document                            | Purpose                                                           |

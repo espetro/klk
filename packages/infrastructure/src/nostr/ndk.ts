@@ -1,8 +1,8 @@
 import NDK, { type NDKSigner } from '@klk/nostr-mobile';
 import { Platform } from 'react-native';
 
-const relayHost = Platform.OS === 'android' ? '10.0.2.2' : 'localhost';
-export const RELAY_URL = `ws://${relayHost}:10547`;
+const DEV_RELAY = `ws://${Platform.OS === 'android' ? '10.0.2.2' : 'localhost'}:10547`;
+export const RELAY_URL = process.env.EXPO_PUBLIC_RELAY_URL ?? DEV_RELAY;
 export const RELAYS = [RELAY_URL];
 
 let ndkInstance: NDK | null = null;

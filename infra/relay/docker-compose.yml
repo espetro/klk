@@ -1,0 +1,43 @@
+services:
+  strfry:
+    image: ghcr.io/hoytech/strfry:latest
+    restart: unless-stopped
+    volumes:
+      - ./strfry-db:/app/strfry-db
+      - ./strfry.conf:/app/strfry.conf:ro
+      - ./write-policy:/write-policy:ro
+    command: relay --config /app/strfry.conf
+    expose:
+      - "7777"
+    networks:
+      - relay-net
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 1536m
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy-data:/data
+      - ./caddy-config:/config
+      - ./certs:/certs:ro
+    depends_on:
+      - strfry
+    networks:
+      - relay-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256m
+
+networks:
+  relay-net:
+    driver: bridge

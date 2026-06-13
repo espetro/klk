@@ -1,8 +1,8 @@
 import { CityPicker } from '@/components';
-import { $city, useCity } from '@/features';
+import { saveCity, useCity } from '@/features';
 
 function handleCityChange(newCity: string) {
-  $city.set({ ...$city.get(), name: newCity });
+  saveCity(newCity).catch(() => {});
 }
 
 export default function MapScreen() {

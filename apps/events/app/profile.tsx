@@ -1,6 +1,6 @@
 import { CityPicker } from '@/components';
 import { HostedButton as Button } from '@/components/hosted-button';
-import { $city, useCity } from '@/features';
+import { saveCity, useCity } from '@/features';
 import { NDKContext } from '@/lib/context/ndk-context';
 import { wipeIdentity, resetOnboarding, RELAY_URL } from '@klk/infrastructure';
 import { router as expoRouter, Stack } from 'expo-router';
@@ -8,7 +8,7 @@ import { useContext } from 'react';
 import { Alert, Clipboard, Pressable, ScrollView, Text, View } from 'react-native';
 
 function handleCityChange(newCity: string) {
-  $city.set({ ...$city.get(), name: newCity });
+  saveCity(newCity).catch(() => {});
 }
 
 function handleWipe() {

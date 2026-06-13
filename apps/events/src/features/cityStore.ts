@@ -1,4 +1,4 @@
-import { getSecure, CitySettings, DEFAULT_CITY_SETTINGS } from '@klk/infrastructure';
+import { getSecure, CitySettings, DEFAULT_CITY_SETTINGS, CITIES, saveCitySettings } from '@klk/infrastructure';
 import { atom } from 'nanostores';
 
 const CITY_STORE_KEY = 'city_settings';
@@ -17,6 +17,18 @@ export async function loadCity(): Promise<void> {
     }
   }
   $city.set(DEFAULT_CITY_SETTINGS);
+}
+
+export async function saveCity(name: string): Promise<void> {
+  const canonical = CITIES.find((c) => c.slug === name);
+  const current = $city.get();
+  const updated: CitySettings = {
+    ...current,
+    name,
+    coordinates: canonical?.coordinates ?? current.coordinates,
+  };
+  $city.set(updated);
+  await saveCitySettings(updated);
 }
 
 export function useCity(): string {

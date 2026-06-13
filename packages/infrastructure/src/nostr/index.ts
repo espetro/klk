@@ -14,6 +14,7 @@ export { getNDK, connectNDK, connectNDKGuest, RELAY_URL, RELAYS } from './ndk';
 export { getOrCreateIdentity, hasIdentity, wipeIdentity } from './identity';
 export { KlkKind, NkdKind, type AppNdkKind } from './kinds';
 export { CITIES, cityTag, cityTagValue, slugifyCity } from './tags';
+export type { City } from './tags';
 export {
   DISTANCE_RANGES,
   DEFAULT_DISTANCE_RANGE,

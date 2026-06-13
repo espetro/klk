@@ -1,5 +1,5 @@
 // Feature hooks barrel export
-export { $city, loadCity, useCity, useDistanceRange, useCityCoordinates } from './cityStore';
+export { $city, loadCity, saveCity, useCity, useDistanceRange, useCityCoordinates } from './cityStore';
 export type { CitySettings } from './cityStore';
 export { $lastActiveTab } from './tabStore';
 export { $eventsSearch, $circlesSearch } from './searchStore';

@@ -1,6 +1,6 @@
 import { HostedButton as Button } from '@/components/hosted-button';
 import { HostedInput as Input } from '@/components/hosted-input';
-import { CITIES, DistanceRange, DISTANCE_RANGES } from '@klk/infrastructure';
+import { CITIES, haversineDistance, DistanceRange, DISTANCE_RANGES } from '@klk/infrastructure';
 import * as Location from 'expo-location';
 import { err, ok } from 'neverthrow';
 import { useState, useCallback } from 'react';
@@ -42,23 +42,22 @@ export interface LocationPickerProps {
   onChange: (selection: LocationSelection) => void;
 }
 
-const PRESET_CITIES = [
-  { slug: 'madrid', label: 'Madrid' },
-  { slug: 'barcelona', label: 'Barcelona' },
-  { slug: 'valencia', label: 'Valencia' },
-  { slug: 'seville', label: 'Seville' },
-  { slug: 'bilbao', label: 'Bilbao' },
-];
+const normalizeSearch = (s: string) =>
+  s
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .toLowerCase();
 
 export function LocationPicker({ value, onChange }: LocationPickerProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [isLocating, setIsLocating] = useState(false);
 
-  const suggestions = searchQuery.trim()
+  const normalizedQuery = normalizeSearch(searchQuery.trim());
+  const suggestions = normalizedQuery
     ? CITIES.filter(
         (c) =>
-          c.label.toLowerCase().includes(searchQuery.toLowerCase()) &&
-          c.label.toLowerCase() !== searchQuery.toLowerCase()
+          normalizeSearch(c.label).includes(normalizedQuery) &&
+          normalizeSearch(c.label) !== normalizedQuery
       ).slice(0, 5)
     : [];
 
@@ -68,8 +67,11 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
 
   const handleCitySelect = useCallback(
     function handleCitySelect(slug: string, label: string) {
+      const canonical = CITIES.find((c) => c.slug === slug);
       onChange({
         city: slug,
+        lat: canonical?.coordinates.latitude,
+        lon: canonical?.coordinates.longitude,
         distance: value.distance,
       });
       setSearchQuery(label);
@@ -93,8 +95,20 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
 
     response.match(
       (location) => {
-        onChange({ ...location, city: 'current', distance: value.distance });
-        setSearchQuery('Current location');
+        const coords = { latitude: location.lat, longitude: location.lon };
+        const nearest = CITIES.reduce((best, c) =>
+          haversineDistance(coords, c.coordinates) <
+          haversineDistance(coords, best.coordinates)
+            ? c
+            : best
+        );
+        onChange({
+          city: nearest.slug,
+          lat: nearest.coordinates.latitude,
+          lon: nearest.coordinates.longitude,
+          distance: value.distance,
+        });
+        setSearchQuery(nearest.label);
       },
       ([title, message]) => {
         Alert.alert(title, message);
@@ -141,7 +155,7 @@ export function LocationPicker({ value, onChange }: LocationPickerProps) {
       <View className='mb-4'>
         <Text className='text-sm font-medium text-gray-700 mb-2'>Popular cities</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className='flex-row'>
-          {PRESET_CITIES.map((c) => (
+          {CITIES.map((c) => (
             <View key={c.slug} className='mr-2'>
               <Button
                 label={c.label}
