@@ -15,12 +15,13 @@ import (
 	"fiatjaf.com/nostr"
 )
 
-// Capabilities a delegation may grant. Unknown cap tags are ignored so
-// newer caps don't break old relays.
+// Capabilities a delegation may grant — declared in
+// packages/proto/src/taxonomy.ts (CAPABILITIES); mirrored here. Unknown
+// cap tags are ignored so newer caps don't break old relays.
 const (
-	CapRead      = "read"
-	CapPostEvent = "postEvent"
-	CapSetRsvp   = "setRsvp"
+	CapRead      = "read"      // filter-level reads of circle-scoped events
+	CapPostEvent = "postEvent" // delegated writes of KindCalendarEvent
+	CapSetRsvp   = "setRsvp"   // delegated writes of KindRSVP
 )
 
 // capForKind maps a write kind to the capability it needs; "" means the
