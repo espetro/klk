@@ -1,0 +1,17 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "import", "react", "react-hooks", "unicorn"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "pedantic": "off",
+    "perf": "warn",
+    "style": "off"
+  },
+  "rules": {
+    "import/no-default-export": "off",
+    "typescript/no-explicit-any": "error",
+    "typescript/consistent-type-imports": "warn"
+  },
+  "ignorePatterns": ["**/dist/**", "**/.one/**", "**/node_modules/**", "apps/relay/**", "**/*.go"]
+}

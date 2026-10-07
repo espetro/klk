@@ -1,0 +1,10 @@
+{
+  "ignorePatterns": [
+    "**/dist/**",
+    "**/.one/**",
+    "**/node_modules/**",
+    "apps/relay/**",
+    "**/*.go",
+    "**/pnpm-lock.yaml"
+  ]
+}

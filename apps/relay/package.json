@@ -1,0 +1,12 @@
+{
+  "name": "@klk/relay",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "go build -o bin/klk-relay ./cmd/klk-relay",
+    "dev": "go run ./cmd/klk-relay",
+    "test": "go test ./...",
+    "validate": "go vet ./... && test -z \"$(gofmt -l .)\" && go test ./..."
+  }
+}

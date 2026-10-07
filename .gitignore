@@ -10,3 +10,4 @@ tmp/
 coverage/
 *.tsbuildinfo
 apps/relay/data/
+apps/relay/bin/

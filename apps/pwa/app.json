@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "klk",
+    "slug": "klk",
+    "platforms": ["ios", "android"],
+    "plugins": ["one/expo-plugin"],
+    "icon": "./public/app-icon.png",
+    "splash": {
+      "image": "./public/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "ios": {
+      "bundleIdentifier": "fyi.klk.app"
+    },
+    "android": {
+      "package": "fyi.klk.app"
+    }
+  }
+}
