@@ -12,6 +12,7 @@ import {
   addContact,
   displayName,
   fetchProfiles,
+  getLogger,
   removeContact,
 } from "@klk/core";
 import { npubDecode, npubEncode } from "@klk/proto";
@@ -19,6 +20,8 @@ import { EmptyState, ShareActions, palette, useMountEffect } from "@klk/ui";
 import { createAndConnect } from "../../src/boot.ts";
 import { APP_ORIGIN } from "../../src/config.ts";
 import { notify } from "../../src/notify.ts";
+
+const log = getLogger(["klk", "user-card"]);
 
 export default function UserCard() {
   const params = useParams<{ npub: string }>();
@@ -31,13 +34,21 @@ export default function UserCard() {
 
   useMountEffect(function loadProfile() {
     if (pk === null) return;
-    // boot() may still be connecting — the first fetch races it and
-    // throws, so re-fire when the realm comes up instead of degrading
-    // to the autogen name forever
+    // boot() may still be connecting — fire when the realm comes up,
+    // and retry a few times: a failed fetch used to leave the card on
+    // the autogen name forever
+    let tries = 0;
+    const attempt = () => {
+      tries += 1;
+      void fetchProfiles([pk]).catch((e: unknown) => {
+        log.warn`profile fetch failed (try ${String(tries)}): ${String(e)}`;
+        if (tries < 4) setTimeout(attempt, 600);
+      });
+    };
     const stop = $connected.subscribe((ok) => {
       if (!ok) return;
       stop();
-      void fetchProfiles([pk]).catch(() => {});
+      attempt();
     });
     return () => stop();
   });

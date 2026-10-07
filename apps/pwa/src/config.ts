@@ -21,8 +21,11 @@ export const APP_ORIGIN =
 // cohort launch; '0' disables (local dev).
 export const COHORT_GATE = (import.meta.env.VITE_COHORT_GATE as string | undefined) !== "0";
 
-// PostHog EU analytics — publishable client key; unset = telemetry off.
-export const POSTHOG_KEY = import.meta.env.VITE_POSTHOG_KEY as string | undefined;
+// PostHog EU analytics — the project key is publishable by design, so it
+// ships as the default; override to point at another project/self-host.
+export const POSTHOG_KEY =
+  (import.meta.env.VITE_POSTHOG_KEY as string | undefined) ??
+  "phc_nZLNAtVNFTH7tLrhA2VgXuv7MC8CS9WgNKSUet8tDDrz";
 export const POSTHOG_HOST =
   (import.meta.env.VITE_POSTHOG_HOST as string | undefined) ?? "https://eu.i.posthog.com";
 

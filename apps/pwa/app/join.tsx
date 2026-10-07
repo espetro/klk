@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useStore } from "@nanostores/react";
 import { useRouter } from "one";
-import { Button, Spinner, Text, YStack } from "tamagui";
+import { Button, Spinner, Text, XStack, YStack } from "tamagui";
 import { $identity, joinCircle } from "@klk/core";
 import { palette, useMountEffect } from "@klk/ui";
 import { createAndConnect } from "../src/boot.ts";
@@ -16,7 +16,9 @@ export default function Join() {
   const router = useRouter();
 
   useMountEffect(function consumeInvite() {
-    const frag = location.hash.slice(1);
+    // the payload is pure base64url — drop anything else (pasted
+    // whitespace, router-injected fragments) instead of failing to parse
+    const frag = location.hash.slice(1).replaceAll(/[^A-Za-z0-9_-]/g, "");
     if (frag === "") {
       setErr("This invite link is missing its payload.");
       return;
@@ -32,7 +34,7 @@ export default function Join() {
           notify("You're in — welcome to the circle");
           router.replace(`/circle/${encodeURIComponent(c.coord)}` as never);
         })
-        .catch((e) => setErr(e instanceof Error ? e.message : String(e)));
+        .catch(() => setErr("Couldn't open this invite — the link may be incomplete."));
     });
     return () => {
       done = true;
@@ -51,9 +53,20 @@ export default function Join() {
   return (
     <YStack flex={1} justifyContent="center" alignItems="center" gap="$4" paddingVertical="$8">
       {err !== undefined ? (
-        <Text fontSize={14} color="#9F2F2D" textAlign="center">
-          {err}
-        </Text>
+        <XStack gap="$3" alignItems="center">
+          <Text fontSize={14} color="#9F2F2D" textAlign="center">
+            {err}
+          </Text>
+          <Button
+            size="$3"
+            borderWidth={1}
+            borderColor={palette.border}
+            color={palette.ink}
+            onPress={() => location.reload()}
+          >
+            Try again
+          </Button>
+        </XStack>
       ) : me === null ? (
         <>
           <Text fontSize={20} fontWeight="600" color={palette.ink}>
