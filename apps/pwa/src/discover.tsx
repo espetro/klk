@@ -61,7 +61,7 @@ export const Discover = () => {
 
   const openEvent = (e: CalendarEvent) =>
     router.replace(
-      `/event/${encodeURIComponent(e.eventId)}?coord=${encodeURIComponent(e.coord)}` as never,
+      `/event/${encodeURIComponent(e.id)}?coord=${encodeURIComponent(e.coord)}` as never,
     );
 
   const circleList = Object.values(circles);

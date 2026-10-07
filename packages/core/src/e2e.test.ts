@@ -64,9 +64,9 @@ describe.skipIf(!RUN)("v0 loop over a live relay", () => {
     });
     await until(() => ($events.get()[circle.coord] ?? []).some((e) => e.id === ev.id));
 
-    await setRsvp(circle.coord, ev.eventId, "yes");
+    await setRsvp(circle.coord, ev.id, "yes");
     await until(() =>
-      ($rsvps.get()[`${circle.coord}:${ev.eventId}`] ?? []).some(
+      ($rsvps.get()[`${circle.coord}:${ev.id}`] ?? []).some(
         (r) => r.pubkey === member.pubkey && r.status === "yes",
       ),
     );
@@ -170,6 +170,9 @@ describe.skipIf(!RUN)("v0 loop over a live relay", () => {
     await connect(member, { relayUrl: RELAY_URL });
     await joinCircle(inviteFragment);
 
+    // member RSVPs first — apply must not orphan it (e-tags carry `d`)
+    await setRsvp(circle.coord, ev.id, "yes");
+
     const later = Math.floor(Date.now() / 1000) + 7200;
     await suggestChange({
       coord: circle.coord,
@@ -195,6 +198,10 @@ describe.skipIf(!RUN)("v0 loop over a live relay", () => {
         ($events.get()[circle.coord] ?? []).find((e) => e.id === ev.id)?.title ===
         "moved to the park",
     );
+
+    // the republished event has a new hash; the member's RSVP is keyed by `d`
+    expect($events.get()[circle.coord]?.find((e) => e.id === ev.id)?.eventId).not.toBe(ev.eventId);
+    expect($rsvps.get()[`${circle.coord}:${ev.id}`]?.[0]?.status).toBe("yes");
 
     await disconnect();
   }, 20000);

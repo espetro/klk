@@ -21,7 +21,7 @@ export interface CalendarEvent {
   location?: string;
   geo?: readonly [number, number];
   summary?: string;
-  eventId: string; // nostr event id for RSVP e-tag
+  eventId: string; // latest revision hash — republished events keep `id`, change this
   image?: string; // NIP-52 image URL
   suggestable?: boolean; // members may propose changes (kind 31926)
 }

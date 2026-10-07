@@ -31,7 +31,7 @@ export default function EventDetail() {
   const search = useLocalSearchParams<{ coord: string }>();
   const eventId = decodeURIComponent(String(params.id ?? ""));
   const coord = decodeURIComponent(String(search.coord ?? ""));
-  const event = (useStore($events)[coord] ?? []).find((e) => e.eventId === eventId);
+  const event = (useStore($events)[coord] ?? []).find((e) => e.id === eventId);
   const circle = useStore($circles)[coord];
   const me = useStore($identity);
   const connected = useStore($connected);
@@ -92,7 +92,7 @@ export default function EventDetail() {
           <RsvpButtons
             {...(mine !== undefined ? { current: mine.status } : {})}
             onSelect={(s) => {
-              void setRsvp(coord, event.eventId, s).then(() =>
+              void setRsvp(coord, event.id, s).then(() =>
                 notify(
                   s === "yes"
                     ? "You're in — see you there"
@@ -129,7 +129,7 @@ export default function EventDetail() {
               onSubmit={(v) => {
                 void suggestChange({
                   coord,
-                  eventId: event.eventId,
+                  eventId: event.id,
                   title: v.title,
                   starts: v.starts,
                   ...(v.ends !== undefined ? { ends: v.ends } : {}),

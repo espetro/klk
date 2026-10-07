@@ -157,21 +157,18 @@ export default function CircleDetail() {
         <YStack gap="$3">
           {upcoming.map((e) => (
             <EventCard
-              key={e.eventId}
+              key={e.id}
               event={e}
               accent={circleColor(e.coord)}
               myStatus={
                 me === null
                   ? undefined
-                  : (rsvps[`${coord}:${e.eventId}`] ?? []).find((r) => r.pubkey === me.pubkey)
-                      ?.status
+                  : (rsvps[`${coord}:${e.id}`] ?? []).find((r) => r.pubkey === me.pubkey)?.status
               }
-              going={
-                (rsvps[`${coord}:${e.eventId}`] ?? []).filter((r) => r.status === "yes").length
-              }
+              going={(rsvps[`${coord}:${e.id}`] ?? []).filter((r) => r.status === "yes").length}
               onPress={() =>
                 router.push(
-                  `/event/${encodeURIComponent(e.eventId)}?coord=${encodeURIComponent(coord)}` as never,
+                  `/event/${encodeURIComponent(e.id)}?coord=${encodeURIComponent(coord)}` as never,
                 )
               }
             />

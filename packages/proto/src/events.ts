@@ -115,7 +115,7 @@ export function buildSuggestion(p: SuggestionParams): EventTemplate {
 }
 
 export interface RSVPParams {
-  eventId: string; // id of the calendar event (or its coordinate)
+  eventId: string; // `e` tag — target event's `d` (stable across edits)
   coord: string; // circle coordinate the event belongs to
   status: "yes" | "no" | "maybe";
   comment?: string;
