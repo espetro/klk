@@ -5,18 +5,10 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import { Button, Card, Input, Text, TextArea, XStack, YStack } from "tamagui";
 import type { CalendarEvent, Circle, RSVP } from "@klk/core";
+import { LocationInput } from "./location-input.tsx";
+import { palette } from "./palette.ts";
 
-export const palette = {
-  canvas: "#FBFBFA",
-  surface: "#FFFFFF",
-  border: "#EAEAEA",
-  ink: "#111111",
-  muted: "#787774",
-  pastelBlue: "#E1F3FE",
-  pastelBlueInk: "#1F6C9F",
-  pastelGreen: "#EDF3EC",
-  pastelGreenInk: "#346538",
-};
+export { palette };
 
 export const Badge = ({ label, tone }: { label: string; tone: "blue" | "green" }) => (
   <XStack
@@ -51,7 +43,10 @@ export const CircleCard = ({ circle, onPress }: { circle: Circle; onPress?: () =
       <Text fontSize={17} fontWeight="600" color={palette.ink}>
         {circle.name !== "" ? circle.name : circle.slug}
       </Text>
-      <Badge label={circle.tier} tone={circle.tier === "sealed" ? "blue" : "green"} />
+      <Badge
+        label={circle.tier === "sealed" ? "Sealed" : "Connected"}
+        tone={circle.tier === "sealed" ? "blue" : "green"}
+      />
     </XStack>
     <Text fontSize={13} color={palette.muted}>
       {circle.members.length} member{circle.members.length === 1 ? "" : "s"}
@@ -71,10 +66,18 @@ const timeLabel = (ts: number) =>
 export const EventCard = ({
   event,
   going,
+  accent,
+  circleName,
+  myStatus,
   onPress,
 }: {
   event: CalendarEvent;
   going?: number;
+  /** circle accent — left strip + label color */
+  accent?: string;
+  circleName?: string;
+  /** the viewer's own RSVP, if any */
+  myStatus?: RSVP["status"];
   onPress?: () => void;
 }) => (
   <Card
@@ -86,22 +89,47 @@ export const EventCard = ({
     gap="$1.5"
     pressStyle={{ scale: 0.99 }}
     onPress={onPress}
+    overflow="hidden"
   >
-    <Text fontSize={12} color={palette.muted} textTransform="uppercase" letterSpacing={0.6}>
-      {dayLabel(event.starts)} · {timeLabel(event.starts)}
-    </Text>
+    {accent !== undefined ? (
+      <YStack position="absolute" left={0} top={0} bottom={0} width={3} backgroundColor={accent} />
+    ) : null}
+    <XStack justifyContent="space-between" alignItems="center">
+      <Text fontSize={12} color={palette.muted} textTransform="uppercase" letterSpacing={0.6}>
+        {dayLabel(event.starts)} · {timeLabel(event.starts)}
+      </Text>
+      {myStatus !== undefined && myStatus !== "no" ? (
+        <Text fontSize={11} fontWeight="600" color={accent ?? palette.pastelGreenInk}>
+          {myStatus === "yes" ? "Going" : "Maybe"}
+        </Text>
+      ) : null}
+    </XStack>
     <Text fontSize={17} fontWeight="600" color={palette.ink}>
       {event.title}
     </Text>
-    {event.location !== undefined ? (
-      <Text fontSize={13} color={palette.muted}>
-        {event.location}
-      </Text>
-    ) : null}
+    <XStack gap="$2" alignItems="center">
+      {circleName !== undefined ? (
+        <Text fontSize={12} fontWeight="500" color={accent ?? palette.muted}>
+          {circleName}
+        </Text>
+      ) : null}
+      {event.location !== undefined ? (
+        <Text fontSize={13} color={palette.muted} numberOfLines={1}>
+          {event.location}
+        </Text>
+      ) : null}
+    </XStack>
     {going !== undefined && going > 0 ? (
       <Text fontSize={12} color={palette.muted}>
         {going} going
       </Text>
+    ) : null}
+    {event.image !== undefined ? (
+      <img
+        src={event.image}
+        alt=""
+        style={{ width: "100%", height: 96, objectFit: "cover", borderRadius: 8, marginTop: 4 }}
+      />
     ) : null}
   </Card>
 );
@@ -111,7 +139,10 @@ export interface EventFormValues {
   starts: number;
   ends?: number;
   location?: string;
+  geo?: readonly [number, number];
   summary?: string;
+  image?: string;
+  suggestable?: boolean;
 }
 
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -126,17 +157,23 @@ const defaultStart = () => Math.floor(Date.now() / 1000) + 86400;
 export const EventForm = ({
   initial,
   submitLabel,
+  hideSuggestable,
   onSubmit,
 }: {
   initial?: Partial<EventFormValues>;
   submitLabel: string;
+  /** suggestion flow proposes edits — the toggle belongs to the creator */
+  hideSuggestable?: boolean;
   onSubmit: (values: EventFormValues) => void;
 }) => {
   const [title, setTitle] = useState(initial?.title ?? "");
   const [starts, setStarts] = useState(() => toLocalInput(initial?.starts ?? defaultStart()));
   const [ends, setEnds] = useState(initial?.ends !== undefined ? toLocalInput(initial.ends) : "");
   const [location, setLocation] = useState(initial?.location ?? "");
+  const [geo, setGeo] = useState<readonly [number, number] | undefined>(initial?.geo);
   const [summary, setSummary] = useState(initial?.summary ?? "");
+  const [image, setImage] = useState(initial?.image ?? "");
+  const [suggestable, setSuggestable] = useState(initial?.suggestable ?? false);
   const [busy, setBusy] = useState(false);
 
   const submit = async () => {
@@ -148,7 +185,10 @@ export const EventForm = ({
         starts: fromLocalInput(starts),
         ...(ends !== "" ? { ends: fromLocalInput(ends) } : {}),
         ...(location.trim() !== "" ? { location: location.trim() } : {}),
+        ...(geo !== undefined ? { geo } : {}),
         ...(summary.trim() !== "" ? { summary: summary.trim() } : {}),
+        ...(image.trim() !== "" ? { image: image.trim() } : {}),
+        suggestable,
       });
     } finally {
       setBusy(false);
@@ -213,12 +253,14 @@ export const EventForm = ({
         <Text fontSize={13} color={palette.muted}>
           Location
         </Text>
-        <Input
+        <LocationInput
           value={location}
-          onChangeText={setLocation}
-          placeholder="Café Nord, Gracia"
-          borderColor={palette.border}
-          backgroundColor={palette.surface}
+          geo={geo}
+          onChange={setLocation}
+          onPick={(label, g) => {
+            setLocation(label);
+            setGeo(g);
+          }}
         />
       </YStack>
       <YStack gap="$1.5">
@@ -234,6 +276,56 @@ export const EventForm = ({
           rows={4}
         />
       </YStack>
+      <YStack gap="$1.5">
+        <Text fontSize={13} color={palette.muted}>
+          Cover photo URL <Text color={palette.border}>(optional)</Text>
+        </Text>
+        <Input
+          value={image}
+          onChangeText={setImage}
+          placeholder="https://…"
+          borderColor={palette.border}
+          backgroundColor={palette.surface}
+        />
+      </YStack>
+      {hideSuggestable !== true ? (
+        <XStack
+          justifyContent="space-between"
+          alignItems="center"
+          borderWidth={1}
+          borderColor={palette.border}
+          borderRadius={8}
+          padding="$3"
+          cursor="pointer"
+          pressStyle={{ opacity: 0.8 }}
+          onPress={() => setSuggestable(!suggestable)}
+        >
+          <YStack gap={2} flex={1}>
+            <Text fontSize={14} fontWeight="500" color={palette.ink}>
+              Let members suggest changes
+            </Text>
+            <Text fontSize={12} color={palette.muted}>
+              They can propose a new time, place or name — you approve.
+            </Text>
+          </YStack>
+          <YStack
+            width={20}
+            height={20}
+            borderRadius={4}
+            borderWidth={1}
+            borderColor={suggestable ? palette.ink : palette.border}
+            backgroundColor={suggestable ? palette.ink : "transparent"}
+            alignItems="center"
+            justifyContent="center"
+          >
+            {suggestable ? (
+              <Text fontSize={12} color="#FFF">
+                ✓
+              </Text>
+            ) : null}
+          </YStack>
+        </XStack>
+      ) : null}
       <Button
         backgroundColor={palette.ink}
         color="#FFFFFF"
