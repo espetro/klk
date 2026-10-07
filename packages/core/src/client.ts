@@ -446,7 +446,7 @@ export async function applySuggestion(
   event: CalendarEvent,
   suggestion: Suggestion,
 ): Promise<CalendarEvent> {
-  return postEvent({
+  const updated = await postEvent({
     coord: event.coord,
     id: event.id,
     title: suggestion.title ?? event.title,
@@ -464,6 +464,15 @@ export async function applySuggestion(
     ...(event.image !== undefined ? { image: event.image } : {}),
     ...(event.suggestable === true ? { suggestable: true } : {}),
   });
+  // resolved — drop it from the pending list
+  const key = `${event.coord}:${suggestion.eventId}`;
+  $suggestions.setKey(
+    key,
+    ($suggestions.get()[key] ?? []).filter(
+      (s) => !(s.pubkey === suggestion.pubkey && s.suggestedAt === suggestion.suggestedAt),
+    ),
+  );
+  return updated;
 }
 
 // ---------- calendar export ----------

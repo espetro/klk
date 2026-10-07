@@ -21,12 +21,13 @@ const mapsLink = (v: string): { label?: string; geo?: [number, number] } | null 
   ) {
     return null;
   }
-  const at = v.match(/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/);
-  if (at !== null) return { geo: [Number(at[1]), Number(at[2])] };
-  const ll = v.match(/[?&](?:ll|q|query)=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/);
-  if (ll !== null) return { geo: [Number(ll[1]), Number(ll[2])] };
   const place = decodeURIComponent(v.match(/\/place\/([^/?#]+)/)?.[1] ?? "");
-  return place !== "" ? { label: place.replace(/\+/g, " ") } : {};
+  const named = place !== "" ? { label: place.replace(/\+/g, " ") } : {};
+  const at = v.match(/@(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/);
+  if (at !== null) return { geo: [Number(at[1]), Number(at[2])], ...named };
+  const ll = v.match(/[?&](?:ll|q|query)=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/);
+  if (ll !== null) return { geo: [Number(ll[1]), Number(ll[2])], ...named };
+  return named;
 };
 
 const searchPlaces = async (q: string): Promise<Hit[]> => {
@@ -61,7 +62,7 @@ export const LocationInput = ({
     const link = mapsLink(text.trim());
     if (link?.geo !== undefined) {
       setHits([]);
-      onPick(link.label ?? text.trim(), link.geo);
+      onPick(link.label ?? "Dropped pin", link.geo);
       return;
     }
     const q = (link?.label ?? text).trim();
