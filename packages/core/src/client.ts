@@ -1,6 +1,7 @@
 import { atom, map } from "nanostores";
 import {
   KlkRelay,
+  buildAgentScope,
   buildCalendarEvent,
   buildCircleDef,
   buildMemberClaim,
@@ -11,6 +12,7 @@ import {
   generateCircleKey,
   newInviteSecret,
   open as cryptoOpen,
+  scopeCoord,
   seal as cryptoSeal,
 } from "@klk/proto";
 import type { CircleKey, Filter, Keypair } from "@klk/proto";
@@ -284,6 +286,32 @@ export async function setRsvp(
   const r = requireRelay();
   const res = await r.publish(buildRSVP({ eventId, coord, status }));
   if (!res.ok) throw new Error(`publish rsvp: ${res.reason}`);
+}
+
+// ---------- agent delegation ----------
+
+export interface AgentScopeInput {
+  scopeId: string; // `d` tag — scopes replace by (delegator, d)
+  agent: string; // agent pubkey hex — signs its own delegated writes
+  circles: string[]; // circle coords; must all be circles you're in
+  caps: string[]; // CAP_READ / CAP_POST_EVENT / CAP_SET_RSVP
+  expiration?: number; // unix seconds; omit = no expiry
+  comment?: string;
+}
+
+/** Publish a kind-34134 scope granting an agent narrow powers. */
+export async function grantAgentScope(input: AgentScopeInput): Promise<string> {
+  const kp = requireIdentity();
+  const r = requireRelay();
+  const known = $circles.get();
+  for (const coord of input.circles) {
+    if (known[coord] === undefined) {
+      throw new Error(`can't delegate a circle you're not in: ${coord}`);
+    }
+  }
+  const res = await r.publish(buildAgentScope({ ...input, id: input.scopeId }));
+  if (!res.ok) throw new Error(`publish scope: ${res.reason}`);
+  return scopeCoord(kp.pubkey, input.scopeId);
 }
 
 // ---------- sealed content ----------

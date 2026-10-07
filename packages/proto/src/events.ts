@@ -1,6 +1,12 @@
 import type { EventTemplate, NostrEvent } from "nostr-tools";
 import { finalizeEvent } from "nostr-tools";
-import { KIND_CALENDAR_EVENT, KIND_CIRCLE, KIND_CIRCLE_MEMBER, KIND_RSVP } from "./kinds.ts";
+import {
+  KIND_AGENT_SCOPE,
+  KIND_CALENDAR_EVENT,
+  KIND_CIRCLE,
+  KIND_CIRCLE_MEMBER,
+  KIND_RSVP,
+} from "./kinds.ts";
 import type { CircleTier } from "./kinds.ts";
 
 function now(): number {
@@ -93,4 +99,29 @@ export function buildRSVP(p: RSVPParams): EventTemplate {
 
 export function sign(tpl: EventTemplate, secretKey: Uint8Array): NostrEvent {
   return finalizeEvent(tpl, secretKey);
+}
+
+export interface AgentScopeParams {
+  id: string; // `d` tag — scope name under the delegator's pubkey
+  agent: string; // agent pubkey (hex) — author of delegated writes
+  circles: string[]; // circle coords this scope covers (required, explicit)
+  caps: string[]; // CAP_READ / CAP_POST_EVENT / CAP_SET_RSVP
+  expiration?: number; // unix seconds (NIP-40 style); omit = no expiry
+  comment?: string;
+}
+
+export function buildAgentScope(p: AgentScopeParams): EventTemplate {
+  const tags: string[][] = [
+    ["d", p.id],
+    ["p", p.agent],
+  ];
+  for (const c of p.circles) tags.push(["a", c]);
+  for (const cap of p.caps) tags.push(["cap", cap]);
+  if (p.expiration !== undefined) tags.push(["expiration", String(p.expiration)]);
+  return { kind: KIND_AGENT_SCOPE, created_at: now(), content: p.comment ?? "", tags };
+}
+
+/** Tag an event template as delegated under a scope coordinate. */
+export function withDelegation(tpl: EventTemplate, scopeCoordinate: string): EventTemplate {
+  return { ...tpl, tags: [...tpl.tags, ["delegation", scopeCoordinate]] };
 }

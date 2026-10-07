@@ -1,7 +1,14 @@
 // Client e2e against a live relay — run with KLK_E2E=1 and a klk-relay
 // listening on KLK_RELAY_URL (default ws://localhost:3334).
 import { describe, expect, it } from "vitest";
-import { generateKeypair } from "@klk/proto";
+import {
+  CAP_POST_EVENT,
+  CAP_READ,
+  KlkRelay,
+  buildCalendarEvent,
+  generateKeypair,
+  withDelegation,
+} from "@klk/proto";
 import {
   $circles,
   $events,
@@ -9,6 +16,7 @@ import {
   connect,
   createCircle,
   disconnect,
+  grantAgentScope,
   inviteLinkFor,
   joinCircle,
   postEvent,
@@ -59,6 +67,60 @@ describe.skipIf(!RUN)("v0 loop over a live relay", () => {
       ),
     );
 
+    await disconnect();
+  }, 20000);
+
+  it("member grants an agent a scoped write + read", async () => {
+    const owner = generateKeypair();
+    const agent = generateKeypair();
+
+    await connect(owner, { relayUrl: RELAY_URL });
+    const circle = await createCircle("agent e2e", "hosted");
+    const scope = await grantAgentScope({
+      scopeId: "my-agent",
+      agent: agent.pubkey,
+      circles: [circle.coord],
+      caps: [CAP_READ, CAP_POST_EVENT],
+    });
+    expect(scope.startsWith("34134:")).toBe(true);
+    await wait(150); // scope event lands in the store
+
+    // agent connects with its OWN key and writes under delegation
+    const ar = await KlkRelay.connect(RELAY_URL, agent.secretKey);
+    const res = await ar.publish(
+      withDelegation(
+        buildCalendarEvent({
+          id: "agent-e1",
+          coord: circle.coord,
+          title: "posted by the agent",
+          starts: Math.floor(Date.now() / 1000) + 7200,
+        }),
+        scope,
+      ),
+    );
+    expect(res.ok).toBe(true);
+
+    // owner sees the delegated event land
+    await until(() => ($events.get()[circle.coord] ?? []).some((e) => e.id === "agent-e1"));
+
+    // out-of-scope write rejected: RSVP isn't a granted cap
+    const bad = await ar.publish(
+      withDelegation(
+        {
+          kind: 31925,
+          created_at: Math.floor(Date.now() / 1000),
+          content: "",
+          tags: [
+            ["e", "x"],
+            ["a", circle.coord],
+          ],
+        },
+        scope,
+      ),
+    );
+    expect(bad.ok).toBe(false);
+
+    ar.close();
     await disconnect();
   }, 20000);
 });

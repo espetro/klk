@@ -5,6 +5,7 @@ package server
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"fiatjaf.com/nostr"
 	"fiatjaf.com/nostr/eventstore/boltdb"
@@ -29,8 +30,16 @@ func New(dbPath, staticDir string) (http.Handler, func(), error) {
 	rl.Info.Software = "fyi.klk/relay"
 	rl.UseEventstore(db, 500)
 
+	// delegated (agent) writes get a per-agent quota on top of the ACL
+	agentWrites := policy.NewRateLimiter(60, time.Hour)
 	rl.OnEvent = func(ctx context.Context, ev nostr.Event) (bool, string) {
-		return policy.CheckStore(ctx, ev, store)
+		if reject, msg := policy.CheckStore(ctx, ev, store); reject {
+			return reject, msg
+		}
+		if policy.IsDelegated(ev) && !agentWrites.Allow(ev.PubKey) {
+			return true, "rate-limited: delegated write quota exceeded"
+		}
+		return false, ""
 	}
 	rl.OnRequest = func(ctx context.Context, f nostr.Filter) (bool, string) {
 		return policy.CheckRequest(ctx, f, store)

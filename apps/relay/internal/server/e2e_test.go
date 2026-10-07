@@ -205,3 +205,140 @@ memberReadDone:
 		}
 	}
 }
+
+// Agent delegation: member grants a scoped token; the agent (its own
+// identity, never the member's key) reads + writes inside that scope —
+// and only that.
+func TestAgentDelegation(t *testing.T) {
+	handler, cleanup, err := server.New(t.TempDir()+"/events.bolt", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+	ts := httptest.NewServer(handler)
+	defer ts.Close()
+	url := "ws" + strings.TrimPrefix(ts.URL, "http")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	ownerSK := nostr.Generate()
+	ownerPK := nostr.GetPublicKey(ownerSK)
+	agentSK := nostr.Generate()
+	agentPK := nostr.GetPublicKey(agentSK)
+
+	owner := connect(t, url, ownerSK)
+	agent := connect(t, url, agentSK)
+
+	coord := "31950:" + ownerPK.Hex() + ":agent-crew"
+	if err := owner.Publish(ctx, sign(ownerSK, nostr.Event{
+		Kind:      policy.KindCircle,
+		CreatedAt: nostr.Now(),
+		Content:   `{"name":"Agent Crew","tier":"hosted"}`,
+		Tags:      nostr.Tags{{"d", "agent-crew"}, {"invite", "sekret"}},
+	})); err != nil {
+		t.Fatalf("circle def: %v", err)
+	}
+	if err := owner.Publish(ctx, sign(ownerSK, nostr.Event{
+		Kind:      policy.KindCircleMember,
+		CreatedAt: nostr.Now(),
+		Tags:      nostr.Tags{{"a", coord}},
+	})); err != nil {
+		t.Fatalf("owner claim: %v", err)
+	}
+
+	// agent has no scope yet → write rejected, read closed
+	scopeCoord := "34134:" + ownerPK.Hex() + ":my-agent"
+	if err := agent.Publish(ctx, sign(agentSK, nostr.Event{
+		Kind:      policy.KindCalendarEvent,
+		CreatedAt: nostr.Now(),
+		Content:   `{"title":"no scope"}`,
+		Tags:      nostr.Tags{{"d", "nope-1"}, {"a", coord}, {"delegation", scopeCoord}},
+	})); err == nil {
+		t.Fatal("agent write without scope should be rejected")
+	}
+	noScopeSub, _ := agent.Subscribe(ctx, nostr.Filter{
+		Kinds: []nostr.Kind{policy.KindCalendarEvent},
+		Tags:  nostr.TagMap{"a": []string{coord}},
+	}, nostr.SubscriptionOptions{})
+	select {
+	case <-noScopeSub.ClosedReason:
+	case <-time.After(3 * time.Second):
+		t.Fatal("unscoped agent read should be closed")
+	}
+
+	// owner grants the agent a scope: read + postEvent on this circle
+	if err := owner.Publish(ctx, sign(ownerSK, nostr.Event{
+		Kind:      policy.KindAgentScope,
+		CreatedAt: nostr.Now(),
+		Tags: nostr.Tags{
+			{"d", "my-agent"},
+			{"p", agentPK.Hex()},
+			{"a", coord},
+			{"cap", "read"},
+			{"cap", "postEvent"},
+		},
+	})); err != nil {
+		t.Fatalf("scope publish: %v", err)
+	}
+	// let the scope land in the store
+	time.Sleep(150 * time.Millisecond)
+
+	// agent writes via delegation — accepted
+	agentEv := sign(agentSK, nostr.Event{
+		Kind:      policy.KindCalendarEvent,
+		CreatedAt: nostr.Now(),
+		Content:   `{"title":"agent says hi","starts":1790000000}`,
+		Tags:      nostr.Tags{{"d", "agent-1"}, {"a", coord}, {"delegation", scopeCoord}},
+	})
+	if err := agent.Publish(ctx, agentEv); err != nil {
+		t.Fatalf("scoped agent write rejected: %v", err)
+	}
+
+	// agent RSVPs — outside granted caps → rejected
+	if err := agent.Publish(ctx, sign(agentSK, nostr.Event{
+		Kind:      policy.KindRSVP,
+		CreatedAt: nostr.Now(),
+		Content:   `{"status":"yes"}`,
+		Tags:      nostr.Tags{{"e", agentEv.ID.Hex()}, {"a", coord}, {"delegation", scopeCoord}},
+	})); err == nil {
+		t.Fatal("agent RSVP outside granted caps should be rejected")
+	}
+
+	// agent reads the circle's events — sees its own post
+	sub, err := agent.Subscribe(ctx, nostr.Filter{
+		Kinds: []nostr.Kind{policy.KindCalendarEvent},
+		Tags:  nostr.TagMap{"a": []string{coord}},
+	}, nostr.SubscriptionOptions{})
+	if err != nil {
+		t.Fatalf("agent subscribe: %v", err)
+	}
+	got := false
+	for {
+		select {
+		case ev := <-sub.Events:
+			if ev.ID == agentEv.ID {
+				got = true
+			}
+		case <-sub.EndOfStoredEvents:
+			if !got {
+				t.Fatal("agent did not see its delegated event")
+			}
+			goto agentReadDone
+		case <-ctx.Done():
+			t.Fatal("timed out waiting for agent read")
+		}
+	}
+agentReadDone:
+
+	// bulk-scan filter (no circle ref) is rejected even when authed
+	bulk, _ := agent.Subscribe(ctx, nostr.Filter{Kinds: []nostr.Kind{policy.KindCalendarEvent}}, nostr.SubscriptionOptions{})
+	select {
+	case reason := <-bulk.ClosedReason:
+		if !strings.Contains(reason, "restricted") {
+			t.Fatalf("bulk filter closed for wrong reason: %s", reason)
+		}
+	case <-time.After(3 * time.Second):
+		t.Fatal("unscoped bulk filter should be closed")
+	}
+}

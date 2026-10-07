@@ -1,5 +1,5 @@
 // Package lookup resolves the policy.Store contract against a live
-// eventstore: circle definitions and accepted member-claims.
+// eventstore: circle definitions, member-claims, and agent scopes.
 package lookup
 
 import (
@@ -52,6 +52,41 @@ func (s *Store) HasMemberClaim(ctx context.Context, coord nostr.EntityPointer, p
 		return true
 	}
 	return false
+}
+
+// AgentScope returns the newest delegation scope event at the
+// coordinate (kind 34134).
+func (s *Store) AgentScope(ctx context.Context, coord nostr.EntityPointer) (nostr.Event, bool) {
+	filter := nostr.Filter{
+		Kinds:   []nostr.Kind{policy.KindAgentScope},
+		Authors: []nostr.PubKey{coord.PublicKey},
+		Tags:    nostr.TagMap{"d": []string{coord.Identifier}},
+		Limit:   8,
+	}
+	var newest nostr.Event
+	found := false
+	for ev := range s.ES.QueryEvents(filter, 8) {
+		if !found || ev.CreatedAt > newest.CreatedAt {
+			newest = ev
+			found = true
+		}
+	}
+	return newest, found
+}
+
+// AgentScopesFor lists delegation scopes naming pubkey as the agent
+// (`p` tag). Bounded — an agent's granted scopes are a small set.
+func (s *Store) AgentScopesFor(ctx context.Context, agent nostr.PubKey) []nostr.Event {
+	filter := nostr.Filter{
+		Kinds: []nostr.Kind{policy.KindAgentScope},
+		Tags:  nostr.TagMap{"p": []string{agent.Hex()}},
+		Limit: 200,
+	}
+	var out []nostr.Event
+	for ev := range s.ES.QueryEvents(filter, 200) {
+		out = append(out, ev)
+	}
+	return out
 }
 
 // Members lists member pubkeys of a circle (owner + claim authors).

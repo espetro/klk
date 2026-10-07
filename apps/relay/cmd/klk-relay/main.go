@@ -17,7 +17,11 @@ import (
 
 func main() {
 	addr := envOr("ADDR", ":3334")
-	dbPath := envOr("DATA_DIR", "./data") + "/events.bolt"
+	dataDir := envOr("DATA_DIR", "./data")
+	if err := os.MkdirAll(dataDir, 0o755); err != nil {
+		log.Fatalf("create data dir %s: %v", dataDir, err)
+	}
+	dbPath := dataDir + "/events.bolt"
 	staticDir := os.Getenv("STATIC_DIR") // empty = relay only (dev)
 
 	handler, cleanup, err := server.New(dbPath, staticDir)

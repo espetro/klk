@@ -3,7 +3,18 @@ export const KIND_CALENDAR_EVENT = 31923;
 export const KIND_RSVP = 31925;
 export const KIND_CIRCLE = 31950;
 export const KIND_CIRCLE_MEMBER = 31951;
-export const KIND_AGENT_SCOPE = 24134;
+// addressable range (30000-39999) — 24134 would be ephemeral per NIP-16
+export const KIND_AGENT_SCOPE = 34134;
+
+// capabilities a delegation scope can grant (mirrors relay policy)
+export const CAP_READ = "read";
+export const CAP_POST_EVENT = "postEvent";
+export const CAP_SET_RSVP = "setRsvp";
+
+/** "34134:<delegator>:<d>" — coordinate of an agent scope. */
+export function scopeCoord(delegator: string, d: string): string {
+  return `${KIND_AGENT_SCOPE}:${delegator}:${d}`;
+}
 
 export type CircleTier = "hosted" | "sealed";
 

@@ -5,6 +5,7 @@ package policy
 
 import (
 	"context"
+	"slices"
 	"strings"
 
 	"fiatjaf.com/nostr"
@@ -17,7 +18,7 @@ const (
 	KindRSVP          nostr.Kind = 31925 // NIP-52
 	KindCircle        nostr.Kind = 31950 // addressable circle definition
 	KindCircleMember  nostr.Kind = 31951 // membership claim by a member
-	KindAgentScope    nostr.Kind = 24134 // agent delegation token
+	KindAgentScope    nostr.Kind = 34134 // addressable agent delegation scope
 )
 
 // storable are the kinds the relay will store at all. Anything else is
@@ -39,6 +40,10 @@ type Store interface {
 	// HasMemberClaim reports whether pubkey has an accepted member-claim
 	// event for the circle at coord.
 	HasMemberClaim(ctx context.Context, coord nostr.EntityPointer, pubkey nostr.PubKey) bool
+	// AgentScope returns the delegation scope event at coord (kind 34134).
+	AgentScope(ctx context.Context, coord nostr.EntityPointer) (nostr.Event, bool)
+	// AgentScopesFor lists scope events naming pubkey as the agent.
+	AgentScopesFor(ctx context.Context, agent nostr.PubKey) []nostr.Event
 }
 
 // IsMember reports whether pubkey is a member of the circle at coord:
@@ -75,6 +80,16 @@ func CheckStore(ctx context.Context, ev nostr.Event, st Store) (reject bool, msg
 		if ev.Tags.GetD() == "" {
 			return true, "invalid: circle definition missing d tag"
 		}
+	case KindAgentScope:
+		// stored as-is; validity (membership, caps, expiry) is checked
+		// when an agent tries to use it — a delegator can revoke by
+		// re-publishing an empty/capped scope at the same coordinate
+		if ev.Tags.GetD() == "" {
+			return true, "invalid: scope missing d tag"
+		}
+		if _, ok := ParseScope(ev); !ok {
+			return true, "invalid: scope needs p, a and cap tags"
+		}
 	case KindCircleMember:
 		coords := CircleCoords(ev)
 		if len(coords) == 0 {
@@ -96,9 +111,10 @@ func CheckStore(ctx context.Context, ev nostr.Event, st Store) (reject bool, msg
 		}
 	default:
 		// circle-scoped content (events, RSVPs): the author must be a
-		// member of every circle they post to
+		// member of every circle they post to, or carry a live
+		// delegation scope granting the capability for that circle
 		for _, c := range CircleCoords(ev) {
-			if !IsMember(ctx, st, c, ev.PubKey) {
+			if !IsMember(ctx, st, c, ev.PubKey) && !delegationCovers(ctx, st, ev, c) {
 				return true, "restricted: not a member of that circle"
 			}
 		}
@@ -117,23 +133,67 @@ func inviteTagValue(ev nostr.Event) string {
 
 // CheckRequest decides whether a filter may run for this connection.
 // All reads require NIP-42 auth; filters referencing circles require
-// membership in every tagged circle.
+// membership in every tagged circle (or a live read scope for agents).
+// Filters touching no circle are allowed only for benign self-lookups —
+// profile/contacts by author, or single events by id; anything else is
+// rejected so there is no bulk-scan surface (the moat rule).
 func CheckRequest(ctx context.Context, filter nostr.Filter, st Store) (reject bool, msg string) {
 	authed, ok := khatru.GetAuthed(ctx)
 	if !ok {
 		return true, "auth-required: subscribe requires NIP-42 authentication"
 	}
 
-	for _, coord := range filter.Tags["a"] {
-		ptr, err := nostr.ParseAddrString(coord)
-		if err != nil || ptr.Kind != KindCircle {
-			continue
-		}
-		if !IsMember(ctx, st, ptr, authed) {
+	for _, ref := range requestCircles(filter) {
+		if !IsMember(ctx, st, ref, authed) && !readScopeCovers(ctx, st, authed, ref, CapRead) {
 			return true, "restricted: not a member of that circle"
 		}
 	}
+
+	if !requestTouchesCircle(filter) {
+		if len(filter.IDs) > 0 {
+			return false, "" // single-item fetch by event id
+		}
+		for _, k := range filter.Kinds {
+			if k != 0 && k != 3 {
+				return true, "restricted: filter needs a circle scope"
+			}
+		}
+		if len(filter.Kinds) == 0 {
+			return true, "restricted: filter needs a circle scope"
+		}
+	}
 	return false, ""
+}
+
+// requestCircles resolves every circle a filter can touch: explicit `a`
+// refs plus `d`+`authors` combos when the filter can return circle defs.
+func requestCircles(filter nostr.Filter) []nostr.EntityPointer {
+	out := make([]nostr.EntityPointer, 0, 4)
+	for _, coord := range filter.Tags["a"] {
+		if ptr, err := nostr.ParseAddrString(coord); err == nil && ptr.Kind == KindCircle {
+			out = append(out, ptr)
+		}
+	}
+	if kindAllows(filter, KindCircle) {
+		for _, d := range filter.Tags["d"] {
+			for _, author := range filter.Authors {
+				out = append(out, nostr.EntityPointer{
+					Kind:       KindCircle,
+					PublicKey:  author,
+					Identifier: d,
+				})
+			}
+		}
+	}
+	return out
+}
+
+func requestTouchesCircle(filter nostr.Filter) bool {
+	return len(filter.Tags["a"]) > 0 || (len(filter.Tags["d"]) > 0 && len(filter.Authors) > 0 && kindAllows(filter, KindCircle))
+}
+
+func kindAllows(filter nostr.Filter, kind nostr.Kind) bool {
+	return len(filter.Kinds) == 0 || slices.Contains(filter.Kinds, kind)
 }
 
 // IsCircleCoordString reports whether an `a`-tag string points at a circle.
