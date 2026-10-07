@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useStore } from "@nanostores/react";
 import { useRouter } from "one";
-import { Button, Input, ScrollView, Text, XStack, YStack } from "tamagui";
+import { Button, Input, ScrollView, Text, TextArea, XStack, YStack } from "tamagui";
 import {
   $connected,
   $contacts,
@@ -16,7 +16,8 @@ import {
 import { npubDecode, npubEncode } from "@klk/proto";
 import { Field, ShareActions, lookupCity, palette } from "@klk/ui";
 import { createAndConnect, signOut } from "../src/boot.ts";
-import { RELAY_URL } from "../src/config.ts";
+import { reportBug } from "../src/analytics.ts";
+import { APP_ORIGIN, RELAY_URL } from "../src/config.ts";
 import { notify } from "../src/notify.ts";
 
 export default function Profile() {
@@ -30,6 +31,7 @@ export default function Profile() {
   const [username, setUsername] = useState<string | undefined>(undefined);
   const [city, setCity] = useState<string | undefined>(undefined);
   const [addInput, setAddInput] = useState("");
+  const [bug, setBug] = useState("");
   const [busy, setBusy] = useState(false);
   // PWA notifications probe: OS-level push needs a push service we don't
   // run yet — this captures the permission state honestly.
@@ -71,7 +73,7 @@ export default function Profile() {
   }
 
   const npub = npubEncode(identity.pubkey);
-  const profileUrl = `${location.origin}/u/${npub}`;
+  const profileUrl = `${APP_ORIGIN}/u/${npub}`;
 
   const save = () => {
     setBusy(true);
@@ -189,8 +191,8 @@ export default function Profile() {
           </Text>
           <ShareActions
             url={profileUrl}
-            title={`${displayName(identity.pubkey)} on Klk`}
-            text="Add me on Klk — scan or open to save me to your contacts"
+            title={`${displayName(identity.pubkey)} on Pinya`}
+            text="Add me on Pinya — scan or open to save me to your contacts"
             onCopied={notify}
           />
         </YStack>
@@ -313,6 +315,36 @@ export default function Profile() {
             </YStack>
           )}
         </Field>
+
+        <YStack gap="$2">
+          <Text fontSize={13} color={palette.muted}>
+            Report a bug
+          </Text>
+          <TextArea
+            value={bug}
+            onChangeText={setBug}
+            placeholder="What broke? One line is plenty."
+            numberOfLines={3}
+            borderColor={palette.border}
+            backgroundColor={palette.surface}
+          />
+          <Button
+            size="$3"
+            borderRadius={6}
+            borderWidth={1}
+            borderColor={palette.border}
+            backgroundColor={palette.surface}
+            color={palette.ink}
+            disabled={bug.trim() === ""}
+            onPress={() => {
+              reportBug(bug.trim());
+              setBug("");
+              notify("Sent — thanks for the heads up");
+            }}
+          >
+            Send report
+          </Button>
+        </YStack>
         <XStack gap="$2" alignItems="center">
           <YStack
             width={8}

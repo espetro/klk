@@ -36,7 +36,7 @@ export const Discover = () => {
       const k = dayKey(new Date(e.starts * 1000));
       return k >= range.from && k <= range.to;
     })
-    .sort((a, b) => a.starts - b.starts);
+    .toSorted((a, b) => a.starts - b.starts);
 
   // day → circle accents for the calendar dots
   const dots = new Map<string, string[]>();
@@ -212,7 +212,7 @@ export const Discover = () => {
                   Just looking around?
                 </Text>
                 <Text fontSize={13} color={palette.muted} lineHeight={18}>
-                  Klk works without an account — open an invite link or poke around. Create an
+                  Pinya works without an account — open an invite link or poke around. Create an
                   identity only when you want to make circles, RSVP, or save contacts.
                 </Text>
                 <Button

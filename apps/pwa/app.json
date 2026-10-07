@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "klk",
-    "slug": "klk",
+    "name": "Pinya",
+    "slug": "pinya",
     "platforms": ["ios", "android"],
     "plugins": ["one/expo-plugin"],
     "icon": "./public/app-icon.png",
@@ -11,10 +11,10 @@
       "backgroundColor": "#000000"
     },
     "ios": {
-      "bundleIdentifier": "fyi.klk.app"
+      "bundleIdentifier": "club.pinya.app"
     },
     "android": {
-      "package": "fyi.klk.app"
+      "package": "club.pinya.app"
     }
   }
 }

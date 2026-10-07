@@ -13,7 +13,11 @@ import {
 } from "@klk/core";
 import type { UnlockMode } from "@klk/core";
 import { generateKeypair } from "@klk/proto";
+import { initTelemetry } from "./analytics.ts";
 import { RELAY_URL } from "./config.ts";
+
+// logging + PostHog first, so boot-time failures are captured
+initTelemetry();
 
 // vite-plugin-pwa emits /sw.js at build; virtual:pwa-register doesn't resolve
 // under One's unified build, so register the emitted file directly.

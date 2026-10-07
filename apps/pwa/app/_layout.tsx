@@ -3,13 +3,16 @@ import { Platform } from "react-native";
 import { Toaster } from "sonner";
 import { KlkProvider } from "@klk/ui";
 import { AppShell } from "../src/shell.tsx";
+import { CohortGate } from "../src/cohort-gate.tsx";
 
 export default function Layout() {
   const inner = (
     <KlkProvider>
-      <AppShell>
-        <Slot />
-      </AppShell>
+      <CohortGate>
+        <AppShell>
+          <Slot />
+        </AppShell>
+      </CohortGate>
     </KlkProvider>
   );
 
@@ -27,7 +30,7 @@ export default function Layout() {
           <link rel="icon" href="/favicon.svg" />
           <link rel="manifest" href="/manifest.webmanifest" />
           <link rel="apple-touch-icon" href="/app-icon.png" />
-          <title>Klk</title>
+          <title>Pinya</title>
         </head>
         {inner}
         <Toaster position="top-center" toastOptions={{ duration: 2500 }} />

@@ -18,6 +18,27 @@ cd apps/relay && go build -o /usr/local/bin/klk-relay ./cmd/klk-relay
 cd apps/pwa && pnpm build            # produces dist/client
 ```
 
+## PWA build-time env (`apps/pwa`)
+
+All optional — defaults keep local dev working with zero config.
+
+| Var | Purpose | Prod example |
+| --- | --- | --- |
+| `VITE_APP_ORIGIN` | absolute origin for share/invite links | `https://app.pinya.club` |
+| `VITE_API_ORIGIN` | origin for API calls (cohort, ICS feeds) | `https://api.pinya.club` |
+| `VITE_RELAY_URL` | WebSocket relay URL | `wss://api.pinya.club` |
+| `VITE_COHORT_GATE` | `0` disables the email gate | unset (on) |
+| `VITE_POSTHOG_KEY` / `VITE_POSTHOG_HOST` | PostHog EU analytics | `phc_…` / `https://eu.i.posthog.com` |
+| `VITE_MAX_RANGE_DAYS` | calendar range cap | `21` |
+
+Note: split `app.`/`api.` origins break same-origin WS cookies — none used,
+auth is NIP-42 over the socket itself, so a separate `api.` host is fine.
+
+## Cohort emails
+
+`POST /api/cohort` appends `{email,ts,ua}` to `$DATA_DIR/cohort.jsonl`
+(mode 0600, per-IP 5s throttle). Nothing else to run.
+
 ## systemd
 
 `/etc/systemd/system/klk.service`:
@@ -58,21 +79,29 @@ sudo systemctl enable --now klk
 `/etc/caddy/Caddyfile`:
 
 ```caddyfile
-klk.example.com {
+api.pinya.club {
+	reverse_proxy 127.0.0.1:3334
+}
+
+app.pinya.club {
 	reverse_proxy 127.0.0.1:3334
 }
 ```
 
-Caddy terminates TLS (ACME automatic) and proxies the same origin — the
-relay answers `wss://klk.example.com` WebSocket upgrades and `https://`
-static/SPA requests on one port, so the PWA's default `RELAY_URL` (same
-host, `wss`) works with zero config.
+Caddy terminates TLS (ACME automatic). One binary serves relay WS, API
+(`/api/*`), and static/SPA on the same port; `app.` and `api.` can share
+the target — set `VITE_APP_ORIGIN`/`VITE_API_ORIGIN`/`VITE_RELAY_URL` at
+PWA build time to match. For a single-domain deploy, leave them unset:
+the defaults resolve everything same-origin.
 
 ## Verify
 
 ```sh
-curl https://klk.example.com/healthz   # ok
-curl -I https://klk.example.com/       # 200, the PWA
+curl https://api.pinya.club/healthz        # ok
+curl -I https://app.pinya.club/            # 200, the PWA
+curl -X POST https://api.pinya.club/api/cohort \
+  -H 'Content-Type: application/json' -d '{"email":"test@pinya.club"}'  # 204
+cat /var/lib/klk/cohort.jsonl            # the collected email
 ```
 
 ## Local E2E

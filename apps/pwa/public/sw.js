@@ -2,7 +2,7 @@
 // - navigations: network-first, offline falls back to the cached shell
 // - hashed static assets: cache-first
 // - relay/api traffic and non-GET requests: never intercepted
-const CACHE = "klk-shell-1";
+const CACHE = "pinya-shell-1";
 
 const NEVER = ["/healthz", "/api/", "/manifest.webmanifest", "/sw.js"];
 

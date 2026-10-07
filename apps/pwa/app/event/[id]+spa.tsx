@@ -10,12 +10,14 @@ import {
   $rsvps,
   $suggestions,
   applySuggestion,
+  displayName,
   inviteLinkFor,
   setRsvp,
   suggestChange,
 } from "@klk/core";
 import { EmptyState, EventForm, EventMap, RsvpButtons, ShareActions, palette } from "@klk/ui";
 import { $bootState, createAndConnect } from "../../src/boot.ts";
+import { APP_ORIGIN } from "../../src/config.ts";
 import { notify } from "../../src/notify.ts";
 
 const fmt = (ts: number) =>
@@ -64,6 +66,11 @@ export default function EventDetail() {
         <Text fontSize={26} fontWeight="700" color={palette.ink} letterSpacing={-0.4}>
           {event.title}
         </Text>
+        {event.delegatedBy !== undefined ? (
+          <Text fontSize={12} color={palette.muted}>
+            agent · via {displayName(event.delegatedBy)}
+          </Text>
+        ) : null}
       </YStack>
       <YStack gap="$1.5">
         <Text fontSize={15} color={palette.ink}>
@@ -87,7 +94,7 @@ export default function EventDetail() {
       ) : null}
       {circle !== undefined ? (
         <ShareActions
-          url={inviteLinkFor(circle, location.origin)}
+          url={inviteLinkFor(circle, APP_ORIGIN)}
           title={event.title}
           text={`${event.title} — join the circle to see the plan and RSVP`}
           onCopied={notify}

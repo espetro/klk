@@ -21,6 +21,12 @@ export default defineConfig({
         server: { unified: true },
       },
 
+      react: {
+        // React Compiler (babel-plugin-react-compiler) — auto-memoized
+        // renders; keep components compiler-clean (no Date() in render, etc.)
+        compiler: true,
+      },
+
       ...(process.env.TEST_METRO && {
         native: {
           bundler: "metro",
@@ -32,8 +38,8 @@ export default defineConfig({
       // One's SPA html is generated — register the SW from app code instead
       injectRegister: false,
       manifest: {
-        name: "Klk",
-        short_name: "Klk",
+        name: "Pinya",
+        short_name: "Pinya",
         description: "Private circles for the people around you.",
         theme_color: "#FBFBFA",
         background_color: "#FBFBFA",

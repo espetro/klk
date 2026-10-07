@@ -13,6 +13,7 @@ import {
 } from "@klk/core";
 import { Badge, EmptyState, EventCard, EventMap, ShareActions, palette } from "@klk/ui";
 import { $bootState } from "../../src/boot.ts";
+import { API_ORIGIN, APP_ORIGIN } from "../../src/config.ts";
 import { notify } from "../../src/notify.ts";
 
 export default function CircleDetail() {
@@ -61,7 +62,7 @@ export default function CircleDetail() {
   // invite secret is the feed's read capability, same trust as the link.
   // webcal:// asks the OS to subscribe the default calendar app.
   const copyFeed = async () => {
-    const url = `${location.origin}/ics/${circle.owner}/${circle.slug}?invite=${encodeURIComponent(circle.inviteSecret)}`;
+    const url = `${API_ORIGIN}/ics/${circle.owner}/${circle.slug}?invite=${encodeURIComponent(circle.inviteSecret)}`;
     await navigator.clipboard.writeText(url.replace(/^https?/, "webcal"));
     notify("Calendar feed copied — paste it in your calendar app");
   };
@@ -123,15 +124,15 @@ export default function CircleDetail() {
             </Text>
           </XStack>
           <Text fontSize={12} color={palette.muted} lineHeight={17}>
-            Klk is built for agents too — yours can RSVP, post events and keep plans updated on your
-            behalf. Scoped permissions only; you approve what it can do.
+            Pinya is built for agents too — yours can RSVP, post events and keep plans updated on
+            your behalf. Scoped permissions only; you approve what it can do.
           </Text>
         </YStack>
       ) : null}
 
       <ShareActions
-        url={inviteLinkFor(circle, location.origin)}
-        title={`Join ${circle.name !== "" ? circle.name : circle.slug} on Klk`}
+        url={inviteLinkFor(circle, APP_ORIGIN)}
+        title={`Join ${circle.name !== "" ? circle.name : circle.slug} on Pinya`}
         text="You're invited to my circle — tap to join"
         onCopied={notify}
       />

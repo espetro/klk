@@ -17,6 +17,7 @@ import {
 import { npubDecode, npubEncode } from "@klk/proto";
 import { EmptyState, ShareActions, palette, useMountEffect } from "@klk/ui";
 import { createAndConnect } from "../../src/boot.ts";
+import { APP_ORIGIN } from "../../src/config.ts";
 import { notify } from "../../src/notify.ts";
 
 export default function UserCard() {
@@ -44,7 +45,7 @@ export default function UserCard() {
   if (pk === null) {
     return (
       <YStack paddingTop="$6">
-        <EmptyState title="Not a profile link" hint="This link doesn't point at a Klk user." />
+        <EmptyState title="Not a profile link" hint="This link doesn't point at a Pinya user." />
       </YStack>
     );
   }
@@ -52,7 +53,7 @@ export default function UserCard() {
   const p = profiles[pk];
   const isMe = me?.pubkey === pk;
   const isContact = contacts.includes(pk);
-  const selfUrl = `${location.origin}/u/${npubEncode(pk)}`;
+  const selfUrl = `${APP_ORIGIN}/u/${npubEncode(pk)}`;
 
   const toggleContact = () => {
     setBusy(true);
@@ -120,8 +121,8 @@ export default function UserCard() {
 
       <ShareActions
         url={selfUrl}
-        title={`${displayName(pk)} on Klk`}
-        text="Add me on Klk"
+        title={`${displayName(pk)} on Pinya`}
+        text="Add me on Pinya"
         onCopied={notify}
       />
       <XStack gap="$2" alignItems="center">
