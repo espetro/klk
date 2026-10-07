@@ -2,6 +2,8 @@ import { Relay, finalizeEvent } from "nostr-tools";
 import { useWebSocketImplementation } from "nostr-tools/pool";
 import type { Event, EventTemplate, Filter } from "nostr-tools";
 
+export type { Event, EventTemplate, Filter } from "nostr-tools";
+
 export interface KlkHandlers {
   onevent: (evt: Event) => void;
   oneose?: () => void;
@@ -35,8 +37,26 @@ export class KlkRelay {
       enableReconnect: true,
       idleTimeout: 0,
     });
+    const signer = async (tpl: EventTemplate) => finalizeEvent(tpl, secretKey);
+    // NIP-42: the challenge arrives async after ws open. Our relay requires
+    // auth for reads, so don't return until the handshake has settled.
+    let sawChallenge: (() => void) | undefined;
+    const challenged = new Promise<void>((res) => {
+      sawChallenge = res;
+    });
+    relay.onauth = async (tpl: EventTemplate) => {
+      sawChallenge?.();
+      return signer(tpl);
+    };
     await relay.connect();
-    relay.onauth = async (tpl: EventTemplate) => finalizeEvent(tpl, secretKey);
+    await Promise.race([challenged, new Promise((r) => setTimeout(r, 3000))]);
+    try {
+      // resolves on the relay's OK for the AUTH event (shared authPromise
+      // with the lib's own auto-auth, so this never double-signs)
+      await relay.auth(signer);
+    } catch {
+      // relay never challenged, or doesn't require auth — proceed
+    }
     return new KlkRelay(relay, secretKey);
   }
 

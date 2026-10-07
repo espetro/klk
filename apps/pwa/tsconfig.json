@@ -7,10 +7,12 @@
     "rootDir": ".",
     "module": "Preserve",
     "moduleResolution": "Bundler",
-    "preserveSymlinks": true,
+    "preserveSymlinks": false,
     "skipLibCheck": true,
     "jsx": "react-jsx",
     "noImplicitAny": false,
+    "allowImportingTsExtensions": true,
+    "target": "es2022",
     "types": ["node", "react", "vite/client"],
     "lib": ["dom", "esnext"]
   },

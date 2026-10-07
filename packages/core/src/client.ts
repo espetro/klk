@@ -13,7 +13,7 @@ import {
   open as cryptoOpen,
   seal as cryptoSeal,
 } from "@klk/proto";
-import type { CircleKey, Keypair } from "@klk/proto";
+import type { CircleKey, Filter, Keypair } from "@klk/proto";
 import type { CalendarEvent, Circle, RSVP } from "./domain.ts";
 import { circleFromDef } from "./domain.ts";
 
@@ -43,6 +43,11 @@ export async function disconnect(): Promise<void> {
   unsubscribers.length = 0;
   relay?.close();
   relay = null;
+  circleKeys.clear();
+  $identity.set(null);
+  $circles.set({});
+  $events.set({});
+  $rsvps.set({});
   $connected.set(false);
 }
 
@@ -111,8 +116,10 @@ export async function joinCircle(fragment: string): Promise<Circle> {
       inviteSecret: payload.invite,
     };
     $circles.setKey(payload.coord, circle);
-    watchCircle(circle);
   }
+  // (re)subscribe — idempotent: ingest dedupes, and a live sub for this
+  // coord may already exist from a previous watch.
+  watchCircle($circles.get()[payload.coord]!);
   return $circles.get()[payload.coord]!;
 }
 
@@ -121,15 +128,15 @@ function watchCircle(circle: Circle): void {
   const coord = circle.coord;
 
   // def + members + calendar events + rsvps — one live subscription
-  const filters = [
+  const filters: Filter[] = [
     { kinds: [31950], "#d": [circle.slug], authors: [circle.owner] },
     { kinds: [31951, 31923], "#a": [coord] },
     { kinds: [31925], "#a": [coord] },
   ];
-  const unsub = r.subscribe(filters as never, {
+  const unsub = r.subscribe(filters, {
     onevent: (ev) => ingestEvent(circle.coord, ev),
     onclose: (reason) => {
-      if (reason.startsWith("restricted") || reason.startsWith("auth-required")) {
+      if (reason !== "" && !reason.startsWith("closed by caller")) {
         console.warn(`circle ${circle.slug} closed: ${reason}`);
       }
     },

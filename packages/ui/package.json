@@ -13,7 +13,11 @@
     "validate": "tsc --noEmit"
   },
   "dependencies": {
+    "@klk/core": "workspace:*",
+    "@klk/proto": "workspace:*",
+    "@tamagui/config-default": "^2.7.7",
     "@tamagui/core": "^2.7.7",
+    "maplibre-gl": "^5.6.0",
     "react": "^19.3.0",
     "tamagui": "^2.7.7"
   },

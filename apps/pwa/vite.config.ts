@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import { one } from "one/vite";
+import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
   plugins: [
@@ -25,6 +26,23 @@ export default defineConfig({
           bundler: "metro",
         },
       }),
+    }),
+    VitePWA({
+      registerType: "autoUpdate",
+      // One's SPA html is generated — register the SW from app code instead
+      injectRegister: false,
+      manifest: {
+        name: "Klk",
+        short_name: "Klk",
+        description: "Private circles for the people around you.",
+        theme_color: "#FBFBFA",
+        background_color: "#FBFBFA",
+        display: "standalone",
+        start_url: "/",
+        icons: [{ src: "/app-icon.png", sizes: "1024x1024", type: "image/png", purpose: "any" }],
+      },
+      // generateSW doesn't emit under One's unified rolldown build — the
+      // app shell cache is a hand-rolled public/sw.js registered by src/boot
     }),
   ],
 });
