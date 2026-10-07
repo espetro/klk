@@ -1,0 +1,28 @@
+# https://docs.devin.ai/onboard-devin/environment-yaml
+# Commands run from the repo root.
+initialize: |
+  # toolchain pinned in .mise.toml (node 24, pnpm 10, go 1.25)
+  curl -fsSL https://mise.run | sh
+  echo 'PATH=$HOME/.local/bin:$HOME/.local/share/mise/shims:$PATH' >> $ENVRC
+  echo 'GOPATH=$HOME/go' >> $ENVRC
+  echo 'GOCACHE=/tmp/gocache' >> $ENVRC
+maintenance: |
+  $HOME/.local/bin/mise install
+  pnpm install
+  (cd apps/relay && go mod download)
+knowledge:
+  - name: validate
+    contents: |
+      # run before every commit
+      pnpm validate
+      (cd apps/relay && go vet ./... && gofmt -l . && go test ./...)
+  - name: dev
+    contents: |
+      # relay on :3334 (also serves built PWA)
+      (cd apps/relay && DATA_DIR=/tmp/klk-data go run ./cmd/klk-relay)
+      # pwa dev server
+      (cd apps/pwa && pnpm dev)
+  - name: e2e
+    contents: |
+      # full docker-compose smoke (build + healthz + seed + client e2e)
+      ./scripts/smoke.sh
