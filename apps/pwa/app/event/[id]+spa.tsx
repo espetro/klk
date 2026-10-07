@@ -1,9 +1,21 @@
+import { useState } from "react";
 import { useStore } from "@nanostores/react";
 import { useLocalSearchParams, useParams } from "one";
-import { Text, YStack } from "tamagui";
-import { $circles, $connected, $events, $identity, $rsvps, setRsvp } from "@klk/core";
-import { EmptyState, EventMap, RsvpButtons, palette } from "@klk/ui";
+import { Button, Text, XStack, YStack } from "tamagui";
+import {
+  $circles,
+  $connected,
+  $events,
+  $identity,
+  $rsvps,
+  $suggestions,
+  applySuggestion,
+  setRsvp,
+  suggestChange,
+} from "@klk/core";
+import { EmptyState, EventForm, EventMap, RsvpButtons, palette } from "@klk/ui";
 import { $bootState } from "../../src/boot.ts";
+import { notify } from "../../src/notify.ts";
 
 const fmt = (ts: number) =>
   new Date(ts * 1000).toLocaleString(undefined, {
@@ -24,7 +36,9 @@ export default function EventDetail() {
   const me = useStore($identity);
   const connected = useStore($connected);
   const rsvps = useStore($rsvps)[`${coord}:${eventId}`] ?? [];
+  const suggestions = useStore($suggestions)[`${coord}:${eventId}`] ?? [];
   const bootState = useStore($bootState);
+  const [suggesting, setSuggesting] = useState(false);
 
   if (event === undefined) {
     return (
@@ -77,7 +91,17 @@ export default function EventDetail() {
         {connected ? (
           <RsvpButtons
             {...(mine !== undefined ? { current: mine.status } : {})}
-            onSelect={(s) => void setRsvp(coord, event.eventId, s)}
+            onSelect={(s) => {
+              void setRsvp(coord, event.eventId, s).then(() =>
+                notify(
+                  s === "yes"
+                    ? "You're in — see you there"
+                    : s === "maybe"
+                      ? "Marked maybe"
+                      : "Marked as can't go",
+                ),
+              );
+            }}
           />
         ) : (
           <Text fontSize={14} color={palette.muted}>
@@ -85,6 +109,99 @@ export default function EventDetail() {
           </Text>
         )}
       </YStack>
+
+      {event.suggestable === true && connected && me?.pubkey !== event.pubkey ? (
+        suggesting ? (
+          <YStack gap="$2">
+            <Text fontSize={15} fontWeight="600" color={palette.ink}>
+              Suggest a change
+            </Text>
+            <EventForm
+              hideSuggestable
+              submitLabel="Send suggestion"
+              initial={{
+                title: event.title,
+                starts: event.starts,
+                ...(event.ends !== undefined ? { ends: event.ends } : {}),
+                ...(event.location !== undefined ? { location: event.location } : {}),
+                ...(event.geo !== undefined ? { geo: event.geo } : {}),
+              }}
+              onSubmit={(v) => {
+                void suggestChange({
+                  coord,
+                  eventId: event.eventId,
+                  title: v.title,
+                  starts: v.starts,
+                  ...(v.ends !== undefined ? { ends: v.ends } : {}),
+                  ...(v.location !== undefined ? { location: v.location } : {}),
+                  ...(v.geo !== undefined ? { geo: v.geo } : {}),
+                  ...(v.summary !== undefined ? { note: v.summary } : {}),
+                }).then(() => {
+                  setSuggesting(false);
+                  notify("Suggestion sent to the organizer");
+                });
+              }}
+            />
+          </YStack>
+        ) : (
+          <Button
+            borderRadius={6}
+            borderWidth={1}
+            borderColor={palette.border}
+            backgroundColor={palette.surface}
+            color={palette.ink}
+            onPress={() => setSuggesting(true)}
+          >
+            Suggest a change
+          </Button>
+        )
+      ) : null}
+
+      {me?.pubkey === event.pubkey && suggestions.length > 0 ? (
+        <YStack gap="$2" paddingTop="$2">
+          <Text fontSize={13} color={palette.muted}>
+            Suggestions
+          </Text>
+          {suggestions.map((s) => (
+            <XStack
+              key={`${s.pubkey}:${s.suggestedAt}`}
+              borderWidth={1}
+              borderColor={palette.border}
+              borderRadius={8}
+              padding="$3"
+              gap="$3"
+              alignItems="center"
+              backgroundColor={palette.surface}
+            >
+              <YStack flex={1} gap={2}>
+                <Text fontSize={14} fontWeight="500" color={palette.ink}>
+                  {s.title ?? event.title}
+                </Text>
+                <Text fontSize={12} color={palette.muted}>
+                  {fmt(s.starts ?? event.starts)}
+                  {s.location !== undefined ? ` · ${s.location}` : ""}
+                </Text>
+                {s.note !== undefined ? (
+                  <Text fontSize={12} color={palette.muted}>
+                    “{s.note}”
+                  </Text>
+                ) : null}
+              </YStack>
+              <Button
+                size="$3"
+                borderRadius={6}
+                backgroundColor={palette.ink}
+                color="#FFF"
+                onPress={() => {
+                  void applySuggestion(event, s).then(() => notify("Event updated"));
+                }}
+              >
+                Apply
+              </Button>
+            </XStack>
+          ))}
+        </YStack>
+      ) : null}
     </YStack>
   );
 }

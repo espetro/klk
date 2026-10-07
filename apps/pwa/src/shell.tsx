@@ -47,8 +47,9 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
         justifyContent="space-around"
         alignItems="center"
       >
-        <Tab href="/" label="Circles" />
-        <Tab href="/circle/new" label="New circle" />
+        <Tab href="/" label="Discover" />
+        <Tab href="/circles" label="Circles" />
+        <Tab href="/circle/new" label="New" />
         <Tab href="/profile" label="Profile" />
       </XStack>
     </YStack>

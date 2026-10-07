@@ -5,6 +5,7 @@ import { Button, Input, Text, XStack, YStack } from "tamagui";
 import { $connected, createCircle } from "@klk/core";
 import { Field, palette } from "@klk/ui";
 import type { CircleTier } from "@klk/proto";
+import { notify } from "../../src/notify.ts";
 
 export default function NewCircle() {
   const [name, setName] = useState("");
@@ -20,6 +21,7 @@ export default function NewCircle() {
     setErr(undefined);
     try {
       const c = await createCircle(name.trim(), tier);
+      notify("Circle created — share the invite link");
       router.replace(`/circle/${encodeURIComponent(c.coord)}` as never);
     } catch (e) {
       setErr(e instanceof Error ? e.message : String(e));
@@ -56,7 +58,7 @@ export default function NewCircle() {
                 color={active ? "#FFFFFF" : palette.ink}
                 onPress={() => setTier(t)}
               >
-                {t}
+                {t === "hosted" ? "Connected" : "Sealed"}
               </Button>
             );
           })}
@@ -64,8 +66,8 @@ export default function NewCircle() {
       </Field>
       <Text fontSize={13} color={palette.muted} lineHeight={19}>
         {tier === "sealed"
-          ? "End-to-end encrypted. Our relay stores ciphertext — agents can't read circle content."
-          : "Server-readable. Enables agent actions and future AI features."}
+          ? "Locked end-to-end — only members' devices can read what's inside. Agents and calendar sync can't help here."
+          : "The relay can read this circle — that's what lets agents and calendar sync work."}
       </Text>
       <Button
         backgroundColor={palette.ink}

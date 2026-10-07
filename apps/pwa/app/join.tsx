@@ -7,6 +7,7 @@ import { Button, Spinner, Text, YStack } from "tamagui";
 import { $connected, joinCircle } from "@klk/core";
 import { palette, useMountEffect } from "@klk/ui";
 import { $bootState, createAndConnect } from "../src/boot.ts";
+import { notify } from "../src/notify.ts";
 
 export default function Join() {
   const [err, setErr] = useState<string>();
@@ -27,7 +28,10 @@ export default function Join() {
       if (!ok || done) return;
       done = true;
       joinCircle(`#${frag}`)
-        .then((c) => router.replace(`/circle/${encodeURIComponent(c.coord)}` as never))
+        .then((c) => {
+          notify("You're in — welcome to the circle");
+          router.replace(`/circle/${encodeURIComponent(c.coord)}` as never);
+        })
         .catch((e) => setErr(e instanceof Error ? e.message : String(e)));
     });
     return () => {
@@ -56,7 +60,7 @@ export default function Join() {
             You're invited
           </Text>
           <Text fontSize={14} color={palette.muted} textAlign="center" maxWidth={320}>
-            Create your identity on this device to join the circle.
+            Create an identity on this device to join — your device will ask to save a passkey.
           </Text>
           <Button backgroundColor={palette.ink} color="white" disabled={busy} onPress={create}>
             {busy ? "Creating…" : "Create identity"}

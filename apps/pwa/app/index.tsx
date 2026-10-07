@@ -1,15 +1,25 @@
+import { useState } from "react";
 import { useStore } from "@nanostores/react";
-import { Link, useRouter } from "one";
-import { Button, Spinner, Text, XStack, YStack } from "tamagui";
-import { $circles } from "@klk/core";
-import { CircleCard, EmptyState, palette } from "@klk/ui";
-import { $bootError, $bootState, createAndConnect } from "../src/boot.ts";
+import { Link } from "one";
+import { Button, Spinner, Text, YStack } from "tamagui";
+import { palette } from "@klk/ui";
+import { $bootError, $bootState, $unlockMode, createAndConnect, unlock } from "../src/boot.ts";
+import { Discover } from "../src/discover.tsx";
+
+const WELCOMED = "klk.welcomed";
 
 export default function Home() {
   const state = useStore($bootState);
   const err = useStore($bootError);
-  const circles = useStore($circles);
-  const router = useRouter();
+  const unlockMode = useStore($unlockMode);
+  // post-create welcome shows once, right after identity creation
+  const [welcomed, setWelcomed] = useState(() => {
+    try {
+      return localStorage.getItem(WELCOMED) === "1";
+    } catch {
+      return true;
+    }
+  });
 
   if (state === "onboarding") {
     return (
@@ -19,8 +29,11 @@ export default function Home() {
             Klk
           </Text>
           <Text fontSize={15} color={palette.muted} lineHeight={22}>
-            Private circles for the people around you. Create an identity to get started — it stays
-            on this device.
+            Plans with the people around you — private by default.
+          </Text>
+          <Text fontSize={15} color={palette.muted} lineHeight={22}>
+            Create an identity to get started. Your device will ask to save a passkey — that's what
+            unlocks you here, no passwords.
           </Text>
         </YStack>
         <Button
@@ -30,6 +43,32 @@ export default function Home() {
           onPress={() => void createAndConnect()}
         >
           Create identity
+        </Button>
+        {err !== undefined ? (
+          <Text fontSize={13} color="#9F2F2D">
+            {err}
+          </Text>
+        ) : null}
+      </YStack>
+    );
+  }
+
+  if (state === "locked") {
+    return (
+      <YStack flex={1} justifyContent="center" gap="$4" paddingVertical="$8">
+        <Text fontSize={26} fontWeight="700" color={palette.ink} letterSpacing={-0.4}>
+          Welcome back
+        </Text>
+        <Text fontSize={15} color={palette.muted} lineHeight={22}>
+          Your identity is protected by the passkey on this device.
+        </Text>
+        <Button
+          backgroundColor={palette.ink}
+          color="#FFFFFF"
+          borderRadius={6}
+          onPress={() => void unlock()}
+        >
+          Unlock with passkey
         </Button>
         {err !== undefined ? (
           <Text fontSize={13} color="#9F2F2D">
@@ -57,42 +96,45 @@ export default function Home() {
           </YStack>
         ) : (
           <Text fontSize={13} color={palette.muted}>
-            {state === "connecting" ? "Connecting to relay…" : "Restoring identity…"}
+            {state === "connecting" ? "Connecting…" : "Waking up…"}
           </Text>
         )}
       </YStack>
     );
   }
 
-  const list = Object.values(circles);
-  return (
-    <YStack gap="$4" paddingTop="$6">
-      <XStack justifyContent="space-between" alignItems="baseline">
-        <Text fontSize={26} fontWeight="700" color={palette.ink} letterSpacing={-0.4}>
-          Your circles
+  if (!welcomed) {
+    return (
+      <YStack flex={1} justifyContent="center" gap="$4" paddingVertical="$8">
+        <Text fontSize={28} fontWeight="700" color={palette.ink} letterSpacing={-0.5}>
+          You're in.
         </Text>
-        <Link href="/circle/new">
-          <Text fontSize={14} color={palette.ink} fontWeight="500">
-            + New
-          </Text>
-        </Link>
-      </XStack>
-      {list.length === 0 ? (
-        <EmptyState
-          title="No circles yet"
-          hint="Create one and share the invite link with friends or family."
-        />
-      ) : (
-        <YStack gap="$3">
-          {list.map((c) => (
-            <CircleCard
-              key={c.coord}
-              circle={c}
-              onPress={() => router.replace(`/circle/${encodeURIComponent(c.coord)}` as never)}
-            />
-          ))}
-        </YStack>
-      )}
-    </YStack>
-  );
+        <Text fontSize={15} color={palette.muted} lineHeight={22}>
+          {unlockMode === "passkey"
+            ? "Your identity is locked to your passkey — the same one your device asked about. No passwords, nothing to remember."
+            : "Your identity lives on this device only. Sign in from somewhere else by joining through an invite link."}
+        </Text>
+        <Text fontSize={15} color={palette.muted} lineHeight={22}>
+          Make a circle for your people, or open an invite link someone's sent you.
+        </Text>
+        <Button
+          backgroundColor={palette.ink}
+          color="#FFFFFF"
+          borderRadius={6}
+          onPress={() => {
+            try {
+              localStorage.setItem(WELCOMED, "1");
+            } catch {
+              /* private mode — just move on */
+            }
+            setWelcomed(true);
+          }}
+        >
+          Start exploring
+        </Button>
+      </YStack>
+    );
+  }
+
+  return <Discover />;
 }

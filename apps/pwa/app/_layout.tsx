@@ -1,5 +1,6 @@
 import { Slot } from "one";
 import { Platform } from "react-native";
+import { Toaster } from "sonner";
 import { KlkProvider } from "@klk/ui";
 import { AppShell } from "../src/shell.tsx";
 
@@ -29,6 +30,7 @@ export default function Layout() {
           <title>Klk</title>
         </head>
         {inner}
+        <Toaster position="top-center" toastOptions={{ duration: 2500 }} />
       </html>
     );
   }

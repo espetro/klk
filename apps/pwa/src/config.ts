@@ -5,3 +5,6 @@ export const RELAY_URL =
   (typeof location !== "undefined"
     ? `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}`
     : "ws://localhost:3334");
+
+// Discovery range-select cap (days). Single day or a span up to this many.
+export const MAX_RANGE_DAYS = Number(import.meta.env.VITE_MAX_RANGE_DAYS ?? 21);

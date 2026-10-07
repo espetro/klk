@@ -4,6 +4,7 @@ import { useParams, useRouter } from "one";
 import { Text, YStack } from "tamagui";
 import { $connected, postEvent } from "@klk/core";
 import { EventForm, palette } from "@klk/ui";
+import { notify } from "../../src/notify.ts";
 
 export default function NewEvent() {
   const params = useParams<{ coord: string }>();
@@ -22,7 +23,10 @@ export default function NewEvent() {
           submitLabel="Post event"
           onSubmit={(v) => {
             postEvent({ coord, ...v })
-              .then(() => router.back())
+              .then(() => {
+                notify("Event posted");
+                router.back();
+              })
               .catch((e: unknown) => setErr(e instanceof Error ? e.message : String(e)));
           }}
         />
