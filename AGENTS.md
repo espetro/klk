@@ -9,14 +9,14 @@ is amended.
 
 ## Monorepo
 
-- Bun workspaces for TS (`apps/pwa`, `packages/*`), Go module in `apps/relay`.
-- All commands via `bun run` on the TS side; `go` toolchain on the Go side.
+- pnpm workspaces for TS (`apps/pwa`, `packages/*`), Go module in `apps/relay`.
+- All commands via `pnpm` on the TS side; `go` toolchain on the Go side.
 - `apps/pwa` runs on **One** (`onejs/one`) + Tamagui: SPA render mode, Node
   (not Bun) for `one dev`/`one build` — Bun crashes on its V8 callsite use.
 
 ## Rules
 
-- `bun run validate` (tsc + oxlint + oxfmt) and `go vet && gofmt -l . &&
+- `pnpm -r validate` (tsc + oxlint + oxfmt) and `go vet && gofmt -l . &&
   go test ./...` must pass before every commit — CI runs the same.
 - Conventional commits, atomic deployable increments, no dead code.
 - TS style: `interface` over `type` unless a union/alias is required; prefer
