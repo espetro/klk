@@ -1,0 +1,21 @@
+{
+  "name": "@klk/sim",
+  "version": "0.0.0",
+  "private": true,
+  "bin": {
+    "klk-sim": "bin/klk-sim.mjs"
+  },
+  "type": "module",
+  "scripts": {
+    "validate": "tsc --noEmit",
+    "klk-sim": "node --experimental-transform-types --disable-warning=ExperimentalWarning src/cli.ts"
+  },
+  "dependencies": {
+    "@klk/core": "workspace:*",
+    "@klk/proto": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.1",
+    "typescript": "^5.9.3"
+  }
+}

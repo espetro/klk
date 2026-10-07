@@ -192,6 +192,22 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  tools/sim:
+    dependencies:
+      '@klk/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@klk/proto':
+        specifier: workspace:*
+        version: link:../../packages/proto
+    devDependencies:
+      '@types/node':
+        specifier: ^24.19.1
+        version: 24.19.1
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
 packages:
 
   2g@0.4.4:
