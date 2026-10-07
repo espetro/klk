@@ -1,5 +1,12 @@
 import { atom, map } from "nanostores";
 import {
+  KIND_CALENDAR_EVENT,
+  KIND_CIRCLE,
+  KIND_CIRCLE_MEMBER,
+  KIND_CONTACTS,
+  KIND_PROFILE,
+  KIND_RSVP,
+  KIND_SUGGESTION,
   KlkRelay,
   buildAgentScope,
   buildCalendarEvent,
@@ -186,9 +193,9 @@ function watchCircle(circle: Circle): void {
 
   // def + members + calendar events + rsvps — one live subscription
   const filters: Filter[] = [
-    { kinds: [31950], "#d": [circle.slug], authors: [circle.owner] },
-    { kinds: [31951, 31923, 31926], "#a": [coord] },
-    { kinds: [31925], "#a": [coord] },
+    { kinds: [KIND_CIRCLE], "#d": [circle.slug], authors: [circle.owner] },
+    { kinds: [KIND_CIRCLE_MEMBER, KIND_CALENDAR_EVENT, KIND_SUGGESTION], "#a": [coord] },
+    { kinds: [KIND_RSVP], "#a": [coord] },
   ];
   const unsub = r.subscribe(filters, {
     onevent: (ev) => ingestEvent(circle.coord, ev),
@@ -213,7 +220,7 @@ function ingestEvent(
   },
 ): void {
   switch (ev.kind) {
-    case 31950: {
+    case KIND_CIRCLE: {
       // circle def update — refresh name/tier
       const c = $circles.get()[coord];
       const inv = ev.tags.find((t) => t[0] === "invite")?.[1] ?? c?.inviteSecret ?? "";
@@ -223,7 +230,7 @@ function ingestEvent(
       void fetchProfiles([ev.pubkey]).catch(() => {});
       break;
     }
-    case 31951: {
+    case KIND_CIRCLE_MEMBER: {
       const c = $circles.get()[coord];
       if (c !== undefined && !c.members.includes(ev.pubkey)) {
         $circles.setKey(coord, { ...c, members: [...c.members, ev.pubkey] });
@@ -231,7 +238,7 @@ function ingestEvent(
       void fetchProfiles([ev.pubkey]).catch(() => {});
       break;
     }
-    case 31923: {
+    case KIND_CALENDAR_EVENT: {
       const list = ($events.get()[coord] ?? []).filter((e) => e.id !== dTag(ev));
       const cal = toCalendarEvent(ev, coord);
       $events.setKey(
@@ -240,7 +247,7 @@ function ingestEvent(
       );
       break;
     }
-    case 31925: {
+    case KIND_RSVP: {
       const eTag = ev.tags.find((t) => t[0] === "e")?.[1] ?? "";
       const key = `${coord}:${eTag}`;
       const list = ($rsvps.get()[key] ?? []).filter((r) => r.pubkey !== ev.pubkey);
@@ -248,7 +255,7 @@ function ingestEvent(
       $rsvps.setKey(key, [...list, { pubkey: ev.pubkey, eventId: eTag, coord, status }]);
       break;
     }
-    case 31926: {
+    case KIND_SUGGESTION: {
       const eTag = ev.tags.find((t) => t[0] === "e")?.[1] ?? "";
       const key = `${coord}:${eTag}`;
       const list = ($suggestions.get()[key] ?? []).filter(
@@ -327,17 +334,19 @@ function toCalendarEvent(
 export async function discoverCircles(): Promise<void> {
   const kp = requireIdentity();
   const r = requireRelay();
-  const events = await r.query([{ authors: [kp.pubkey], kinds: [31950, 31951] }]);
+  const events = await r.query([
+    { authors: [kp.pubkey], kinds: [KIND_CIRCLE, KIND_CIRCLE_MEMBER] },
+  ]);
   for (const ev of events) {
     const coord =
-      ev.kind === 31950
+      ev.kind === KIND_CIRCLE
         ? circleCoord(kp.pubkey, dTag(ev))
         : (ev.tags.find((t) => t[0] === "a")?.[1] ?? "");
     if (coord === "") continue;
     const invite = ev.tags.find((t) => t[0] === "invite")?.[1] ?? "";
     if ($circles.get()[coord] === undefined) {
       const circle: Circle =
-        ev.kind === 31950
+        ev.kind === KIND_CIRCLE
           ? circleFromDef(coord, kp.pubkey, ev.content, invite)
           : {
               coord,
@@ -597,7 +606,7 @@ export interface ProfileInput {
 export async function fetchProfiles(pubkeys: string[]): Promise<void> {
   if (pubkeys.length === 0) return;
   const r = requireRelay();
-  const events = await r.query([{ kinds: [0], authors: [...new Set(pubkeys)] }]);
+  const events = await r.query([{ kinds: [KIND_PROFILE], authors: [...new Set(pubkeys)] }]);
   const latest = new Map<string, (typeof events)[number]>();
   for (const ev of events) {
     const cur = latest.get(ev.pubkey);
@@ -637,8 +646,8 @@ export async function publishProfile(input: ProfileInput): Promise<void> {
 async function restoreContacts(): Promise<void> {
   const kp = requireIdentity();
   const r = requireRelay();
-  const events = await r.query([{ kinds: [3], authors: [kp.pubkey], limit: 1 }]);
-  const latest = events.toSorted((a, b) => b.created_at - a.created_at)[0];
+  const events = await r.query([{ kinds: [KIND_CONTACTS], authors: [kp.pubkey], limit: 1 }]);
+  const latest = events.slice().sort((a, b) => b.created_at - a.created_at)[0];
   if (latest === undefined) return;
   const list = latest.tags.filter((t) => t[0] === "p" && t[1] !== undefined).map((t) => t[1]!);
   $contacts.set(list);

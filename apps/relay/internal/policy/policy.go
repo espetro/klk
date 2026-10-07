@@ -12,21 +12,23 @@ import (
 	"fiatjaf.com/nostr/khatru"
 )
 
-// klk's kinds on the Nostr contract.
+// klk's kinds on the Nostr contract. The contract of record is
+// packages/proto/src/taxonomy.ts (TAXONOMY table) — edit there, then
+// mirror here. Verified in sync at v0: same kind set both sides.
 const (
-	KindCalendarEvent nostr.Kind = 31923 // NIP-52
-	KindRSVP          nostr.Kind = 31925 // NIP-52
-	KindSuggestion    nostr.Kind = 31926 // member-proposed event change
-	KindCircle        nostr.Kind = 31950 // addressable circle definition
-	KindCircleMember  nostr.Kind = 31951 // membership claim by a member
-	KindAgentScope    nostr.Kind = 34134 // addressable agent delegation scope
+	KindCalendarEvent nostr.Kind = 31923 // taxonomy.calendarEvent — NIP-52
+	KindRSVP          nostr.Kind = 31925 // taxonomy.rsvp — NIP-52
+	KindSuggestion    nostr.Kind = 31926 // taxonomy.suggestion — member-proposed event change
+	KindCircle        nostr.Kind = 31950 // taxonomy.circle — addressable circle definition
+	KindCircleMember  nostr.Kind = 31951 // taxonomy.circleMember — membership claim by a member
+	KindAgentScope    nostr.Kind = 34134 // taxonomy.agentScope — addressable agent delegation scope
 )
 
 // storable are the kinds the relay will store at all. Anything else is
 // rejected: this is an application relay, not a public one.
 var storable = map[nostr.Kind]bool{
-	0:                 true, // profile metadata
-	3:                 true, // contacts
+	0:                 true, // taxonomy.profile — metadata
+	3:                 true, // taxonomy.contacts
 	KindCalendarEvent: true,
 	KindRSVP:          true,
 	KindSuggestion:    true,
