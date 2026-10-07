@@ -11,7 +11,8 @@
   "rules": {
     "import/no-default-export": "off",
     "typescript/no-explicit-any": "error",
-    "typescript/consistent-type-imports": "warn"
+    "typescript/consistent-type-imports": "warn",
+    "react/react-in-jsx-scope": "off"
   },
   "ignorePatterns": ["**/dist/**", "**/.one/**", "**/node_modules/**", "apps/relay/**", "**/*.go"]
 }

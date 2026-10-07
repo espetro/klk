@@ -17,9 +17,11 @@
     "@noble/ciphers": "^2.4.0",
     "@noble/curves": "^2.4.0",
     "@noble/hashes": "^2.4.0",
-    "nostr-tools": "^2.25.2"
+    "nostr-tools": "^2.25.2",
+    "ws": "^8.22.0"
   },
   "devDependencies": {
+    "@types/ws": "^8.18.2",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   }
