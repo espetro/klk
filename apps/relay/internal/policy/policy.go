@@ -16,6 +16,7 @@ import (
 const (
 	KindCalendarEvent nostr.Kind = 31923 // NIP-52
 	KindRSVP          nostr.Kind = 31925 // NIP-52
+	KindSuggestion    nostr.Kind = 31926 // member-proposed event change
 	KindCircle        nostr.Kind = 31950 // addressable circle definition
 	KindCircleMember  nostr.Kind = 31951 // membership claim by a member
 	KindAgentScope    nostr.Kind = 34134 // addressable agent delegation scope
@@ -28,6 +29,7 @@ var storable = map[nostr.Kind]bool{
 	3:                 true, // contacts
 	KindCalendarEvent: true,
 	KindRSVP:          true,
+	KindSuggestion:    true,
 	KindCircle:        true,
 	KindCircleMember:  true,
 	KindAgentScope:    true,

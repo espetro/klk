@@ -52,6 +52,7 @@ func New(dbPath, staticDir string) (http.Handler, func(), error) {
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("ok"))
 	})
+	mux.HandleFunc("GET /ics/{owner}/{slug}", icsFeed(store))
 	if staticDir != "" {
 		mux.Handle("/", spaHandler(staticDir))
 	}
