@@ -10,11 +10,12 @@ import {
   $rsvps,
   $suggestions,
   applySuggestion,
+  inviteLinkFor,
   setRsvp,
   suggestChange,
 } from "@klk/core";
-import { EmptyState, EventForm, EventMap, RsvpButtons, palette } from "@klk/ui";
-import { $bootState } from "../../src/boot.ts";
+import { EmptyState, EventForm, EventMap, RsvpButtons, ShareActions, palette } from "@klk/ui";
+import { $bootState, createAndConnect } from "../../src/boot.ts";
 import { notify } from "../../src/notify.ts";
 
 const fmt = (ts: number) =>
@@ -84,11 +85,28 @@ export default function EventDetail() {
           {event.summary}
         </Text>
       ) : null}
+      {circle !== undefined ? (
+        <ShareActions
+          url={inviteLinkFor(circle, location.origin)}
+          title={event.title}
+          text={`${event.title} — join the circle to see the plan and RSVP`}
+          onCopied={notify}
+        />
+      ) : null}
       <YStack gap="$2" paddingTop="$2">
         <Text fontSize={13} color={palette.muted}>
           Your RSVP
         </Text>
-        {connected ? (
+        {me === null ? (
+          <Button
+            borderRadius={6}
+            backgroundColor={palette.ink}
+            color="#FFFFFF"
+            onPress={() => void createAndConnect()}
+          >
+            Create identity to RSVP
+          </Button>
+        ) : connected ? (
           <RsvpButtons
             {...(mine !== undefined ? { current: mine.status } : {})}
             onSelect={(s) => {
@@ -110,7 +128,7 @@ export default function EventDetail() {
         )}
       </YStack>
 
-      {event.suggestable === true && connected && me?.pubkey !== event.pubkey ? (
+      {event.suggestable === true && connected && me !== null && me.pubkey !== event.pubkey ? (
         suggesting ? (
           <YStack gap="$2">
             <Text fontSize={15} fontWeight="600" color={palette.ink}>

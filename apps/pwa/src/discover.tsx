@@ -4,8 +4,9 @@
 import { useState } from "react";
 import { useStore } from "@nanostores/react";
 import { useRouter } from "one";
-import { ScrollView, Text, XStack, YStack } from "tamagui";
+import { Button, ScrollView, Text, XStack, YStack } from "tamagui";
 import { $circles, $events, $identity, $rsvps, circleColor } from "@klk/core";
+import { createAndConnect } from "./boot.ts";
 import type { CalendarEvent } from "@klk/core";
 import { DiscoveryMap, EmptyState, EventCard, RangeCalendar, dayKey, palette } from "@klk/ui";
 import type { DayRange, DiscoveryPin } from "@klk/ui";
@@ -198,6 +199,33 @@ export const Discover = () => {
 
         <ScrollView flex={1}>
           <YStack paddingHorizontal="$4" paddingBottom="$4" gap="$3">
+            {identity === null ? (
+              <YStack
+                gap="$2"
+                padding="$3"
+                borderRadius={10}
+                borderWidth={1}
+                borderColor={palette.border}
+                backgroundColor={palette.canvas}
+              >
+                <Text fontSize={14} fontWeight="600" color={palette.ink}>
+                  Just looking around?
+                </Text>
+                <Text fontSize={13} color={palette.muted} lineHeight={18}>
+                  Klk works without an account — open an invite link or poke around. Create an
+                  identity only when you want to make circles, RSVP, or save contacts.
+                </Text>
+                <Button
+                  size="$3"
+                  borderRadius={6}
+                  backgroundColor={palette.ink}
+                  color="#FFFFFF"
+                  onPress={() => void createAndConnect()}
+                >
+                  Create identity
+                </Button>
+              </YStack>
+            ) : null}
             <RangeCalendar
               mode={expanded ? "month" : "week"}
               anchor={anchor}
@@ -210,7 +238,11 @@ export const Discover = () => {
             {all.length === 0 ? (
               <EmptyState
                 title="Nothing on the map yet"
-                hint="Create an event in a circle and it'll show up here — and on the map above."
+                hint={
+                  identity === null
+                    ? "Events appear here once you join a circle — open an invite link someone's sent you."
+                    : "Create an event in a circle and it'll show up here — and on the map above."
+                }
               />
             ) : (
               all.map((e) => (

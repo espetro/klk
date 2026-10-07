@@ -1,18 +1,138 @@
 import { useState } from "react";
 import { useStore } from "@nanostores/react";
 import { Link } from "one";
-import { Button, Spinner, Text, YStack } from "tamagui";
-import { palette } from "@klk/ui";
-import { $bootError, $bootState, $unlockMode, createAndConnect, unlock } from "../src/boot.ts";
+import { Button, Input, Spinner, Text, XStack, YStack } from "tamagui";
+import { $identity, publishProfile, usernameFor } from "@klk/core";
+import { Field, lookupCity, palette } from "@klk/ui";
+import { notify } from "../src/notify.ts";
+import { $bootError, $bootState, $unlockMode, unlock } from "../src/boot.ts";
 import { Discover } from "../src/discover.tsx";
 
 const WELCOMED = "klk.welcomed";
+
+// One screen after identity creation: who are you. Everything skippable —
+// username is pre-filled by the autogen, city is one tap.
+function ProfileSetup(props: { onDone: () => void; unlockMode: string }) {
+  const me = useStore($identity);
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState(me === null ? "" : usernameFor(me.pubkey));
+  const [city, setCity] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const locate = () => {
+    if (!("geolocation" in navigator)) return;
+    setBusy(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        void lookupCity(pos.coords.latitude, pos.coords.longitude)
+          .then((c) => {
+            if (c !== null) setCity(c);
+            else notify("Couldn't resolve your city — type it instead");
+          })
+          .finally(() => setBusy(false));
+      },
+      () => {
+        setBusy(false);
+        notify("Location unavailable — type your city instead");
+      },
+      { timeout: 8000 },
+    );
+  };
+
+  const finish = () => {
+    setBusy(true);
+    void publishProfile({
+      name: name.trim() === "" ? undefined : name.trim(),
+      username: username.trim() === "" ? undefined : username.trim(),
+      city: city.trim() === "" ? undefined : city.trim(),
+    })
+      .catch(() => {})
+      .finally(() => props.onDone());
+  };
+
+  return (
+    <YStack flex={1} justifyContent="center" gap="$4" paddingVertical="$8">
+      <YStack gap="$2">
+        <Text fontSize={28} fontWeight="700" color={palette.ink} letterSpacing={-0.5}>
+          You're in.
+        </Text>
+        <Text fontSize={15} color={palette.muted} lineHeight={22}>
+          {props.unlockMode === "passkey"
+            ? "Your identity is locked to your passkey — no passwords, nothing to remember."
+            : "Your identity lives on this device only."}{" "}
+          A name so friends recognize you — everything here is editable later.
+        </Text>
+      </YStack>
+      <Field label="Name (optional)">
+        <Input
+          value={name}
+          onChangeText={setName}
+          placeholder="How friends know you"
+          borderColor={palette.border}
+          backgroundColor={palette.surface}
+        />
+      </Field>
+      <Field label="Username">
+        <Input
+          value={username}
+          onChangeText={setUsername}
+          autoCapitalize="none"
+          borderColor={palette.border}
+          backgroundColor={palette.surface}
+        />
+      </Field>
+      <Field label="City (optional)">
+        <XStack gap="$2">
+          <Input
+            flex={1}
+            value={city}
+            onChangeText={setCity}
+            placeholder="Barcelona"
+            borderColor={palette.border}
+            backgroundColor={palette.surface}
+          />
+          <Button
+            size="$3"
+            borderRadius={6}
+            borderWidth={1}
+            borderColor={palette.border}
+            backgroundColor={palette.surface}
+            color={palette.ink}
+            disabled={busy}
+            onPress={locate}
+          >
+            Locate
+          </Button>
+        </XStack>
+      </Field>
+      <Button
+        backgroundColor={palette.ink}
+        color="#FFFFFF"
+        borderRadius={6}
+        disabled={busy}
+        onPress={finish}
+      >
+        Start exploring
+      </Button>
+      <Text
+        fontSize={13}
+        color={palette.muted}
+        textAlign="center"
+        onPress={() => props.onDone()}
+        cursor="pointer"
+      >
+        Skip for now
+      </Text>
+    </YStack>
+  );
+}
 
 export default function Home() {
   const state = useStore($bootState);
   const err = useStore($bootError);
   const unlockMode = useStore($unlockMode);
-  // post-create welcome shows once, right after identity creation
+  const me = useStore($identity);
+  // profile-setup welcome shows once, right after first identity creation
   const [welcomed, setWelcomed] = useState(() => {
     try {
       return localStorage.getItem(WELCOMED) === "1";
@@ -20,38 +140,14 @@ export default function Home() {
       return true;
     }
   });
-
-  if (state === "onboarding") {
-    return (
-      <YStack flex={1} justifyContent="center" gap="$4" paddingVertical="$8">
-        <YStack gap="$2">
-          <Text fontSize={32} fontWeight="700" color={palette.ink} letterSpacing={-0.5}>
-            Klk
-          </Text>
-          <Text fontSize={15} color={palette.muted} lineHeight={22}>
-            Plans with the people around you — private by default.
-          </Text>
-          <Text fontSize={15} color={palette.muted} lineHeight={22}>
-            Create an identity to get started. Your device will ask to save a passkey — that's what
-            unlocks you here, no passwords.
-          </Text>
-        </YStack>
-        <Button
-          backgroundColor={palette.ink}
-          color="#FFFFFF"
-          borderRadius={6}
-          onPress={() => void createAndConnect()}
-        >
-          Create identity
-        </Button>
-        {err !== undefined ? (
-          <Text fontSize={13} color="#9F2F2D">
-            {err}
-          </Text>
-        ) : null}
-      </YStack>
-    );
-  }
+  const done = () => {
+    try {
+      localStorage.setItem(WELCOMED, "1");
+    } catch {
+      /* private mode — just move on */
+    }
+    setWelcomed(true);
+  };
 
   if (state === "locked") {
     return (
@@ -103,38 +199,11 @@ export default function Home() {
     );
   }
 
-  if (!welcomed) {
-    return (
-      <YStack flex={1} justifyContent="center" gap="$4" paddingVertical="$8">
-        <Text fontSize={28} fontWeight="700" color={palette.ink} letterSpacing={-0.5}>
-          You're in.
-        </Text>
-        <Text fontSize={15} color={palette.muted} lineHeight={22}>
-          {unlockMode === "passkey"
-            ? "Your identity is locked to your passkey — the same one your device asked about. No passwords, nothing to remember."
-            : "Your identity lives on this device only. Sign in from somewhere else by joining through an invite link."}
-        </Text>
-        <Text fontSize={15} color={palette.muted} lineHeight={22}>
-          Make a circle for your people, or open an invite link someone's sent you.
-        </Text>
-        <Button
-          backgroundColor={palette.ink}
-          color="#FFFFFF"
-          borderRadius={6}
-          onPress={() => {
-            try {
-              localStorage.setItem(WELCOMED, "1");
-            } catch {
-              /* private mode — just move on */
-            }
-            setWelcomed(true);
-          }}
-        >
-          Start exploring
-        </Button>
-      </YStack>
-    );
+  // signed in, never onboarded here → collect profile details once
+  if (me !== null && !welcomed) {
+    return <ProfileSetup onDone={done} unlockMode={unlockMode} />;
   }
 
+  // guest or fully onboarded — straight to the map
   return <Discover />;
 }

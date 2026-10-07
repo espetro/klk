@@ -4,15 +4,15 @@ import { useState } from "react";
 import { useStore } from "@nanostores/react";
 import { useRouter } from "one";
 import { Button, Spinner, Text, YStack } from "tamagui";
-import { $connected, joinCircle } from "@klk/core";
+import { $identity, joinCircle } from "@klk/core";
 import { palette, useMountEffect } from "@klk/ui";
-import { $bootState, createAndConnect } from "../src/boot.ts";
+import { createAndConnect } from "../src/boot.ts";
 import { notify } from "../src/notify.ts";
 
 export default function Join() {
   const [err, setErr] = useState<string>();
   const [busy, setBusy] = useState(false);
-  const bootState = useStore($bootState);
+  const me = useStore($identity);
   const router = useRouter();
 
   useMountEffect(function consumeInvite() {
@@ -21,11 +21,11 @@ export default function Join() {
       setErr("This invite link is missing its payload.");
       return;
     }
-    // boot() may still be connecting on a fresh realm — join once up.
-    // subscribe fires immediately too, covering the already-connected case.
+    // guests hold at the CTA until identity exists — join fires the
+    // moment one is created (or was already stored).
     let done = false;
-    const stop = $connected.subscribe((ok) => {
-      if (!ok || done) return;
+    const stop = $identity.subscribe((id) => {
+      if (id === null || done) return;
       done = true;
       joinCircle(`#${frag}`)
         .then((c) => {
@@ -54,7 +54,7 @@ export default function Join() {
         <Text fontSize={14} color="#9F2F2D" textAlign="center">
           {err}
         </Text>
-      ) : bootState === "onboarding" ? (
+      ) : me === null ? (
         <>
           <Text fontSize={20} fontWeight="600" color={palette.ink}>
             You're invited

@@ -39,6 +39,15 @@ export interface Suggestion {
   suggestedAt: number;
 }
 
+/** Kind-0 profile card — what other users see. */
+export interface Profile {
+  pubkey: string;
+  name?: string;
+  username?: string;
+  city?: string;
+  updatedAt: number;
+}
+
 export interface RSVP {
   pubkey: string;
   eventId: string;

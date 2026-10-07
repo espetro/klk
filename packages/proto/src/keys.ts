@@ -18,6 +18,18 @@ export function npubEncode(pubkey: string): string {
   return nip19.npubEncode(pubkey);
 }
 
+/** Accepts an npub or bare hex pubkey; returns hex or null. */
+export function npubDecode(s: string): string | null {
+  const t = s.trim();
+  if (/^[0-9a-f]{64}$/i.test(t)) return t.toLowerCase();
+  try {
+    const d = nip19.decode(t);
+    return d.type === "npub" ? (d.data as string) : null;
+  } catch {
+    return null;
+  }
+}
+
 export function secretKeyFromHex(hex: string): Uint8Array {
   const bytes = new Uint8Array(32);
   for (let i = 0; i < 32; i++) bytes[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);

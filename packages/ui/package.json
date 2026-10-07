@@ -18,6 +18,7 @@
     "@tamagui/config-default": "^2.7.7",
     "@tamagui/core": "^2.7.7",
     "maplibre-gl": "^5.6.0",
+    "qrcode.react": "^4.1.0",
     "react": "^19.3.0",
     "tamagui": "^2.7.7"
   },

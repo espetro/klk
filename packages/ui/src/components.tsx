@@ -49,7 +49,7 @@ export const CircleCard = ({ circle, onPress }: { circle: Circle; onPress?: () =
       />
     </XStack>
     <Text fontSize={13} color={palette.muted}>
-      {circle.members.length} member{circle.members.length === 1 ? "" : "s"}
+      {circle.members.length} user{circle.members.length === 1 ? "" : "s"}
     </Text>
   </Card>
 );
@@ -270,7 +270,7 @@ export const EventForm = ({
         <TextArea
           value={summary}
           onChangeText={setSummary}
-          placeholder="What should people know?"
+          placeholder="What should everyone know?"
           borderColor={palette.border}
           backgroundColor={palette.surface}
           rows={4}
@@ -302,7 +302,7 @@ export const EventForm = ({
         >
           <YStack gap={2} flex={1}>
             <Text fontSize={14} fontWeight="500" color={palette.ink}>
-              Let members suggest changes
+              Let others suggest changes
             </Text>
             <Text fontSize={12} color={palette.muted}>
               They can propose a new time, place or name — you approve.

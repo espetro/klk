@@ -1,4 +1,6 @@
 /** klk's event kinds on the Nostr contract (mirrors apps/relay policy). */
+export const KIND_PROFILE = 0; // user metadata: name, username, city
+export const KIND_CONTACTS = 3; // contact list (p tags) — the friend graph
 export const KIND_CALENDAR_EVENT = 31923;
 export const KIND_RSVP = 31925;
 export const KIND_SUGGESTION = 31926; // member-proposed change to an event

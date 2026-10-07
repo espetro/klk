@@ -2,8 +2,16 @@ import { useState } from "react";
 import { useStore } from "@nanostores/react";
 import { useParams, useRouter } from "one";
 import { Button, Text, XStack, YStack } from "tamagui";
-import { $circles, $events, $identity, $rsvps, circleColor, inviteLinkFor } from "@klk/core";
-import { Badge, EmptyState, EventCard, EventMap, palette } from "@klk/ui";
+import {
+  $circles,
+  $events,
+  $identity,
+  $rsvps,
+  circleColor,
+  displayName,
+  inviteLinkFor,
+} from "@klk/core";
+import { Badge, EmptyState, EventCard, EventMap, ShareActions, palette } from "@klk/ui";
 import { $bootState } from "../../src/boot.ts";
 import { notify } from "../../src/notify.ts";
 
@@ -49,12 +57,6 @@ export default function CircleDetail() {
     );
   }
 
-  const copyInvite = async () => {
-    const link = inviteLinkFor(circle, location.origin);
-    await navigator.clipboard.writeText(link);
-    notify("Invite link copied — send it to your people");
-  };
-
   // hosted circles expose a calendar feed the relay can render — the
   // invite secret is the feed's read capability, same trust as the link.
   // webcal:// asks the OS to subscribe the default calendar app.
@@ -75,8 +77,27 @@ export default function CircleDetail() {
             {circle.name !== "" ? circle.name : circle.slug}
           </Text>
           <Text fontSize={13} color={palette.muted}>
-            {circle.members.length} member{circle.members.length === 1 ? "" : "s"}
+            {circle.members.length === 1
+              ? "Just you — share the invite to connect"
+              : `${circle.members.length} users`}
           </Text>
+          <XStack gap="$2" flexWrap="wrap">
+            {circle.members.map((m) => (
+              <Text
+                key={m}
+                fontSize={12}
+                color={palette.muted}
+                backgroundColor={palette.canvas}
+                borderWidth={1}
+                borderColor={palette.border}
+                paddingHorizontal={8}
+                paddingVertical={2}
+                borderRadius={10}
+              >
+                {m === me?.pubkey ? "you" : displayName(m)}
+              </Text>
+            ))}
+          </XStack>
         </YStack>
         <Badge
           label={circle.tier === "sealed" ? "Sealed" : "Connected"}
@@ -108,32 +129,24 @@ export default function CircleDetail() {
         </YStack>
       ) : null}
 
-      <XStack gap="$2">
+      <ShareActions
+        url={inviteLinkFor(circle, location.origin)}
+        title={`Join ${circle.name !== "" ? circle.name : circle.slug} on Klk`}
+        text="You're invited to my circle — tap to join"
+        onCopied={notify}
+      />
+      {circle.tier === "hosted" ? (
         <Button
-          flex={1}
           borderRadius={6}
           borderWidth={1}
           borderColor={palette.border}
           backgroundColor={palette.surface}
           color={palette.ink}
-          onPress={() => void copyInvite()}
+          onPress={() => void copyFeed()}
         >
-          Copy invite link
+          Add to your calendar
         </Button>
-        {circle.tier === "hosted" ? (
-          <Button
-            flex={1}
-            borderRadius={6}
-            borderWidth={1}
-            borderColor={palette.border}
-            backgroundColor={palette.surface}
-            color={palette.ink}
-            onPress={() => void copyFeed()}
-          >
-            Add to your calendar
-          </Button>
-        ) : null}
-      </XStack>
+      ) : null}
 
       <XStack justifyContent="space-between" alignItems="baseline">
         <Text fontSize={17} fontWeight="600" color={palette.ink}>

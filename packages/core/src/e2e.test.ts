@@ -11,18 +11,24 @@ import {
 } from "@klk/proto";
 import {
   $circles,
+  $contacts,
   $events,
+  $profiles,
   $rsvps,
   $suggestions,
+  addContact,
   applySuggestion,
   connect,
   createCircle,
   disconnect,
   discoverCircles,
+  displayName,
+  fetchProfiles,
   grantAgentScope,
   inviteLinkFor,
   joinCircle,
   postEvent,
+  publishProfile,
   setRsvp,
   suggestChange,
 } from "./client.ts";
@@ -235,6 +241,33 @@ describe.skipIf(!RUN)("v0 loop over a live relay", () => {
       `${httpBase}/ics/${sealed.owner}/${sealed.slug}?invite=${sealed.inviteSecret}`,
     );
     expect(sealedRes.status).toBe(403);
+
+    await disconnect();
+  }, 20000);
+
+  it("profile publish → open read; contacts add → visible to another user", async () => {
+    const a = generateKeypair();
+    const b = generateKeypair();
+
+    await connect(a, { relayUrl: RELAY_URL });
+    await publishProfile({ name: "Ada", username: "ada-otter-001", city: "Lisbon" });
+    await disconnect();
+
+    // a second user sees the card through the open profile read lane
+    await connect(b, { relayUrl: RELAY_URL });
+    await fetchProfiles([a.pubkey]);
+    const card = $profiles.get()[a.pubkey];
+    expect(card?.name).toBe("Ada");
+    expect(card?.username).toBe("ada-otter-001");
+    expect(card?.city).toBe("Lisbon");
+
+    await addContact(a.pubkey);
+    expect($contacts.get()).toContain(a.pubkey);
+    // contact graph survives a realm reset (kind-3 restore at connect)
+    await disconnect();
+    await connect(b, { relayUrl: RELAY_URL });
+    await until(() => $contacts.get().includes(a.pubkey));
+    expect(displayName(a.pubkey)).toBe("Ada");
 
     await disconnect();
   }, 20000);

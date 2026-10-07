@@ -1,13 +1,13 @@
 // Session bootstrap: restore persisted identity, connect the domain client.
 import { atom } from "nanostores";
 import {
-  $connected,
   $identity,
   PasskeyRequired,
   connect,
   disconnect,
   discoverCircles,
   persistIdentity,
+  publishProfile,
   restoreIdentity,
   unlockWithPasskey,
 } from "@klk/core";
@@ -24,10 +24,9 @@ if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
 export type BootState =
   | "idle"
   | "restoring"
-  | "onboarding"
   | "locked"
   | "connecting"
-  | "ready"
+  | "ready" // guest or signed in — $identity distinguishes
   | "error";
 
 export const $bootState = atom<BootState>("idle");
@@ -52,13 +51,11 @@ export const boot = async (): Promise<void> => {
   setState("restoring");
   try {
     const kp = await restoreIdentity();
-    if (kp === null) {
-      setState("onboarding");
-      return;
-    }
     setState("connecting");
+    // no stored identity → guest mode: connect anonymously, browse for
+    // free, create an identity only when the first write needs one
     await connect(kp, { relayUrl: RELAY_URL });
-    await discoverCircles();
+    if (kp !== null) await discoverCircles();
     setState("ready");
   } catch (e) {
     if (e instanceof PasskeyRequired) {
@@ -76,7 +73,7 @@ export const unlock = async (): Promise<void> => {
   try {
     const kp = await unlockWithPasskey();
     if (kp === null) {
-      setState("onboarding");
+      setState("ready");
       return;
     }
     await connect(kp, { relayUrl: RELAY_URL });
@@ -87,14 +84,17 @@ export const unlock = async (): Promise<void> => {
   }
 };
 
-// Onboarding: create a fresh keypair, persist it, connect.
+// Create a fresh keypair, persist it, connect — run on the first action
+// that needs identity (join/create/post), not on first open.
 export const createAndConnect = async (): Promise<void> => {
   setState("connecting");
   try {
+    await disconnect();
     const kp = generateKeypair();
     $unlockMode.set(await persistIdentity(kp));
     await connect(kp, { relayUrl: RELAY_URL });
     $identity.set(kp);
+    void publishProfile({}).catch(() => {}); // seed the autogen username
     setState("ready");
   } catch (e) {
     setState("error", e instanceof Error ? e.message : String(e));
@@ -104,8 +104,8 @@ export const createAndConnect = async (): Promise<void> => {
 export const signOut = async (): Promise<void> => {
   await disconnect();
   localStorage.clear();
-  $identity.set(null);
-  $connected.set(false);
   booted = false;
-  setState("onboarding");
+  // fall back to guest browsing rather than a dead end
+  await connect(null, { relayUrl: RELAY_URL });
+  setState("ready");
 };

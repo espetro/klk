@@ -5,6 +5,22 @@ import { useRef, useState } from "react";
 import { Input, Text, XStack, YStack } from "tamagui";
 import { palette } from "./palette.ts";
 
+/** Reverse-geocode a coordinate to a city/town name (Nominatim). */
+export async function lookupCity(lat: number, lon: number): Promise<string | null> {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`,
+    );
+    const data = (await res.json()) as {
+      address?: { city?: string; town?: string; village?: string; municipality?: string };
+    };
+    const a = data.address;
+    return a?.city ?? a?.town ?? a?.village ?? a?.municipality ?? null;
+  } catch {
+    return null;
+  }
+}
+
 interface Hit {
   label: string;
   geo: [number, number];

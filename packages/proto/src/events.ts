@@ -5,6 +5,8 @@ import {
   KIND_CALENDAR_EVENT,
   KIND_CIRCLE,
   KIND_CIRCLE_MEMBER,
+  KIND_CONTACTS,
+  KIND_PROFILE,
   KIND_RSVP,
   KIND_SUGGESTION,
 } from "./kinds.ts";
@@ -128,6 +130,25 @@ export function buildRSVP(p: RSVPParams): EventTemplate {
     ["status", p.status],
   ];
   return { kind: KIND_RSVP, created_at: now(), content: p.comment ?? "", tags };
+}
+
+/** Kind-0 user metadata — the profile card (name, username, city). */
+export function buildProfile(meta: Record<string, string | undefined>): EventTemplate {
+  const clean: Record<string, string> = {};
+  for (const [k, v] of Object.entries(meta)) {
+    if (v !== undefined && v !== "") clean[k] = v;
+  }
+  return { kind: KIND_PROFILE, created_at: now(), content: JSON.stringify(clean), tags: [] };
+}
+
+/** Kind-3 contact list — the friend graph. One `p` tag per contact. */
+export function buildContacts(pubkeys: string[]): EventTemplate {
+  return {
+    kind: KIND_CONTACTS,
+    created_at: now(),
+    content: "",
+    tags: pubkeys.map((p) => ["p", p]),
+  };
 }
 
 export function sign(tpl: EventTemplate, secretKey: Uint8Array): NostrEvent {

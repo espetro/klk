@@ -4,7 +4,9 @@ import {
   buildAgentScope,
   buildCalendarEvent,
   buildCircleDef,
+  buildContacts,
   buildMemberClaim,
+  buildProfile,
   buildRSVP,
   buildSuggestion,
   circleCoord,
@@ -13,14 +15,16 @@ import {
   decodeInvite,
   encodeInvite,
   generateCircleKey,
+  generateKeypair,
   newInviteSecret,
   open as cryptoOpen,
   scopeCoord,
   seal as cryptoSeal,
 } from "@klk/proto";
 import type { CircleKey, Filter, Keypair } from "@klk/proto";
-import type { CalendarEvent, Circle, RSVP, Suggestion } from "./domain.ts";
+import type { CalendarEvent, Circle, Profile, RSVP, Suggestion } from "./domain.ts";
 import { circleFromDef } from "./domain.ts";
+import { usernameFor } from "./username.ts";
 
 // Domain state (nanostores — framework-free, shared by app + agent surface)
 export const $identity = atom<Keypair | null>(null);
@@ -28,6 +32,8 @@ export const $circles = map<Record<string, Circle>>({});
 export const $events = map<Record<string, CalendarEvent[]>>({});
 export const $rsvps = map<Record<string, RSVP[]>>({});
 export const $suggestions = map<Record<string, Suggestion[]>>({});
+export const $profiles = map<Record<string, Profile>>({});
+export const $contacts = atom<string[]>([]);
 export const $connected = atom(false);
 
 let relay: KlkRelay | null = null;
@@ -65,10 +71,22 @@ export interface ClientOptions {
   relayUrl: string;
 }
 
-export async function connect(identity: Keypair, opts: ClientOptions): Promise<void> {
-  relay = await KlkRelay.connect(opts.relayUrl, identity.secretKey);
-  $identity.set(identity);
+/**
+ * Bring the realm online. `identity === null` is guest mode: an ephemeral
+ * in-memory keypair answers the relay's NIP-42 auth so browsing works
+ * without signup — $identity stays null and writes gate on it.
+ */
+export async function connect(identity: Keypair | null, opts: ClientOptions): Promise<void> {
+  const guest = identity === null;
+  const kp = identity ?? generateKeypair();
+  relay = await KlkRelay.connect(opts.relayUrl, kp.secretKey);
+  $identity.set(guest ? null : kp);
   $connected.set(true);
+  if (!guest) {
+    // my profile + contact graph ride the same boot
+    void fetchProfiles([kp.pubkey]).catch(() => {});
+    void restoreContacts().catch(() => {});
+  }
 }
 
 export async function disconnect(): Promise<void> {
@@ -83,6 +101,8 @@ export async function disconnect(): Promise<void> {
   $events.set({});
   $rsvps.set({});
   $suggestions.set({});
+  $profiles.set({});
+  $contacts.set([]);
   $connected.set(false);
 }
 
@@ -200,6 +220,7 @@ function ingestEvent(
       const def = circleFromDef(coord, ev.pubkey, ev.content, inv);
       if (c !== undefined) def.members = c.members;
       $circles.setKey(coord, def);
+      void fetchProfiles([ev.pubkey]).catch(() => {});
       break;
     }
     case 31951: {
@@ -207,6 +228,7 @@ function ingestEvent(
       if (c !== undefined && !c.members.includes(ev.pubkey)) {
         $circles.setKey(coord, { ...c, members: [...c.members, ev.pubkey] });
       }
+      void fetchProfiles([ev.pubkey]).catch(() => {});
       break;
     }
     case 31923: {
@@ -554,11 +576,105 @@ export function openFor(coord: string, packed: string): string | null {
   }
 }
 
+// ---------- profiles + contacts ----------
+
+/** Thrown by write paths in guest mode — the UI turns it into a
+ * "create identity" prompt instead of an error. */
+export class IdentityRequired extends Error {
+  constructor() {
+    super("create an identity first");
+    this.name = "IdentityRequired";
+  }
+}
+
+export interface ProfileInput {
+  name?: string;
+  username?: string;
+  city?: string;
+}
+
+/** Latest kind-0 per author → $profiles. Open read on the relay. */
+export async function fetchProfiles(pubkeys: string[]): Promise<void> {
+  if (pubkeys.length === 0) return;
+  const r = requireRelay();
+  const events = await r.query([{ kinds: [0], authors: [...new Set(pubkeys)] }]);
+  const latest = new Map<string, (typeof events)[number]>();
+  for (const ev of events) {
+    const cur = latest.get(ev.pubkey);
+    if (cur === undefined || ev.created_at > cur.created_at) latest.set(ev.pubkey, ev);
+  }
+  for (const ev of latest.values()) {
+    let meta: Record<string, string> = {};
+    try {
+      meta = JSON.parse(ev.content) as Record<string, string>;
+    } catch {
+      continue;
+    }
+    const p: Profile = { pubkey: ev.pubkey, updatedAt: ev.created_at };
+    if (meta.name !== undefined && meta.name !== "") p.name = meta.name;
+    if (meta.username !== undefined && meta.username !== "") p.username = meta.username;
+    if (meta.city !== undefined && meta.city !== "") p.city = meta.city;
+    $profiles.setKey(ev.pubkey, p);
+  }
+}
+
+/** Publish my profile card. Fields left out keep their published value. */
+export async function publishProfile(input: ProfileInput): Promise<void> {
+  const kp = requireIdentity();
+  const r = requireRelay();
+  const existing = $profiles.get()[kp.pubkey];
+  const res = await r.publish(
+    buildProfile({
+      name: input.name ?? existing?.name,
+      username: input.username ?? existing?.username ?? usernameFor(kp.pubkey),
+      city: input.city ?? existing?.city,
+    }),
+  );
+  if (!res.ok) throw new Error(`publish profile: ${res.reason}`);
+  await fetchProfiles([kp.pubkey]);
+}
+
+async function restoreContacts(): Promise<void> {
+  const kp = requireIdentity();
+  const r = requireRelay();
+  const events = await r.query([{ kinds: [3], authors: [kp.pubkey], limit: 1 }]);
+  const latest = events.toSorted((a, b) => b.created_at - a.created_at)[0];
+  if (latest === undefined) return;
+  const list = latest.tags.filter((t) => t[0] === "p" && t[1] !== undefined).map((t) => t[1]!);
+  $contacts.set(list);
+  void fetchProfiles(list).catch(() => {});
+}
+
+async function saveContacts(pubkeys: string[]): Promise<void> {
+  const r = requireRelay();
+  const res = await r.publish(buildContacts([...new Set(pubkeys)]));
+  if (!res.ok) throw new Error(`publish contacts: ${res.reason}`);
+  $contacts.set([...new Set(pubkeys)]);
+}
+
+export async function addContact(pubkey: string): Promise<void> {
+  const me = requireIdentity();
+  if (pubkey === me.pubkey) throw new Error("that's you");
+  await saveContacts([...$contacts.get(), pubkey]);
+  void fetchProfiles([pubkey]).catch(() => {});
+}
+
+export async function removeContact(pubkey: string): Promise<void> {
+  await saveContacts($contacts.get().filter((p) => p !== pubkey));
+}
+
+/** Display name for any pubkey: their profile name, then their
+ * username, then a deterministic friendly autogen. */
+export function displayName(pubkey: string): string {
+  const p = $profiles.get()[pubkey];
+  return p?.name ?? p?.username ?? usernameFor(pubkey);
+}
+
 // ---------- guards ----------
 
 function requireIdentity(): Keypair {
   const kp = $identity.get();
-  if (kp === null) throw new Error("not signed in");
+  if (kp === null) throw new IdentityRequired();
   return kp;
 }
 
