@@ -6,6 +6,7 @@ import {
   buildCircleDef,
   buildMemberClaim,
   buildRSVP,
+  buildSuggestion,
   circleCoord,
   circleKeyFromHex,
   circleKeyToHex,
@@ -18,7 +19,7 @@ import {
   seal as cryptoSeal,
 } from "@klk/proto";
 import type { CircleKey, Filter, Keypair } from "@klk/proto";
-import type { CalendarEvent, Circle, RSVP } from "./domain.ts";
+import type { CalendarEvent, Circle, RSVP, Suggestion } from "./domain.ts";
 import { circleFromDef } from "./domain.ts";
 
 // Domain state (nanostores — framework-free, shared by app + agent surface)
@@ -26,6 +27,7 @@ export const $identity = atom<Keypair | null>(null);
 export const $circles = map<Record<string, Circle>>({});
 export const $events = map<Record<string, CalendarEvent[]>>({});
 export const $rsvps = map<Record<string, RSVP[]>>({});
+export const $suggestions = map<Record<string, Suggestion[]>>({});
 export const $connected = atom(false);
 
 let relay: KlkRelay | null = null;
@@ -80,6 +82,7 @@ export async function disconnect(): Promise<void> {
   $circles.set({});
   $events.set({});
   $rsvps.set({});
+  $suggestions.set({});
   $connected.set(false);
 }
 
@@ -164,7 +167,7 @@ function watchCircle(circle: Circle): void {
   // def + members + calendar events + rsvps — one live subscription
   const filters: Filter[] = [
     { kinds: [31950], "#d": [circle.slug], authors: [circle.owner] },
-    { kinds: [31951, 31923], "#a": [coord] },
+    { kinds: [31951, 31923, 31926], "#a": [coord] },
     { kinds: [31925], "#a": [coord] },
   ];
   const unsub = r.subscribe(filters, {
@@ -223,7 +226,42 @@ function ingestEvent(
       $rsvps.setKey(key, [...list, { pubkey: ev.pubkey, eventId: eTag, coord, status }]);
       break;
     }
+    case 31926: {
+      const eTag = ev.tags.find((t) => t[0] === "e")?.[1] ?? "";
+      const key = `${coord}:${eTag}`;
+      const list = ($suggestions.get()[key] ?? []).filter(
+        (s) => !(s.pubkey === ev.pubkey && s.suggestedAt === ev.created_at),
+      );
+      $suggestions.setKey(key, [...list, toSuggestion(ev, coord)]);
+      break;
+    }
   }
+}
+
+function toSuggestion(
+  ev: { pubkey: string; content: string; tags: string[][]; created_at: number },
+  coord: string,
+): Suggestion {
+  const tag = (n: string) => ev.tags.find((t) => t[0] === n)?.[1];
+  const g = tag("g");
+  const out: Suggestion = {
+    eventId: tag("e") ?? "",
+    coord,
+    pubkey: ev.pubkey,
+    suggestedAt: ev.created_at,
+  };
+  const note = openFor(coord, ev.content) ?? ev.content;
+  if (note !== "") out.note = note;
+  const t = tag("title");
+  if (t !== undefined) out.title = t;
+  const st = tag("start");
+  if (st !== undefined) out.starts = Number(st);
+  const en = tag("end");
+  if (en !== undefined) out.ends = Number(en);
+  const loc = tag("location");
+  if (loc !== undefined) out.location = loc;
+  if (g !== undefined) out.geo = g.split(",").map(Number) as [number, number];
+  return out;
 }
 
 function dTag(ev: { tags: string[][] }): string {
@@ -243,7 +281,7 @@ function toCalendarEvent(
     pubkey: ev.pubkey,
     title: tag("title") ?? "",
     starts: Number(tag("start") ?? 0),
-    summary: ev.content,
+    summary: openFor(coord, ev.content) ?? ev.content,
     eventId: ev.id,
   };
   const end = tag("end");
@@ -251,6 +289,9 @@ function toCalendarEvent(
   const loc = tag("location");
   if (loc !== undefined) out.location = loc;
   if (geo !== undefined) out.geo = geo;
+  const img = tag("image");
+  if (img !== undefined) out.image = img;
+  if (tag("suggestable") === "1") out.suggestable = true;
   return out;
 }
 
@@ -302,6 +343,8 @@ export interface NewEventInput {
   location?: string;
   geo?: readonly [number, number];
   summary?: string;
+  image?: string;
+  suggestable?: boolean;
 }
 
 export async function postEvent(input: NewEventInput): Promise<CalendarEvent> {
@@ -320,6 +363,8 @@ export async function postEvent(input: NewEventInput): Promise<CalendarEvent> {
       ...(input.ends !== undefined ? { ends: input.ends } : {}),
       ...(input.location !== undefined ? { location: input.location } : {}),
       ...(input.geo !== undefined ? { geo: input.geo } : {}),
+      ...(input.image !== undefined ? { image: input.image } : {}),
+      ...(input.suggestable === true ? { suggestable: true } : {}),
       ...(sealed !== undefined
         ? { sealed }
         : input.summary !== undefined
@@ -355,6 +400,106 @@ export async function setRsvp(
   const r = requireRelay();
   const res = await r.publish(buildRSVP({ eventId, coord, status }));
   if (!res.ok) throw new Error(`publish rsvp: ${res.reason}`);
+}
+
+// ---------- suggestions ----------
+
+export interface SuggestChangeInput {
+  coord: string;
+  eventId: string; // target event `d`
+  title?: string;
+  starts?: number;
+  ends?: number;
+  location?: string;
+  geo?: readonly [number, number];
+  note?: string;
+}
+
+/** A member proposes a change on a `suggestable` event (kind 31926). */
+export async function suggestChange(input: SuggestChangeInput): Promise<void> {
+  const r = requireRelay();
+  const key = getCircleKey(input.coord);
+  const sealed =
+    key !== undefined && input.note !== undefined ? cryptoSeal(key, input.note) : undefined;
+  const res = await r.publish(
+    buildSuggestion({
+      eventId: input.eventId,
+      coord: input.coord,
+      ...(input.title !== undefined ? { title: input.title } : {}),
+      ...(input.starts !== undefined ? { starts: input.starts } : {}),
+      ...(input.ends !== undefined ? { ends: input.ends } : {}),
+      ...(input.location !== undefined ? { location: input.location } : {}),
+      ...(input.geo !== undefined ? { geo: input.geo } : {}),
+      ...(sealed !== undefined
+        ? { sealed }
+        : input.note !== undefined
+          ? { summary: input.note }
+          : {}),
+    }),
+  );
+  if (!res.ok) throw new Error(`publish suggestion: ${res.reason}`);
+}
+
+/** The event creator accepts a suggestion — republish the event with the
+ * proposed fields applied (same `d`, replaceable). */
+export async function applySuggestion(
+  event: CalendarEvent,
+  suggestion: Suggestion,
+): Promise<CalendarEvent> {
+  return postEvent({
+    coord: event.coord,
+    id: event.id,
+    title: suggestion.title ?? event.title,
+    starts: suggestion.starts ?? event.starts,
+    ...(suggestion.ends !== undefined || event.ends !== undefined
+      ? { ends: suggestion.ends ?? event.ends }
+      : {}),
+    ...(suggestion.location !== undefined || event.location !== undefined
+      ? { location: suggestion.location ?? event.location }
+      : {}),
+    ...(suggestion.geo !== undefined || event.geo !== undefined
+      ? { geo: suggestion.geo ?? event.geo }
+      : {}),
+    ...(event.summary !== undefined ? { summary: event.summary } : {}),
+    ...(event.image !== undefined ? { image: event.image } : {}),
+    ...(event.suggestable === true ? { suggestable: true } : {}),
+  });
+}
+
+// ---------- calendar export ----------
+
+const icsDate = (ts: number) =>
+  new Date(ts * 1000)
+    .toISOString()
+    .replace(/[-:]/g, "")
+    .replace(/\.\d{3}/, "");
+const icsEscape = (s: string) =>
+  s.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+
+/** Render events as an iCalendar (.ics) feed — client-side, works for
+ * sealed circles too since decryption happens in the realm. */
+export function toICS(events: CalendarEvent[], name: string): string {
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//klk//events//EN",
+    `X-WR-CALNAME:${icsEscape(name)}`,
+  ];
+  for (const e of events) {
+    lines.push("BEGIN:VEVENT");
+    lines.push(`UID:${e.coord}/${e.id}@klk`);
+    lines.push(`DTSTAMP:${icsDate(Math.floor(Date.now() / 1000))}`);
+    lines.push(`DTSTART:${icsDate(e.starts)}`);
+    if (e.ends !== undefined) lines.push(`DTEND:${icsDate(e.ends)}`);
+    lines.push(`SUMMARY:${icsEscape(e.title)}`);
+    if (e.location !== undefined) lines.push(`LOCATION:${icsEscape(e.location)}`);
+    if (e.summary !== undefined && e.summary !== "")
+      lines.push(`DESCRIPTION:${icsEscape(e.summary)}`);
+    if (e.geo !== undefined) lines.push(`GEO:${e.geo[0]};${e.geo[1]}`);
+    lines.push("END:VEVENT");
+  }
+  lines.push("END:VCALENDAR");
+  return lines.join("\r\n") + "\r\n";
 }
 
 // ---------- agent delegation ----------

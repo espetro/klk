@@ -6,6 +6,7 @@ import {
   KIND_CIRCLE,
   KIND_CIRCLE_MEMBER,
   KIND_RSVP,
+  KIND_SUGGESTION,
 } from "./kinds.ts";
 import type { CircleTier } from "./kinds.ts";
 
@@ -65,6 +66,8 @@ export interface CalendarEventParams {
   geo?: readonly [number, number];
   summary?: string;
   sealed?: string; // sealed content blob for sealed circles
+  image?: string; // NIP-52 image URL — pin/card thumbnail
+  suggestable?: boolean; // members may post 31926 suggestions
 }
 
 export function buildCalendarEvent(p: CalendarEventParams): EventTemplate {
@@ -77,8 +80,38 @@ export function buildCalendarEvent(p: CalendarEventParams): EventTemplate {
   if (p.ends !== undefined) tags.push(["end", String(p.ends)]);
   if (p.location !== undefined) tags.push(["location", p.location]);
   if (p.geo !== undefined) tags.push(["g", `${p.geo[0]},${p.geo[1]}`]);
+  if (p.image !== undefined) tags.push(["image", p.image]);
+  if (p.suggestable === true) tags.push(["suggestable", "1"]);
   const content = p.sealed ?? p.summary ?? "";
   return { kind: KIND_CALENDAR_EVENT, created_at: now(), content, tags };
+}
+
+export interface SuggestionParams {
+  eventId: string; // `e` tag — target calendar event's `d`
+  coord: string; // `a` tag — circle coordinate
+  title?: string;
+  starts?: number;
+  ends?: number;
+  location?: string;
+  geo?: readonly [number, number];
+  summary?: string;
+  sealed?: string;
+}
+
+/** A member-proposed change on a `suggestable` event. Content carries the
+ * note; the proposed values ride as tags mirroring the event's own. */
+export function buildSuggestion(p: SuggestionParams): EventTemplate {
+  const tags: string[][] = [
+    ["e", p.eventId],
+    ["a", p.coord],
+  ];
+  if (p.title !== undefined) tags.push(["title", p.title]);
+  if (p.starts !== undefined) tags.push(["start", String(p.starts)]);
+  if (p.ends !== undefined) tags.push(["end", String(p.ends)]);
+  if (p.location !== undefined) tags.push(["location", p.location]);
+  if (p.geo !== undefined) tags.push(["g", `${p.geo[0]},${p.geo[1]}`]);
+  const content = p.sealed ?? p.summary ?? "";
+  return { kind: KIND_SUGGESTION, created_at: now(), content, tags };
 }
 
 export interface RSVPParams {
