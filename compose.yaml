@@ -1,0 +1,42 @@
+# Local E2E: `docker compose up` boots the relay+PWA and seeds a demo
+# circle; `--profile tunnel` adds a public link. Resource limits mirror
+# the <1GB VPS budget — if it fits compose, it fits the VPS.
+services:
+  klk:
+    build: .
+    image: klk:latest
+    ports:
+      - "3334:3334"
+    volumes:
+      - klk-data:/data
+    mem_limit: 384m
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:3334/healthz"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  seed:
+    image: klk:latest
+    command: ["klk-seed"]
+    environment:
+      RELAY_URL: ws://klk:3334
+    depends_on:
+      klk:
+        condition: service_healthy
+    mem_limit: 64m
+    restart: "no"
+
+  tunnel:
+    profiles: ["tunnel"]
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate --url http://klk:3334
+    depends_on:
+      klk:
+        condition: service_healthy
+    mem_limit: 64m
+    restart: unless-stopped
+
+volumes:
+  klk-data:
