@@ -1,4 +1,0 @@
-# Klk relay write allowlist
-# One hex pubkey per line. Lines starting with # are ignored.
-# Hot-reloadable: the plugin re-reads this file on mtime change — no restart needed.
-# Add a pubkey: ./bin/klk-allow.sh npub1... (or paste hex directly)

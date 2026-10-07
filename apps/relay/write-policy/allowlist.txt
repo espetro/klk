@@ -1,3 +1,0 @@
-# Relay allowlist — one hex pubkey per line
-# Hot-reloaded on write; no relay restart needed
-# Add seed key and your npub via: ./bin/klk-allow.sh <npub1...>
