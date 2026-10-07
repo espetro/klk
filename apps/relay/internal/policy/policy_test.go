@@ -305,4 +305,19 @@ func TestCheckRequestScoping(t *testing.T) {
 	if reject, _ := CheckRequest(khatru.ForceSetAuthed(context.Background(), stray), nostr.Filter{IDs: []nostr.ID{nostr.ID{}}}, s); reject {
 		t.Fatal("id lookup should be allowed")
 	}
+	// self-authored lookup allowed — client boot discovery (own defs+claims)
+	self := nostr.Filter{Kinds: []nostr.Kind{KindCircle, KindCircleMember}, Authors: []nostr.PubKey{member}}
+	if reject, msg := CheckRequest(khatru.ForceSetAuthed(context.Background(), member), self, s); reject {
+		t.Fatalf("self-authored filter rejected: %s", msg)
+	}
+	// but you can't enumerate someone else's authorship
+	other := nostr.Filter{Kinds: []nostr.Kind{KindCircleMember}, Authors: []nostr.PubKey{member}}
+	if reject, _ := CheckRequest(khatru.ForceSetAuthed(context.Background(), stray), other, s); !reject {
+		t.Fatal("other-authored kind filter should be rejected")
+	}
+	// self-authored without kinds is still a wildcard — rejected
+	wild := nostr.Filter{Authors: []nostr.PubKey{member}}
+	if reject, _ := CheckRequest(khatru.ForceSetAuthed(context.Background(), member), wild, s); !reject {
+		t.Fatal("kindless self filter should be rejected")
+	}
 }

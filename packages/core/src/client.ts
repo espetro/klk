@@ -7,6 +7,8 @@ import {
   buildMemberClaim,
   buildRSVP,
   circleCoord,
+  circleKeyFromHex,
+  circleKeyToHex,
   decodeInvite,
   encodeInvite,
   generateCircleKey,
@@ -28,7 +30,34 @@ export const $connected = atom(false);
 
 let relay: KlkRelay | null = null;
 const unsubscribers: (() => void)[] = [];
+const watched = new Set<string>();
+// sealed-circle keys: in-memory map backed by localStorage so a reload
+// keeps decryption. Device-scoped, like the identity wrap key — a new
+// device needs a fresh invite link.
 const circleKeys = new Map<string, CircleKey>();
+
+function setCircleKey(coord: string, key: CircleKey): void {
+  circleKeys.set(coord, key);
+  try {
+    localStorage.setItem(`klk.circlekey.${coord}`, circleKeyToHex(key));
+  } catch {
+    // non-DOM (tests, agents): memory only
+  }
+}
+
+function getCircleKey(coord: string): CircleKey | undefined {
+  const hit = circleKeys.get(coord);
+  if (hit !== undefined) return hit;
+  try {
+    const hex = localStorage.getItem(`klk.circlekey.${coord}`);
+    if (hex === null) return undefined;
+    const key = circleKeyFromHex(hex);
+    circleKeys.set(coord, key);
+    return key;
+  } catch {
+    return undefined;
+  }
+}
 
 export interface ClientOptions {
   relayUrl: string;
@@ -46,6 +75,7 @@ export async function disconnect(): Promise<void> {
   relay?.close();
   relay = null;
   circleKeys.clear();
+  watched.clear();
   $identity.set(null);
   $circles.set({});
   $events.set({});
@@ -66,7 +96,7 @@ export async function createCircle(name: string, tier: "hosted" | "sealed"): Pro
   let sealedContent: string | undefined;
   if (tier === "sealed") {
     key = generateCircleKey();
-    circleKeys.set(coord, key);
+    setCircleKey(coord, key);
     sealedContent = cryptoSeal(key, JSON.stringify({ name, tier }));
   }
 
@@ -91,7 +121,7 @@ export async function createCircle(name: string, tier: "hosted" | "sealed"): Pro
 }
 
 export function inviteLinkFor(circle: Circle, baseUrl: string): string {
-  const key = circleKeys.get(circle.coord);
+  const key = getCircleKey(circle.coord);
   return `${baseUrl}/join${encodeInvite({ coord: circle.coord, invite: circle.inviteSecret, ...(key !== undefined ? { key } : {}) })}`;
 }
 
@@ -100,7 +130,7 @@ export async function joinCircle(fragment: string): Promise<Circle> {
   const r = requireRelay();
   const payload = decodeInvite(fragment);
 
-  if (payload.key !== undefined) circleKeys.set(payload.coord, payload.key);
+  if (payload.key !== undefined) setCircleKey(payload.coord, payload.key);
 
   const res = await r.publish(buildMemberClaim({ coord: payload.coord, invite: payload.invite }));
   if (!res.ok) throw new Error(`join circle: ${res.reason}`);
@@ -128,6 +158,8 @@ export async function joinCircle(fragment: string): Promise<Circle> {
 function watchCircle(circle: Circle): void {
   const r = requireRelay();
   const coord = circle.coord;
+  if (watched.has(coord)) return;
+  watched.add(coord);
 
   // def + members + calendar events + rsvps — one live subscription
   const filters: Filter[] = [
@@ -222,6 +254,43 @@ function toCalendarEvent(
   return out;
 }
 
+// ---------- discovery ----------
+
+/**
+ * Re-discover circles I authored or joined, for a fresh realm (reload,
+ * deep link): REQ my own 31950 defs + 31951 claims, then watchCircle
+ * each. The relay admits this filter because it's scoped to my pubkey.
+ */
+export async function discoverCircles(): Promise<void> {
+  const kp = requireIdentity();
+  const r = requireRelay();
+  const events = await r.query([{ authors: [kp.pubkey], kinds: [31950, 31951] }]);
+  for (const ev of events) {
+    const coord =
+      ev.kind === 31950
+        ? circleCoord(kp.pubkey, dTag(ev))
+        : (ev.tags.find((t) => t[0] === "a")?.[1] ?? "");
+    if (coord === "") continue;
+    const invite = ev.tags.find((t) => t[0] === "invite")?.[1] ?? "";
+    if ($circles.get()[coord] === undefined) {
+      const circle: Circle =
+        ev.kind === 31950
+          ? circleFromDef(coord, kp.pubkey, ev.content, invite)
+          : {
+              coord,
+              slug: coord.split(":")[2] ?? "",
+              owner: coord.split(":")[1] ?? "",
+              name: "",
+              tier: "hosted",
+              members: [kp.pubkey],
+              inviteSecret: invite,
+            };
+      $circles.setKey(coord, circle);
+    }
+    watchCircle($circles.get()[coord]!);
+  }
+}
+
 // ---------- events ----------
 
 export interface NewEventInput {
@@ -238,7 +307,7 @@ export interface NewEventInput {
 export async function postEvent(input: NewEventInput): Promise<CalendarEvent> {
   const r = requireRelay();
   const id = input.id ?? `e-${Math.random().toString(36).slice(2, 10)}`;
-  const key = circleKeys.get(input.coord);
+  const key = getCircleKey(input.coord);
   const sealed =
     key !== undefined && input.summary !== undefined ? cryptoSeal(key, input.summary) : undefined;
 
@@ -317,12 +386,12 @@ export async function grantAgentScope(input: AgentScopeInput): Promise<string> {
 // ---------- sealed content ----------
 
 export function sealFor(coord: string, plaintext: string): string | null {
-  const key = circleKeys.get(coord);
+  const key = getCircleKey(coord);
   return key === undefined ? null : cryptoSeal(key, plaintext);
 }
 
 export function openFor(coord: string, packed: string): string | null {
-  const key = circleKeys.get(coord);
+  const key = getCircleKey(coord);
   if (key === undefined) return null;
   try {
     return cryptoOpen(key, packed);

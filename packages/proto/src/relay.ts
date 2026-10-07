@@ -70,6 +70,27 @@ export class KlkRelay {
     }
   }
 
+  /** One-shot fetch: collect until EOSE (or timeout), then close. */
+  query(filters: Filter[], timeoutMs = 5000): Promise<Event[]> {
+    return new Promise((resolve) => {
+      const out: Event[] = [];
+      let finished = false;
+      const timer = setTimeout(done, timeoutMs);
+      const sub = this.relay.subscribe(filters, {
+        onevent: (ev) => out.push(ev),
+        oneose: done,
+        onclose: () => done(),
+      });
+      function done() {
+        if (finished) return;
+        finished = true;
+        clearTimeout(timer);
+        sub.close();
+        resolve(out);
+      }
+    });
+  }
+
   subscribe(filters: Filter[], handlers: KlkHandlers): () => void {
     const sub = this.relay.subscribe(filters, {
       onevent: handlers.onevent,

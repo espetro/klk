@@ -1,26 +1,15 @@
-import { useState } from "react";
 import { useStore } from "@nanostores/react";
 import { Link, useRouter } from "one";
 import { Button, Spinner, Text, XStack, YStack } from "tamagui";
 import { $circles } from "@klk/core";
-import { CircleCard, EmptyState, palette, useMountEffect } from "@klk/ui";
-import { boot, createAndConnect } from "../src/boot.ts";
-import type { BootState } from "../src/boot.ts";
+import { CircleCard, EmptyState, palette } from "@klk/ui";
+import { $bootError, $bootState, createAndConnect } from "../src/boot.ts";
 
 export default function Home() {
-  const [state, setState] = useState<BootState>("idle");
-  const [err, setErr] = useState<string>();
+  const state = useStore($bootState);
+  const err = useStore($bootError);
   const circles = useStore($circles);
   const router = useRouter();
-
-  useMountEffect(function bootOnMount() {
-    void boot(setState);
-  });
-
-  const onState = (s: BootState, e?: string) => {
-    setState(s);
-    if (e !== undefined) setErr(e);
-  };
 
   if (state === "onboarding") {
     return (
@@ -38,7 +27,7 @@ export default function Home() {
           backgroundColor={palette.ink}
           color="#FFFFFF"
           borderRadius={6}
-          onPress={() => void createAndConnect(onState)}
+          onPress={() => void createAndConnect()}
         >
           Create identity
         </Button>
@@ -99,7 +88,7 @@ export default function Home() {
             <CircleCard
               key={c.coord}
               circle={c}
-              onPress={() => router.push(`/circle/${encodeURIComponent(c.coord)}` as never)}
+              onPress={() => router.replace(`/circle/${encodeURIComponent(c.coord)}` as never)}
             />
           ))}
         </YStack>

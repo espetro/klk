@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { useStore } from "@nanostores/react";
 import { useRouter } from "one";
 import { Button, Input, Text, XStack, YStack } from "tamagui";
-import { createCircle } from "@klk/core";
+import { $connected, createCircle } from "@klk/core";
 import { Field, palette } from "@klk/ui";
 import type { CircleTier } from "@klk/proto";
 
@@ -10,6 +11,7 @@ export default function NewCircle() {
   const [tier, setTier] = useState<CircleTier>("hosted");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string>();
+  const connected = useStore($connected);
   const router = useRouter();
 
   const submit = async () => {
@@ -69,11 +71,11 @@ export default function NewCircle() {
         backgroundColor={palette.ink}
         color="#FFFFFF"
         borderRadius={6}
-        disabled={busy || name.trim() === ""}
-        opacity={busy || name.trim() === "" ? 0.6 : 1}
+        disabled={busy || name.trim() === "" || !connected}
+        opacity={busy || name.trim() === "" || !connected ? 0.6 : 1}
         onPress={() => void submit()}
       >
-        Create circle
+        {connected ? "Create circle" : "Connecting…"}
       </Button>
       {err !== undefined ? (
         <Text fontSize={13} color="#9F2F2D">

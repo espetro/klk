@@ -1,8 +1,9 @@
 import { useStore } from "@nanostores/react";
 import { useLocalSearchParams, useParams } from "one";
 import { Text, YStack } from "tamagui";
-import { $circles, $events, $identity, $rsvps, setRsvp } from "@klk/core";
+import { $circles, $connected, $events, $identity, $rsvps, setRsvp } from "@klk/core";
 import { EmptyState, EventMap, RsvpButtons, palette } from "@klk/ui";
+import { $bootState } from "../../src/boot.ts";
 
 const fmt = (ts: number) =>
   new Date(ts * 1000).toLocaleString(undefined, {
@@ -21,12 +22,17 @@ export default function EventDetail() {
   const event = (useStore($events)[coord] ?? []).find((e) => e.eventId === eventId);
   const circle = useStore($circles)[coord];
   const me = useStore($identity);
+  const connected = useStore($connected);
   const rsvps = useStore($rsvps)[`${coord}:${eventId}`] ?? [];
+  const bootState = useStore($bootState);
 
   if (event === undefined) {
     return (
       <YStack paddingTop="$6">
-        <EmptyState title="Event not found" hint="It may still be syncing." />
+        <EmptyState
+          title={bootState === "ready" ? "Event not found" : "Syncing…"}
+          hint={bootState === "ready" ? "It may still be syncing." : "Restoring circle data."}
+        />
       </YStack>
     );
   }
@@ -68,10 +74,16 @@ export default function EventDetail() {
         <Text fontSize={13} color={palette.muted}>
           Your RSVP
         </Text>
-        <RsvpButtons
-          {...(mine !== undefined ? { current: mine.status } : {})}
-          onSelect={(s) => void setRsvp(coord, event.eventId, s)}
-        />
+        {connected ? (
+          <RsvpButtons
+            {...(mine !== undefined ? { current: mine.status } : {})}
+            onSelect={(s) => void setRsvp(coord, event.eventId, s)}
+          />
+        ) : (
+          <Text fontSize={14} color={palette.muted}>
+            Connecting…
+          </Text>
+        )}
       </YStack>
     </YStack>
   );

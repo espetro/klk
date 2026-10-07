@@ -4,6 +4,7 @@ import { useParams, useRouter } from "one";
 import { Button, Text, XStack, YStack } from "tamagui";
 import { $circles, $events, $rsvps, inviteLinkFor } from "@klk/core";
 import { Badge, EmptyState, EventCard, EventMap, palette } from "@klk/ui";
+import { $bootState } from "../../src/boot.ts";
 
 export default function CircleDetail() {
   const params = useParams<{ coord: string }>();
@@ -11,6 +12,7 @@ export default function CircleDetail() {
   const circle = useStore($circles)[coord];
   const events = useStore($events)[coord] ?? [];
   const rsvps = useStore($rsvps);
+  const bootState = useStore($bootState);
   const [copied, setCopied] = useState(false);
   const router = useRouter();
 
@@ -18,8 +20,12 @@ export default function CircleDetail() {
     return (
       <YStack paddingTop="$6">
         <EmptyState
-          title="Circle not found"
-          hint="It may still be syncing, or the invite didn't complete."
+          title={bootState === "ready" ? "Circle not found" : "Syncing…"}
+          hint={
+            bootState === "ready"
+              ? "It may still be syncing, or the invite didn't complete."
+              : "Restoring your circles."
+          }
         />
       </YStack>
     );

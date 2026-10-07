@@ -1,9 +1,11 @@
 // Session bootstrap: restore persisted identity, connect the domain client.
+import { atom } from "nanostores";
 import {
   $connected,
   $identity,
   connect,
   disconnect,
+  discoverCircles,
   persistIdentity,
   restoreIdentity,
 } from "@klk/core";
@@ -18,40 +20,51 @@ if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
 
 export type BootState = "idle" | "restoring" | "onboarding" | "connecting" | "ready" | "error";
 
+export const $bootState = atom<BootState>("idle");
+export const $bootError = atom<string | undefined>(undefined);
+
 let booted = false;
 
-export const boot = async (onState: (s: BootState, err?: string) => void): Promise<void> => {
+const setState = (s: BootState, err?: string): void => {
+  $bootState.set(s);
+  if (err !== undefined) $bootError.set(err);
+};
+
+/**
+ * Runs once per document realm — every route needs this, so the AppShell
+ * (mounted on every page) calls it, not the index route.
+ */
+export const boot = async (): Promise<void> => {
   if (booted) return;
   booted = true;
-  onState("restoring");
+  setState("restoring");
   try {
     const kp = await restoreIdentity();
     if (kp === null) {
-      onState("onboarding");
+      setState("onboarding");
       return;
     }
-    onState("connecting");
+    setState("connecting");
     await connect(kp, { relayUrl: RELAY_URL });
-    onState("ready");
+    await discoverCircles();
+    setState("ready");
   } catch (e) {
     booted = false;
-    onState("error", e instanceof Error ? e.message : String(e));
+    setState("error", e instanceof Error ? e.message : String(e));
   }
 };
 
 // Onboarding: create a fresh keypair, persist it, connect.
-export const createAndConnect = async (
-  onState: (s: BootState, err?: string) => void,
-): Promise<void> => {
-  onState("connecting");
+export const createAndConnect = async (): Promise<void> => {
+  setState("connecting");
   try {
     const kp = generateKeypair();
     await persistIdentity(kp);
     await connect(kp, { relayUrl: RELAY_URL });
     $identity.set(kp);
-    onState("ready");
+    setState("ready");
   } catch (e) {
-    onState("error", e instanceof Error ? e.message : String(e));
+    setState("error", e instanceof Error ? e.message : String(e));
   }
 };
 
@@ -61,4 +74,5 @@ export const signOut = async (): Promise<void> => {
   $identity.set(null);
   $connected.set(false);
   booted = false;
+  setState("onboarding");
 };

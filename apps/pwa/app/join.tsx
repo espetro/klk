@@ -1,13 +1,17 @@
 // Invite intake: /join#<payload>. Secrets live in the fragment — never sent
 // to the server. Joins the circle then redirects to it.
 import { useState } from "react";
+import { useStore } from "@nanostores/react";
 import { useRouter } from "one";
-import { Spinner, Text, YStack } from "tamagui";
-import { joinCircle } from "@klk/core";
+import { Button, Spinner, Text, YStack } from "tamagui";
+import { $connected, joinCircle } from "@klk/core";
 import { palette, useMountEffect } from "@klk/ui";
+import { $bootState, createAndConnect } from "../src/boot.ts";
 
 export default function Join() {
   const [err, setErr] = useState<string>();
+  const [busy, setBusy] = useState(false);
+  const bootState = useStore($bootState);
   const router = useRouter();
 
   useMountEffect(function consumeInvite() {
@@ -16,10 +20,29 @@ export default function Join() {
       setErr("This invite link is missing its payload.");
       return;
     }
-    joinCircle(`#${frag}`)
-      .then((c) => router.replace(`/circle/${encodeURIComponent(c.coord)}` as never))
-      .catch((e) => setErr(e instanceof Error ? e.message : String(e)));
+    // boot() may still be connecting on a fresh realm — join once up.
+    // subscribe fires immediately too, covering the already-connected case.
+    let done = false;
+    const stop = $connected.subscribe((ok) => {
+      if (!ok || done) return;
+      done = true;
+      joinCircle(`#${frag}`)
+        .then((c) => router.replace(`/circle/${encodeURIComponent(c.coord)}` as never))
+        .catch((e) => setErr(e instanceof Error ? e.message : String(e)));
+    });
+    return () => {
+      done = true;
+      stop();
+    };
   });
+
+  const create = () => {
+    setBusy(true);
+    createAndConnect().catch((e) => {
+      setBusy(false);
+      setErr(e instanceof Error ? e.message : String(e));
+    });
+  };
 
   return (
     <YStack flex={1} justifyContent="center" alignItems="center" gap="$4" paddingVertical="$8">
@@ -27,6 +50,18 @@ export default function Join() {
         <Text fontSize={14} color="#9F2F2D" textAlign="center">
           {err}
         </Text>
+      ) : bootState === "onboarding" ? (
+        <>
+          <Text fontSize={20} fontWeight="600" color={palette.ink}>
+            You're invited
+          </Text>
+          <Text fontSize={14} color={palette.muted} textAlign="center" maxWidth={320}>
+            Create your identity on this device to join the circle.
+          </Text>
+          <Button backgroundColor={palette.ink} color="white" disabled={busy} onPress={create}>
+            {busy ? "Creating…" : "Create identity"}
+          </Button>
+        </>
       ) : (
         <>
           <Spinner size="large" color={palette.muted} />

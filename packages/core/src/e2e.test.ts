@@ -16,6 +16,7 @@ import {
   connect,
   createCircle,
   disconnect,
+  discoverCircles,
   grantAgentScope,
   inviteLinkFor,
   joinCircle,
@@ -121,6 +122,30 @@ describe.skipIf(!RUN)("v0 loop over a live relay", () => {
     expect(bad.ok).toBe(false);
 
     ar.close();
+    await disconnect();
+  }, 20000);
+
+  it("fresh realm re-discovers owned + joined circles", async () => {
+    const owner = generateKeypair();
+    const member = generateKeypair();
+
+    await connect(owner, { relayUrl: RELAY_URL });
+    const circle = await createCircle("restore me", "hosted");
+    const inviteFragment = inviteLinkFor(circle, "http://localhost").split("/join")[1]!;
+
+    await disconnect();
+    await connect(member, { relayUrl: RELAY_URL });
+    await joinCircle(inviteFragment);
+
+    // simulate a document reload: all realm state drops
+    await disconnect();
+    expect(Object.keys($circles.get())).toHaveLength(0);
+
+    await connect(member, { relayUrl: RELAY_URL });
+    await discoverCircles();
+    expect($circles.get()[circle.coord]?.coord).toBe(circle.coord);
+    await until(() => ($circles.get()[circle.coord]?.members.length ?? 0) >= 2);
+
     await disconnect();
   }, 20000);
 });

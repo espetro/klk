@@ -135,8 +135,10 @@ func inviteTagValue(ev nostr.Event) string {
 // All reads require NIP-42 auth; filters referencing circles require
 // membership in every tagged circle (or a live read scope for agents).
 // Filters touching no circle are allowed only for benign self-lookups —
-// profile/contacts by author, or single events by id; anything else is
-// rejected so there is no bulk-scan surface (the moat rule).
+// profile/contacts by author, single events by id, or anything the
+// caller themselves authored (self-discovery; you can't leak what you
+// wrote) — anything else is rejected so there is no bulk-scan surface
+// (the moat rule).
 func CheckRequest(ctx context.Context, filter nostr.Filter, st Store) (reject bool, msg string) {
 	authed, ok := khatru.GetAuthed(ctx)
 	if !ok {
@@ -152,6 +154,9 @@ func CheckRequest(ctx context.Context, filter nostr.Filter, st Store) (reject bo
 	if !requestTouchesCircle(filter) {
 		if len(filter.IDs) > 0 {
 			return false, "" // single-item fetch by event id
+		}
+		if len(filter.Authors) == 1 && filter.Authors[0] == authed && len(filter.Kinds) > 0 {
+			return false, "" // self-authored lookup: your own events can't leak
 		}
 		for _, k := range filter.Kinds {
 			if k != 0 && k != 3 {
