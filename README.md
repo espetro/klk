@@ -12,7 +12,7 @@ on the `legacy` branch. Design decisions live in
 
 ## Shape
 
-- `apps/pwa` — TypeScript PWA (web-first; install via Add-to-Home-Screen)
+- `apps/pwa` — [One](https://onestack.dev) (Vite React → web now, RN later) + Tamagui, PWA install via Add-to-Home-Screen
 - `apps/relay` — Go binary: Nostr relay (khatru) + product backend, one process
 - `packages/` — `proto` (thin layer over nostr-tools), `core` (pure domain), `ui`
 

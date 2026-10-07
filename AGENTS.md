@@ -11,6 +11,8 @@ is amended.
 
 - Bun workspaces for TS (`apps/pwa`, `packages/*`), Go module in `apps/relay`.
 - All commands via `bun run` on the TS side; `go` toolchain on the Go side.
+- `apps/pwa` runs on **One** (`onejs/one`) + Tamagui: SPA render mode, Node
+  (not Bun) for `one dev`/`one build` — Bun crashes on its V8 callsite use.
 
 ## Rules
 
