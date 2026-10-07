@@ -23,6 +23,10 @@ const (
 	CapSetRsvp   = "setRsvp"
 )
 
+// WriteCap reports which capability a write kind requires; "" means the
+// kind is never delegatable (circle defs, member claims, scopes).
+func WriteCap(kind nostr.Kind) string { return capForKind(kind) }
+
 // capForKind maps a write kind to the capability it needs; "" means the
 // kind is never delegatable (circle defs, member claims, scopes).
 func capForKind(kind nostr.Kind) string {

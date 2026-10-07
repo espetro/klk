@@ -5,7 +5,10 @@ package server_test
 
 import (
 	"context"
+	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -340,5 +343,44 @@ agentReadDone:
 		}
 	case <-time.After(3 * time.Second):
 		t.Fatal("unscoped bulk filter should be closed")
+	}
+}
+
+func TestCohortEndpoint(t *testing.T) {
+	dir := t.TempDir()
+	handler, cleanup, err := server.New(dir+"/events.bolt", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+	srv := httptest.NewServer(handler)
+	defer srv.Close()
+
+	res, err := http.Post(srv.URL+"/api/cohort", "application/json",
+		strings.NewReader(`{"email":"Ada@Example.com"}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	res.Body.Close()
+	if res.StatusCode != http.StatusNoContent {
+		t.Fatalf("cohort post: %d", res.StatusCode)
+	}
+
+	bad, err := http.Post(srv.URL+"/api/cohort", "application/json",
+		strings.NewReader(`{"email":"nope"}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	bad.Body.Close()
+	if bad.StatusCode != http.StatusBadRequest {
+		t.Fatalf("bad email accepted: %d", bad.StatusCode)
+	}
+
+	data, err := os.ReadFile(filepath.Join(dir, "cohort.jsonl"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(data), "ada@example.com") {
+		t.Fatalf("cohort.jsonl missing signup: %s", data)
 	}
 }

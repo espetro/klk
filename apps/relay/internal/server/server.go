@@ -5,6 +5,7 @@ package server
 import (
 	"context"
 	"net/http"
+	"path/filepath"
 	"time"
 
 	"fiatjaf.com/nostr"
@@ -25,18 +26,21 @@ func New(dbPath, staticDir string) (http.Handler, func(), error) {
 
 	store := &lookup.Store{ES: db}
 	rl := khatru.NewRelay()
-	rl.Info.Name = "klk"
-	rl.Info.Description = "klk application relay"
+	rl.Info.Name = "pinya"
+	rl.Info.Description = "pinya application relay"
 	rl.Info.Software = "fyi.klk/relay"
 	rl.UseEventstore(db, 500)
 
-	// delegated (agent) writes get a per-agent quota on top of the ACL
-	agentWrites := policy.NewRateLimiter(60, time.Hour)
+	// delegated (agent) writes get per-capability quotas on top of the ACL
+	agentWrites := policy.NewCapLimiter(map[string]int{
+		policy.CapPostEvent: 60,
+		policy.CapSetRsvp:   120,
+	}, time.Hour)
 	rl.OnEvent = func(ctx context.Context, ev nostr.Event) (bool, string) {
 		if reject, msg := policy.CheckStore(ctx, ev, store); reject {
 			return reject, msg
 		}
-		if policy.IsDelegated(ev) && !agentWrites.Allow(ev.PubKey) {
+		if policy.IsDelegated(ev) && !agentWrites.Allow(ev.PubKey, policy.WriteCap(ev.Kind)) {
 			return true, "rate-limited: delegated write quota exceeded"
 		}
 		return false, ""
@@ -53,6 +57,7 @@ func New(dbPath, staticDir string) (http.Handler, func(), error) {
 		_, _ = w.Write([]byte("ok"))
 	})
 	mux.HandleFunc("GET /ics/{owner}/{slug}", icsFeed(store))
+	mux.HandleFunc("POST /api/cohort", cohortHandler(filepath.Dir(dbPath)))
 	if staticDir != "" {
 		mux.Handle("/", spaHandler(staticDir))
 	}

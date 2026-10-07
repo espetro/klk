@@ -1,5 +1,7 @@
 // Per-agent write quota for delegated events. Sliding window in memory —
-// good enough for a single-process relay; resets on restart.
+// good enough for a single-process relay; resets on restart. Buckets are
+// keyed per capability (method × resource × identity axes, as Slack/Discord
+// rate-limit): a heavy rsvp agent can't starve its own postEvent quota.
 package policy
 
 import (
@@ -38,4 +40,33 @@ func (l *RateLimiter) Allow(pk nostr.PubKey) bool {
 	}
 	l.hits[pk] = append(kept, now)
 	return true
+}
+
+// CapLimiter applies a different quota per capability.
+type CapLimiter struct {
+	limiters map[string]*RateLimiter
+}
+
+// NewCapLimiter builds a limiter per cap name, e.g. {"postEvent": 60, "setRsvp": 120}.
+func NewCapLimiter(perCap map[string]int, window time.Duration) *CapLimiter {
+	l := &CapLimiter{limiters: map[string]*RateLimiter{}}
+	for cap, max := range perCap {
+		l.limiters[cap] = NewRateLimiter(max, window)
+	}
+	return l
+}
+
+// Allow reports whether pk may write under cap. Unknown caps fall back to
+// the strictest bucket — the smallest configured max.
+func (l *CapLimiter) Allow(pk nostr.PubKey, cap string) bool {
+	if lim, ok := l.limiters[cap]; ok {
+		return lim.Allow(pk)
+	}
+	var min *RateLimiter
+	for _, lim := range l.limiters {
+		if min == nil || lim.max < min.max {
+			min = lim
+		}
+	}
+	return min == nil || min.Allow(pk)
 }
