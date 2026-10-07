@@ -12,7 +12,7 @@
     "jsx": "react-jsx",
     "noImplicitAny": false,
     "allowImportingTsExtensions": true,
-    "target": "es2022",
+    "target": "esnext",
     "types": ["node", "react", "vite/client"],
     "lib": ["dom", "esnext"]
   },

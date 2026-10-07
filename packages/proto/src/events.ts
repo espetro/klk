@@ -179,3 +179,13 @@ export function buildAgentScope(p: AgentScopeParams): EventTemplate {
 export function withDelegation(tpl: EventTemplate, scopeCoordinate: string): EventTemplate {
   return { ...tpl, tags: [...tpl.tags, ["delegation", scopeCoordinate]] };
 }
+
+/** Delegator pubkey behind a `delegation` tag ("34134:<delegator>:<d>"),
+ * or undefined when the event isn't delegated. This is the second half of
+ * dual attribution: the author is the agent, this is who empowered it. */
+export function delegatorOf(tags: string[][]): string | undefined {
+  const addr = tags.find((t) => t[0] === "delegation")?.[1];
+  if (addr === undefined) return undefined;
+  const pk = addr.split(":")[1];
+  return pk !== undefined && /^[0-9a-f]{64}$/i.test(pk) ? pk : undefined;
+}

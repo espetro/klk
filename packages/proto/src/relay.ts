@@ -91,16 +91,25 @@ export class KlkRelay {
     });
   }
 
+  /** Live subscription. The returned handle is both callable and
+   * `Disposable`, so `using sub = relay.subscribe(...)` cleans up on
+   * scope exit — the pattern harness/tests should prefer. */
   subscribe(filters: Filter[], handlers: KlkHandlers): () => void {
     const sub = this.relay.subscribe(filters, {
       onevent: handlers.onevent,
       oneose: handlers.oneose ?? (() => {}),
       onclose: handlers.onclose ?? (() => {}),
     });
-    return () => sub.close();
+    const stop = () => sub.close();
+    stop[Symbol.dispose] = stop;
+    return stop;
   }
 
   close(): void {
     this.relay.close();
+  }
+
+  [Symbol.dispose](): void {
+    this.close();
   }
 }

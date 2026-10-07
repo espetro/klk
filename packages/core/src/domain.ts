@@ -24,6 +24,7 @@ export interface CalendarEvent {
   eventId: string; // latest revision hash — republished events keep `id`, change this
   image?: string; // NIP-52 image URL
   suggestable?: boolean; // members may propose changes (kind 31926)
+  delegatedBy?: string; // delegator pubkey when authored by an agent under a scope
 }
 
 export interface Suggestion {
@@ -53,6 +54,7 @@ export interface RSVP {
   eventId: string;
   coord: string;
   status: "yes" | "no" | "maybe";
+  delegatedBy?: string; // delegator pubkey when set by an agent under a scope
 }
 
 export function circleFromDef(

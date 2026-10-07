@@ -20,6 +20,7 @@ import {
   circleKeyFromHex,
   circleKeyToHex,
   decodeInvite,
+  delegatorOf,
   encodeInvite,
   generateCircleKey,
   generateKeypair,
@@ -31,7 +32,10 @@ import {
 import type { CircleKey, Filter, Keypair } from "@klk/proto";
 import type { CalendarEvent, Circle, Profile, RSVP, Suggestion } from "./domain.ts";
 import { circleFromDef } from "./domain.ts";
+import { getLogger } from "./log.ts";
 import { usernameFor } from "./username.ts";
+
+const log = getLogger(["klk", "client"]);
 
 // Domain state (nanostores — framework-free, shared by app + agent surface)
 export const $identity = atom<Keypair | null>(null);
@@ -201,7 +205,7 @@ function watchCircle(circle: Circle): void {
     onevent: (ev) => ingestEvent(circle.coord, ev),
     onclose: (reason) => {
       if (reason !== "" && !reason.startsWith("closed by caller")) {
-        console.warn(`circle ${circle.slug} closed: ${reason}`);
+        log.warn(`circle ${circle.slug} closed: {reason}`, { reason });
       }
     },
   });
@@ -243,7 +247,7 @@ function ingestEvent(
       const cal = toCalendarEvent(ev, coord);
       $events.setKey(
         coord,
-        [...list, cal].sort((a, b) => a.starts - b.starts),
+        [...list, cal].toSorted((a, b) => a.starts - b.starts),
       );
       break;
     }
@@ -252,7 +256,10 @@ function ingestEvent(
       const key = `${coord}:${eTag}`;
       const list = ($rsvps.get()[key] ?? []).filter((r) => r.pubkey !== ev.pubkey);
       const status = (ev.tags.find((t) => t[0] === "status")?.[1] ?? "maybe") as RSVP["status"];
-      $rsvps.setKey(key, [...list, { pubkey: ev.pubkey, eventId: eTag, coord, status }]);
+      const rsvp: RSVP = { pubkey: ev.pubkey, eventId: eTag, coord, status };
+      const delegator = delegatorOf(ev.tags);
+      if (delegator !== undefined) rsvp.delegatedBy = delegator;
+      $rsvps.setKey(key, [...list, rsvp]);
       break;
     }
     case KIND_SUGGESTION: {
@@ -313,6 +320,8 @@ function toCalendarEvent(
     summary: openFor(coord, ev.content) ?? ev.content,
     eventId: ev.id,
   };
+  const delegator = delegatorOf(ev.tags);
+  if (delegator !== undefined) out.delegatedBy = delegator;
   const end = tag("end");
   if (end !== undefined) out.ends = Number(end);
   const loc = tag("location");
@@ -339,14 +348,14 @@ export async function discoverCircles(): Promise<void> {
   ]);
   for (const ev of events) {
     const coord =
-      ev.kind === 31950
+      ev.kind === KIND_CIRCLE
         ? circleCoord(kp.pubkey, dTag(ev))
         : (ev.tags.find((t) => t[0] === "a")?.[1] ?? "");
     if (coord === "") continue;
     const invite = ev.tags.find((t) => t[0] === "invite")?.[1] ?? "";
     if ($circles.get()[coord] === undefined) {
       const circle: Circle =
-        ev.kind === 31950
+        ev.kind === KIND_CIRCLE
           ? circleFromDef(coord, kp.pubkey, ev.content, invite)
           : {
               coord,
@@ -647,7 +656,7 @@ async function restoreContacts(): Promise<void> {
   const kp = requireIdentity();
   const r = requireRelay();
   const events = await r.query([{ kinds: [KIND_CONTACTS], authors: [kp.pubkey], limit: 1 }]);
-  const latest = events.slice().sort((a, b) => b.created_at - a.created_at)[0];
+  const latest = events.toSorted((a, b) => b.created_at - a.created_at)[0];
   if (latest === undefined) return;
   const list = latest.tags.filter((t) => t[0] === "p" && t[1] !== undefined).map((t) => t[1]!);
   $contacts.set(list);
