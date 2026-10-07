@@ -13,6 +13,8 @@ import {
   $circles,
   $events,
   $rsvps,
+  $suggestions,
+  applySuggestion,
   connect,
   createCircle,
   disconnect,
@@ -22,6 +24,7 @@ import {
   joinCircle,
   postEvent,
   setRsvp,
+  suggestChange,
 } from "./client.ts";
 
 const RUN = process.env.KLK_E2E === "1";
@@ -145,6 +148,86 @@ describe.skipIf(!RUN)("v0 loop over a live relay", () => {
     await discoverCircles();
     expect($circles.get()[circle.coord]?.coord).toBe(circle.coord);
     await until(() => ($circles.get()[circle.coord]?.members.length ?? 0) >= 2);
+
+    await disconnect();
+  }, 20000);
+
+  it("member suggests a change; creator applies it on the same event", async () => {
+    const owner = generateKeypair();
+    const member = generateKeypair();
+
+    await connect(owner, { relayUrl: RELAY_URL });
+    const circle = await createCircle("suggest e2e", "hosted");
+    const ev = await postEvent({
+      coord: circle.coord,
+      title: "original plan",
+      starts: Math.floor(Date.now() / 1000) + 3600,
+      suggestable: true,
+    });
+    const inviteFragment = inviteLinkFor(circle, "http://localhost").split("/join")[1]!;
+
+    await disconnect();
+    await connect(member, { relayUrl: RELAY_URL });
+    await joinCircle(inviteFragment);
+
+    const later = Math.floor(Date.now() / 1000) + 7200;
+    await suggestChange({
+      coord: circle.coord,
+      eventId: ev.id,
+      title: "moved to the park",
+      starts: later,
+      note: "weather looks better",
+    });
+
+    // creator's view: the suggestion lands on the event
+    await disconnect();
+    await connect(owner, { relayUrl: RELAY_URL });
+    await discoverCircles();
+    const skey = `${circle.coord}:${ev.id}`;
+    await until(() => ($suggestions.get()[skey] ?? []).length >= 1);
+    const suggestion = $suggestions.get()[skey]![0]!;
+    expect(suggestion.pubkey).toBe(member.pubkey);
+    expect(suggestion.title).toBe("moved to the park");
+
+    await applySuggestion(ev, suggestion);
+    await until(
+      () =>
+        ($events.get()[circle.coord] ?? []).find((e) => e.id === ev.id)?.title ===
+        "moved to the park",
+    );
+
+    await disconnect();
+  }, 20000);
+
+  it("ICS feed serves hosted circles by invite secret, 403s sealed ones", async () => {
+    const owner = generateKeypair();
+    const httpBase = RELAY_URL.replace(/^ws/, "http");
+
+    await connect(owner, { relayUrl: RELAY_URL });
+    const hosted = await createCircle("feed hosted", "hosted");
+    const sealed = await createCircle("feed sealed", "sealed");
+    await postEvent({
+      coord: hosted.coord,
+      title: "feed hang",
+      starts: Math.floor(Date.now() / 1000) + 3600,
+      location: "the spot",
+    });
+    await wait(300); // events land in the store
+
+    const url = `${httpBase}/ics/${hosted.owner}/${hosted.slug}?invite=${hosted.inviteSecret}`;
+    const res = await fetch(url);
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain("BEGIN:VCALENDAR");
+    expect(body).toContain("SUMMARY:feed hang");
+    expect(body).toContain("LOCATION:the spot");
+
+    const bad = await fetch(`${httpBase}/ics/${hosted.owner}/${hosted.slug}?invite=wrong`);
+    expect(bad.status).toBe(403);
+    const sealedRes = await fetch(
+      `${httpBase}/ics/${sealed.owner}/${sealed.slug}?invite=${sealed.inviteSecret}`,
+    );
+    expect(sealedRes.status).toBe(403);
 
     await disconnect();
   }, 20000);
