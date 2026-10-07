@@ -29,7 +29,16 @@ export default function UserCard() {
   const [busy, setBusy] = useState(false);
 
   useMountEffect(function loadProfile() {
-    if (pk !== null && pk !== undefined) void fetchProfiles([pk]).catch(() => {});
+    if (pk === null) return;
+    // boot() may still be connecting — the first fetch races it and
+    // throws, so re-fire when the realm comes up instead of degrading
+    // to the autogen name forever
+    const stop = $connected.subscribe((ok) => {
+      if (!ok) return;
+      stop();
+      void fetchProfiles([pk]).catch(() => {});
+    });
+    return () => stop();
   });
 
   if (pk === null) {
