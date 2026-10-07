@@ -22,14 +22,14 @@ cd apps/pwa && pnpm build            # produces dist/client
 
 All optional — defaults keep local dev working with zero config.
 
-| Var | Purpose | Prod example |
-| --- | --- | --- |
-| `VITE_APP_ORIGIN` | absolute origin for share/invite links | `https://app.pinya.club` |
-| `VITE_API_ORIGIN` | origin for API calls (cohort, ICS feeds) | `https://api.pinya.club` |
-| `VITE_RELAY_URL` | WebSocket relay URL | `wss://api.pinya.club` |
-| `VITE_COHORT_GATE` | `0` disables the email gate | unset (on) |
-| `VITE_POSTHOG_KEY` / `VITE_POSTHOG_HOST` | PostHog EU analytics | `phc_…` / `https://eu.i.posthog.com` |
-| `VITE_MAX_RANGE_DAYS` | calendar range cap | `21` |
+| Var                                      | Purpose                                  | Prod example                         |
+| ---------------------------------------- | ---------------------------------------- | ------------------------------------ |
+| `VITE_APP_ORIGIN`                        | absolute origin for share/invite links   | `https://app.pinya.club`             |
+| `VITE_API_ORIGIN`                        | origin for API calls (cohort, ICS feeds) | `https://api.pinya.club`             |
+| `VITE_RELAY_URL`                         | WebSocket relay URL                      | `wss://api.pinya.club`               |
+| `VITE_COHORT_GATE`                       | `0` disables the email gate              | unset (on)                           |
+| `VITE_POSTHOG_KEY` / `VITE_POSTHOG_HOST` | PostHog EU analytics                     | `phc_…` / `https://eu.i.posthog.com` |
+| `VITE_MAX_RANGE_DAYS`                    | calendar range cap                       | `21`                                 |
 
 Note: split `app.`/`api.` origins break same-origin WS cookies — none used,
 auth is NIP-42 over the socket itself, so a separate `api.` host is fine.

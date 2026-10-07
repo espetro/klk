@@ -32,11 +32,11 @@ A tight set; each maps to an existing beat of the circle → event → RSVP
 loop and is implementable as "prompt + structured JSON → fill a form the
 UI already has".
 
-| Feature | What it does | Tier gate |
-| --- | --- | --- |
-| **Event-draft assist** | Free text ("climbing saturday morning at the usual crag, bring ropes") → filled `EventForm` fields (title, start/end, location, summary). The loop's core write — biggest time-save. | hosted (managed) or custom |
-| **Suggestion-draft assist** | On a `suggestable` event, prose → proposed fields + note, staged into the existing kind-31926 compose flow. Same fields as `SuggestionField` in `packages/proto/src/kinds.ts`. | hosted or custom |
-| **Circle recap** | "What's on this week" card per circle: events + open suggestions + RSVP counts → short summary. Context is assembled client-side from the realm (`$events`/`$rsvps`/`$suggestions` are already in memory) — no new read path, no bulk export. | hosted or custom |
+| Feature                     | What it does                                                                                                                                                                                                                                  | Tier gate                  |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| **Event-draft assist**      | Free text ("climbing saturday morning at the usual crag, bring ropes") → filled `EventForm` fields (title, start/end, location, summary). The loop's core write — biggest time-save.                                                          | hosted (managed) or custom |
+| **Suggestion-draft assist** | On a `suggestable` event, prose → proposed fields + note, staged into the existing kind-31926 compose flow. Same fields as `SuggestionField` in `packages/proto/src/kinds.ts`.                                                                | hosted or custom           |
+| **Circle recap**            | "What's on this week" card per circle: events + open suggestions + RSVP counts → short summary. Context is assembled client-side from the realm (`$events`/`$rsvps`/`$suggestions` are already in memory) — no new read path, no bulk export. | hosted or custom           |
 
 Explicitly **not** in v1: chat-with-your-circle (needs a message kind we
 don't have), assistant-authored events (violates §1), onboarding AI
@@ -46,7 +46,7 @@ explainer (static copy does the job).
 
 Decision: **hybrid, with a sharp default.** The managed path is what every
 user gets for free — no keys, no setup. The custom path is a per-device
-override for power users, and the *only* path on sealed circles.
+override for power users, and the _only_ path on sealed circles.
 
 ### 3.1 Managed path — relay-mediated gateway
 
@@ -147,9 +147,9 @@ drain of the token budget is exactly what the budget exists to stop.
 ## 4. Tier rules — where AI calls may run
 
 | Circle tier | Managed (relay → gateway) | Custom (client-direct) |
-| --- | --- | --- |
-| `hosted` | default | opt-in override |
-| `sealed` | **never** | the only path |
+| ----------- | ------------------------- | ---------------------- |
+| `hosted`    | default                   | opt-in override        |
+| `sealed`    | **never**                 | the only path          |
 
 The sealed rule is architectural, not a flag: sealed's promise is that the
 operator cannot produce plaintext. A relay-mediated AI call sends
@@ -191,9 +191,9 @@ consent, AP2 Intent Mandate, NIP-26 conditions).
   bundles are UX sugar over the same `cap` tags, not new semantics.
 - **Read+post caution on hosted.** Granting `read` + a write cap on a
   hosted circle is the lethal trifecta (private data + untrusted content
-  + a post channel): the grant screen shows a plain-language caution when
-  both classes are selected. Copy, not a block — some agents legitimately
-  need both.
+  - a post channel): the grant screen shows a plain-language caution when
+    both classes are selected. Copy, not a block — some agents legitimately
+    need both.
 - **One-click revoke.** Republish the same `d` with an `expiration` in
   the past; relay treats the superseded scope as dead (addressable replace
   already lands this). The UI change is a "revoke" button per scope —

@@ -41,7 +41,10 @@ export default function UserCard() {
     const attempt = () => {
       tries += 1;
       void fetchProfiles([pk]).catch((e: unknown) => {
-        log.warn`profile fetch failed (try ${String(tries)}): ${String(e)}`;
+        log.warn(`profile fetch failed (try {tries}): {err}`, {
+          tries: String(tries),
+          err: String(e),
+        });
         if (tries < 4) setTimeout(attempt, 600);
       });
     };
