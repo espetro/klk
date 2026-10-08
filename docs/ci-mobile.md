@@ -120,11 +120,14 @@ cd apps/pwa/android && ./gradlew bundleRelease    # signed AAB, tags
 
 Release signing: base64 keystore + passwords in secrets, injected via
 `gradle.properties`. The generated `app/build.gradle` has no release
-signingConfig, so `apps/pwa/plugins/with-android-release-signing.cjs`
+signingConfig, so `apps/pwa/plugins/with-android-build-config.cjs`
 (an Expo config plugin registered in `app.json`) injects one that reads
 `PINYA_UPLOAD_*` properties — it survives every `one prebuild`
 regeneration and falls back to the debug keystore when no credentials
-are set (workflow_dispatch stays shareable without secrets).
+are set (workflow_dispatch stays shareable without secrets). The same
+plugin trims `reactNativeArchitectures` to `arm64-v8a,x86_64` — the
+largest single build-time win (cold `assembleDebug` was ~21 min over
+four ABIs).
 
 ### Secrets
 

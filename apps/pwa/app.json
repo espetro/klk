@@ -3,7 +3,7 @@
     "name": "Pinya",
     "slug": "pinya",
     "platforms": ["ios", "android"],
-    "plugins": ["one/expo-plugin", "./plugins/with-android-release-signing.cjs"],
+    "plugins": ["one/expo-plugin", "./plugins/with-android-build-config.cjs"],
     "icon": "./public/app-icon.png",
     "splash": {
       "image": "./public/splash.png",

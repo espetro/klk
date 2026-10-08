@@ -54,7 +54,7 @@ jobs:
         run: CI=1 corepack pnpm --filter @klk/pwa prebuild:native
 
       # Injects PINYA_UPLOAD_* props consumed by the signingConfigs.release
-      # block that apps/pwa/plugins/with-android-release-signing.cjs writes
+      # block that apps/pwa/plugins/with-android-build-config.cjs writes
       # into the generated app/build.gradle. Without secrets the release
       # buildType falls back to the debug keystore — still a shareable APK.
       - name: Configure upload signing
