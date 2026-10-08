@@ -144,7 +144,7 @@ jobs:
           # available runtime ourselves, then `maestro test` uses the
           # booted device.
           RUNTIME=$(xcrun simctl list runtimes available -j | python3 -c "import sys,json; print(sorted([r for r in json.load(sys.stdin)['runtimes'] if r['platform']=='iOS'], key=lambda r: tuple(int(x) for x in r['version'].split('.')))[-1]['identifier'])")
-          DEVICE=$(xcrun simctl list devicetypes available -j | python3 -c "import sys,json; print(sorted([d for d in json.load(sys.stdin)['devicetypes'] if 'iPhone' in d['name']], key=lambda d: d['name'])[-1]['identifier'])")
+          DEVICE=$(xcrun simctl list devicetypes | grep -oE 'com\.apple\.CoreSimulator\.SimDeviceType\.iPhone-[0-9]+' | sort -uV | tail -1)
           xcrun simctl create klk-ci "$DEVICE" "$RUNTIME"
           xcrun simctl boot klk-ci
           xcrun simctl bootstatus klk-ci -b
