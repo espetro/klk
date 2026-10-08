@@ -3,8 +3,9 @@
 // monochrome, hairline borders, muted pastel badges, charcoal CTAs.
 import { useState } from "react";
 import type { ReactNode } from "react";
-import { Button, Card, Input, Text, TextArea, XStack, YStack } from "tamagui";
+import { Button, Card, Image, Input, Text, TextArea, XStack, YStack } from "tamagui";
 import type { CalendarEvent, Circle, RSVP } from "@klk/core";
+import { DateTimeField } from "./datetime-field";
 import { LocationInput } from "./location-input.tsx";
 import { palette } from "./palette.ts";
 
@@ -125,10 +126,13 @@ export const EventCard = ({
       </Text>
     ) : null}
     {event.image !== undefined ? (
-      <img
-        src={event.image}
-        alt=""
-        style={{ width: "100%", height: 96, objectFit: "cover", borderRadius: 8, marginTop: 4 }}
+      <Image
+        source={{ uri: event.image }}
+        width="100%"
+        height={96}
+        borderRadius={8}
+        marginTop={4}
+        objectFit="cover"
       />
     ) : null}
   </Card>
@@ -214,39 +218,13 @@ export const EventForm = ({
           <Text fontSize={13} color={palette.muted}>
             Starts
           </Text>
-          <input
-            type="datetime-local"
-            value={starts}
-            onChange={(e) => setStarts(e.currentTarget.value)}
-            style={{
-              border: `1px solid ${palette.border}`,
-              borderRadius: 8,
-              padding: "10px 12px",
-              fontSize: 14,
-              background: palette.surface,
-              color: palette.ink,
-              width: "100%",
-            }}
-          />
+          <DateTimeField value={starts} onChange={setStarts} />
         </YStack>
         <YStack gap="$1.5" flex={1}>
           <Text fontSize={13} color={palette.muted}>
             Ends
           </Text>
-          <input
-            type="datetime-local"
-            value={ends}
-            onChange={(e) => setEnds(e.currentTarget.value)}
-            style={{
-              border: `1px solid ${palette.border}`,
-              borderRadius: 8,
-              padding: "10px 12px",
-              fontSize: 14,
-              background: palette.surface,
-              color: palette.ink,
-              width: "100%",
-            }}
-          />
+          <DateTimeField value={ends} onChange={setEnds} />
         </YStack>
       </XStack>
       <YStack gap="$1.5">
