@@ -128,13 +128,23 @@ jobs:
             if curl -sf http://localhost:3334/healthz >/dev/null \
               && curl -sf http://localhost:8081/status >/dev/null; then
               echo "relay + metro up"
-              exit 0
+              break
             fi
             sleep 2
+            if [ "$_" = "90" ]; then
+              echo "::error::relay/metro did not come up"
+              tail -50 /tmp/klk-relay.log /tmp/metro.log || true
+              exit 1
+            fi
           done
-          echo "::error::relay/metro did not come up"
-          tail -50 /tmp/klk-relay.log /tmp/metro.log || true
-          exit 1
+          # Warm the JS bundle before the smoke — a cold Metro transform of
+          # the whole app takes minutes, which eats the flow's wait budget.
+          for entry in index.bundle .expo/.virtual-metro-entry.bundle; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 300 \
+              "http://localhost:8081/${entry}?platform=ios&dev=true" || true)
+            echo "bundle warm ${entry}: HTTP ${code}"
+            [ "$code" = "200" ] && break
+          done
 
       - name: Maestro smoke — launch + Discover renders
         run: |
@@ -150,3 +160,15 @@ jobs:
           xcrun simctl bootstatus klk-ci -b
           xcrun simctl install klk-ci apps/pwa/ios/build/Pinya.app
           maestro test apps/pwa/maestro/smoke.yaml
+
+      - name: Upload smoke diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: maestro-debug
+          path: |
+            /Users/runner/.maestro/tests
+            /tmp/metro.log
+            /tmp/klk-relay.log
+          if-no-files-found: ignore
+          retention-days: 14

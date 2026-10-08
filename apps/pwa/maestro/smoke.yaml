@@ -9,5 +9,5 @@ appId: club.pinya.app
 - extendedWaitUntil:
     visible:
       text: "Upcoming"
-    timeout: 120000
+    timeout: 180000
 - assertVisible: "Upcoming"
