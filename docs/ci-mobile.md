@@ -181,10 +181,11 @@ from the CLI ([docs](https://docs.maestro.dev/maestro-flows/flow-control-and-log
   Aug 2026 — [maintained](https://github.com/ReactiveCircus/android-emulator-runner/releases))
   boots a KVM emulator on ubuntu and runs your script inside it:
   install the debug APK, `maestro test .maestro/`.
-- **iOS:** run on the macOS job — `maestro start-device --platform ios`
-  (or `xcrun simctl boot`), `maestro test`. Maestro's own CI does
-  exactly this on `macos-26` runners
-  ([test-e2e.yaml](https://github.com/mobile-dev-inc/Maestro/blob/main/.github/workflows/test-e2e.yaml)).
+- **iOS:** run on the macOS job — `maestro test` against a booted sim.
+  `maestro start-device --platform ios` hardcodes iPhone-11/iOS 17.5,
+  which `macos-26` images no longer ship — the workflow instead
+  `xcrun simctl create`s on the newest available runtime, boots, and
+  installs the `.app`; `maestro test` attaches to it.
 - **Paid alternative:** `mobile-dev-inc/action-maestro-cloud@v3` —
   managed devices, `MAESTRO_CLOUD_API_KEY` + project id
   ([docs](https://docs.maestro.dev/maestro-cloud/ci-cd-integration/github-actions)).
