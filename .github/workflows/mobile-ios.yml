@@ -6,7 +6,7 @@ name: mobile-ios
 
 on:
   push:
-    branches: [main, devin/ios-ci]
+    branches: [main]
     paths:
       - "apps/pwa/**"
       - "packages/**"
