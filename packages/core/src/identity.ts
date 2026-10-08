@@ -1,10 +1,19 @@
-import { publicKeyOf, secretKeyFromHex, secretKeyToHex } from "@klk/proto";
+import { gcm } from "@noble/ciphers/aes.js";
+import {
+  base64ToBytes,
+  bytesToBase64,
+  publicKeyOf,
+  secretKeyFromHex,
+  secretKeyToHex,
+} from "@klk/proto";
 import type { Keypair } from "@klk/proto";
+import { storage } from "./storage";
 
 // Identity persistence: the nsec lives encrypted at rest. Wrap key comes
 // from WebAuthn PRF when the platform supports it (passkey-gated); the
-// documented fallback is a device-bound wrap key in localStorage —
-// honest "locked to this device" mode, not full passkey protection.
+// documented fallback is a device-bound wrap key in storage — honest
+// "locked to this device" mode, not full passkey protection. AES-GCM here
+// is @noble/ciphers (not WebCrypto) so the same code runs on React Native.
 const LS_WRAPPED = "klk.nsec.wrapped";
 const LS_WRAPKEY = "klk.nsec.wrapkey";
 const LS_UNLOCK_MODE = "klk.nsec.mode";
@@ -20,31 +29,17 @@ export interface StoredIdentity {
   pubkey: string;
 }
 
-async function aesWrapKey(raw: Uint8Array): Promise<CryptoKey> {
-  return crypto.subtle.importKey("raw", raw as BufferSource, "AES-GCM", false, [
-    "encrypt",
-    "decrypt",
-  ]);
-}
-
 export async function wrapSecret(
   secretKey: Uint8Array,
   wrapKey: Uint8Array,
 ): Promise<StoredIdentity> {
   const iv = new Uint8Array(12);
   crypto.getRandomValues(iv);
-  const key = await aesWrapKey(wrapKey);
-  const ct = new Uint8Array(
-    await crypto.subtle.encrypt(
-      { name: "AES-GCM", iv: iv as BufferSource },
-      key,
-      secretKey as BufferSource,
-    ),
-  );
+  const ct = gcm(wrapKey, iv).encrypt(secretKey);
   return {
     mode: "device",
-    ciphertext: btoa(String.fromCharCode(...ct)),
-    iv: btoa(String.fromCharCode(...iv)),
+    ciphertext: bytesToBase64(ct),
+    iv: bytesToBase64(iv),
     pubkey: "",
   };
 }
@@ -53,16 +48,9 @@ export async function unwrapSecret(
   stored: StoredIdentity,
   wrapKey: Uint8Array,
 ): Promise<Uint8Array> {
-  const key = await aesWrapKey(wrapKey);
-  const ct = Uint8Array.from(atob(stored.ciphertext), (c) => c.charCodeAt(0));
-  const iv = Uint8Array.from(atob(stored.iv), (c) => c.charCodeAt(0));
-  return new Uint8Array(
-    await crypto.subtle.decrypt(
-      { name: "AES-GCM", iv: iv as BufferSource },
-      key,
-      ct as BufferSource,
-    ),
-  );
+  const ct = base64ToBytes(stored.ciphertext);
+  const iv = base64ToBytes(stored.iv);
+  return gcm(wrapKey, iv).decrypt(ct);
 }
 
 function newDeviceWrapKey(): Uint8Array {
@@ -72,15 +60,19 @@ function newDeviceWrapKey(): Uint8Array {
 }
 
 const b64 = (buf: ArrayBuffer | Uint8Array) =>
-  btoa(String.fromCharCode(...new Uint8Array(buf instanceof ArrayBuffer ? buf : buf)));
-const unb64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+  bytesToBase64(buf instanceof ArrayBuffer ? new Uint8Array(buf) : buf);
+const unb64 = base64ToBytes;
 
 interface PrfExt {
   prf?: { results?: { first?: ArrayBuffer } };
 }
 
+const hasPasskeys =
+  typeof navigator !== "undefined" && typeof navigator.credentials?.create === "function";
+
 // A platform passkey whose PRF evaluates to our wrap key. The ceremony
 // is what shows Chrome's passkey manager / iCloud Keychain prompts.
+// Web-only: native always lands in device mode.
 async function createPasskey(pubkey: string): Promise<string | null> {
   const cred = (await navigator.credentials.create({
     publicKey: {
@@ -123,9 +115,9 @@ async function prfWrapKey(credIdB64: string, saltB64: string): Promise<Uint8Arra
  * back to a device-bound wrap key ("locked to this device").
  */
 export async function persistIdentity(kp: Keypair): Promise<UnlockMode> {
-  let mode: UnlockMode = "device";
+  const mode: UnlockMode = "device";
   try {
-    const credId = await createPasskey(kp.pubkey);
+    const credId = hasPasskeys ? await createPasskey(kp.pubkey) : null;
     if (credId !== null) {
       const salt = b64(crypto.getRandomValues(new Uint8Array(32)));
       const key = await prfWrapKey(credId, salt);
@@ -133,10 +125,10 @@ export async function persistIdentity(kp: Keypair): Promise<UnlockMode> {
         const stored = await wrapSecret(kp.secretKey, key);
         stored.mode = "passkey";
         stored.pubkey = kp.pubkey;
-        localStorage.setItem(LS_WRAPPED, JSON.stringify(stored));
-        localStorage.setItem(LS_CRED, credId);
-        localStorage.setItem(LS_SALT, salt);
-        localStorage.setItem(LS_UNLOCK_MODE, "passkey");
+        storage.setItem(LS_WRAPPED, JSON.stringify(stored));
+        storage.setItem(LS_CRED, credId);
+        storage.setItem(LS_SALT, salt);
+        storage.setItem(LS_UNLOCK_MODE, "passkey");
         return "passkey";
       }
     }
@@ -144,20 +136,20 @@ export async function persistIdentity(kp: Keypair): Promise<UnlockMode> {
     // declined or unsupported — fall through to device mode
   }
 
-  const existing = localStorage.getItem(LS_WRAPKEY);
+  const existing = storage.getItem(LS_WRAPKEY);
   const wrapKey =
     existing !== null
       ? unb64(existing)
       : (() => {
           const k = newDeviceWrapKey();
-          localStorage.setItem(LS_WRAPKEY, b64(k));
+          storage.setItem(LS_WRAPKEY, b64(k));
           return k;
         })();
   const stored = await wrapSecret(kp.secretKey, wrapKey);
   stored.mode = mode;
   stored.pubkey = kp.pubkey;
-  localStorage.setItem(LS_WRAPPED, JSON.stringify(stored));
-  localStorage.setItem(LS_UNLOCK_MODE, mode);
+  storage.setItem(LS_WRAPPED, JSON.stringify(stored));
+  storage.setItem(LS_UNLOCK_MODE, mode);
   return mode;
 }
 
@@ -172,16 +164,18 @@ export class PasskeyRequired extends Error {
  * need a user gesture — this throws PasskeyRequired for the UI to resolve
  * via `unlockWithPasskey()`. */
 export async function restoreIdentity(): Promise<Keypair | null> {
-  const raw = localStorage.getItem(LS_WRAPPED);
+  const raw = storage.getItem(LS_WRAPPED);
   if (raw === null) return null;
   const stored = JSON.parse(raw) as StoredIdentity;
   if (stored.mode === "passkey") {
-    const credId = localStorage.getItem(LS_CRED);
-    const salt = localStorage.getItem(LS_SALT);
+    const credId = storage.getItem(LS_CRED);
+    const salt = storage.getItem(LS_SALT);
     if (credId === null || salt === null) return null;
+    // no WebAuthn on native — a passkey-gated identity can't unlock here
+    if (!hasPasskeys) return null;
     throw new PasskeyRequired();
   }
-  const wrapB64 = localStorage.getItem(LS_WRAPKEY);
+  const wrapB64 = storage.getItem(LS_WRAPKEY);
   if (wrapB64 === null) return null;
   const secretKey = await unwrapSecret(stored, unb64(wrapB64));
   return { secretKey, pubkey: stored.pubkey };
@@ -190,9 +184,9 @@ export async function restoreIdentity(): Promise<Keypair | null> {
 /** The "unlock" button handler for passkey-mode identities — evaluates
  * the PRF under a user gesture and unwraps the keypair. */
 export async function unlockWithPasskey(): Promise<Keypair | null> {
-  const raw = localStorage.getItem(LS_WRAPPED);
-  const credId = localStorage.getItem(LS_CRED);
-  const salt = localStorage.getItem(LS_SALT);
+  const raw = storage.getItem(LS_WRAPPED);
+  const credId = storage.getItem(LS_CRED);
+  const salt = storage.getItem(LS_SALT);
   if (raw === null || credId === null || salt === null) return null;
   const stored = JSON.parse(raw) as StoredIdentity;
   const key = await prfWrapKey(credId, salt);
@@ -202,15 +196,15 @@ export async function unlockWithPasskey(): Promise<Keypair | null> {
 }
 
 export function clearIdentity(): void {
-  localStorage.removeItem(LS_WRAPPED);
-  localStorage.removeItem(LS_WRAPKEY);
-  localStorage.removeItem(LS_UNLOCK_MODE);
-  localStorage.removeItem(LS_CRED);
-  localStorage.removeItem(LS_SALT);
+  storage.removeItem(LS_WRAPPED);
+  storage.removeItem(LS_WRAPKEY);
+  storage.removeItem(LS_UNLOCK_MODE);
+  storage.removeItem(LS_CRED);
+  storage.removeItem(LS_SALT);
 }
 
 export function storedUnlockMode(): UnlockMode | null {
-  return localStorage.getItem(LS_UNLOCK_MODE) as UnlockMode | null;
+  return storage.getItem(LS_UNLOCK_MODE) as UnlockMode | null;
 }
 
 // Hex helpers for export/import flows (power users, recovery)

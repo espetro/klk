@@ -16,6 +16,7 @@
   "dependencies": {
     "@klk/proto": "workspace:*",
     "@logtape/logtape": "^2.3.10",
+    "@noble/ciphers": "^2.4.0",
     "nanostores": "^1.0.2"
   },
   "devDependencies": {
