@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useStore } from "@nanostores/react";
 import { useParams, useRouter } from "one";
+import { Share } from "react-native";
 import { Button, Text, XStack, YStack } from "tamagui";
 import {
   $circles,
@@ -10,11 +11,12 @@ import {
   circleColor,
   displayName,
   inviteLinkFor,
+  storage,
 } from "@klk/core";
 import { Badge, EmptyState, EventCard, EventMap, ShareActions, palette } from "@klk/ui";
 import { $bootState } from "../../src/boot.ts";
 import { API_ORIGIN, APP_ORIGIN } from "../../src/config.ts";
-import { notify } from "../../src/notify.ts";
+import { notify } from "../../src/notify";
 
 export default function CircleDetail() {
   const params = useParams<{ coord: string }>();
@@ -29,14 +31,14 @@ export default function CircleDetail() {
   // flow (join/create lands here), then dismissed for good
   const [showAgentHint, setShowAgentHint] = useState(() => {
     try {
-      return localStorage.getItem("klk.seen.agenthint") !== "1";
+      return storage.getItem("klk.seen.agenthint") !== "1";
     } catch {
       return false;
     }
   });
   const dismissAgentHint = () => {
     try {
-      localStorage.setItem("klk.seen.agenthint", "1");
+      storage.setItem("klk.seen.agenthint", "1");
     } catch {
       /* private mode */
     }
@@ -63,8 +65,14 @@ export default function CircleDetail() {
   // webcal:// asks the OS to subscribe the default calendar app.
   const copyFeed = async () => {
     const url = `${API_ORIGIN}/ics/${circle.owner}/${circle.slug}?invite=${encodeURIComponent(circle.inviteSecret)}`;
-    await navigator.clipboard.writeText(url.replace(/^https?/, "webcal"));
-    notify("Calendar feed copied — paste it in your calendar app");
+    const webcal = url.replace(/^https?/, "webcal");
+    if (typeof navigator !== "undefined" && "clipboard" in navigator) {
+      await navigator.clipboard.writeText(webcal);
+      notify("Calendar feed copied — paste it in your calendar app");
+    } else {
+      // native: no clipboard dep — hand the feed URL to the share sheet
+      void Share.share({ message: webcal });
+    }
   };
 
   // already sorted by start time (see core client ingest)

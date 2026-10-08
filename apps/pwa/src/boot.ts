@@ -12,8 +12,9 @@ import {
   unlockWithPasskey,
 } from "@klk/core";
 import type { UnlockMode } from "@klk/core";
+import { storage } from "@klk/core";
 import { generateKeypair } from "@klk/proto";
-import { initTelemetry } from "./analytics.ts";
+import { initTelemetry } from "./analytics";
 import { RELAY_URL } from "./config.ts";
 
 // logging + PostHog first, so boot-time failures are captured
@@ -107,7 +108,7 @@ export const createAndConnect = async (): Promise<void> => {
 
 export const signOut = async (): Promise<void> => {
   await disconnect();
-  localStorage.clear();
+  storage.clear();
   booted = false;
   // fall back to guest browsing rather than a dead end
   await connect(null, { relayUrl: RELAY_URL });

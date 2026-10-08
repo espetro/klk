@@ -18,7 +18,7 @@ import { npubDecode, npubEncode } from "@klk/proto";
 import { EmptyState, ShareActions, palette, useMountEffect } from "@klk/ui";
 import { createAndConnect } from "../../src/boot.ts";
 import { APP_ORIGIN } from "../../src/config.ts";
-import { notify } from "../../src/notify.ts";
+import { notify } from "../../src/notify";
 
 export default function UserCard() {
   const params = useParams<{ npub: string }>();

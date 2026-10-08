@@ -18,7 +18,7 @@ import {
 import { EmptyState, EventForm, EventMap, RsvpButtons, ShareActions, palette } from "@klk/ui";
 import { $bootState, createAndConnect } from "../../src/boot.ts";
 import { APP_ORIGIN } from "../../src/config.ts";
-import { notify } from "../../src/notify.ts";
+import { notify } from "../../src/notify";
 
 const fmt = (ts: number) =>
   new Date(ts * 1000).toLocaleString(undefined, {

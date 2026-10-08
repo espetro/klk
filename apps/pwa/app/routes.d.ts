@@ -10,19 +10,23 @@ declare module 'one' {
         | `/`
         | `/_sitemap`
         | `/circle/new`
+        | `/circles`
         | `/event/new`
         | `/join`
         | `/profile`
       DynamicRoutes:
         | `/circle/${OneRouter.SingleRoutePart<T>}`
         | `/event/${OneRouter.SingleRoutePart<T>}`
+        | `/u/${OneRouter.SingleRoutePart<T>}`
       DynamicRouteTemplate:
         | `/circle/[coord]`
         | `/event/[id]`
+        | `/u/[npub]`
       IsTyped: true
       RouteTypes: {
         '/circle/[coord]': RouteInfo<{ coord: string }>
         '/event/[id]': RouteInfo<{ id: string }>
+        '/u/[npub]': RouteInfo<{ npub: string }>
       }
     }
   }

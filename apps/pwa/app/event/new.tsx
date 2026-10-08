@@ -5,7 +5,7 @@ import { Button, Text, YStack } from "tamagui";
 import { $connected, $identity, postEvent } from "@klk/core";
 import { EventForm, palette } from "@klk/ui";
 import { createAndConnect } from "../../src/boot.ts";
-import { notify } from "../../src/notify.ts";
+import { notify } from "../../src/notify";
 
 export default function NewEvent() {
   const params = useParams<{ coord: string }>();

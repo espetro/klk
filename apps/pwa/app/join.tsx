@@ -7,7 +7,7 @@ import { Button, Spinner, Text, YStack } from "tamagui";
 import { $identity, joinCircle } from "@klk/core";
 import { palette, useMountEffect } from "@klk/ui";
 import { createAndConnect } from "../src/boot.ts";
-import { notify } from "../src/notify.ts";
+import { notify } from "../src/notify";
 
 export default function Join() {
   const [err, setErr] = useState<string>();

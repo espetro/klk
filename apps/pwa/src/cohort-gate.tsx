@@ -5,7 +5,7 @@ import { useState } from "react";
 import type { ReactNode } from "react";
 import { Button, Input, Text, YStack } from "tamagui";
 import { palette } from "@klk/ui";
-import { posthogClient } from "./analytics.ts";
+import { posthogClient } from "./analytics";
 import { COHORT_GATE } from "./config.ts";
 import { cohortEmail, joinCohort } from "./cohort.ts";
 

@@ -16,9 +16,9 @@ import {
 import { npubDecode, npubEncode } from "@klk/proto";
 import { Field, ShareActions, lookupCity, palette } from "@klk/ui";
 import { createAndConnect, signOut } from "../src/boot.ts";
-import { reportBug } from "../src/analytics.ts";
+import { reportBug } from "../src/analytics";
 import { APP_ORIGIN, RELAY_URL } from "../src/config.ts";
-import { notify } from "../src/notify.ts";
+import { notify } from "../src/notify";
 
 export default function Profile() {
   const identity = useStore($identity);
@@ -363,7 +363,10 @@ export default function Profile() {
           backgroundColor={palette.surface}
           color={palette.ink}
           onPress={() => {
-            void signOut().then(() => location.reload());
+            void signOut().then(() => {
+              // web reloads the realm; native just re-renders the guest view
+              if (typeof location !== "undefined") location.reload();
+            });
           }}
         >
           Sign out of this device

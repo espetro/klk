@@ -5,15 +5,16 @@
   "type": "module",
   "scripts": {
     "postinstall": "one patch || true",
-    "android": "one run:android",
+    "android": "ONE_SKIP_EXPO_SDK_CHECK=1 one run:android",
     "build": "one build",
     "clean": "one clean",
     "dev": "one dev",
     "dev:clean": "one dev --clean",
-    "ios": "one run:ios",
+    "ios": "ONE_SKIP_EXPO_SDK_CHECK=1 one run:ios",
     "prebuild:native": "one prebuild",
     "serve": "one serve",
-    "validate": "tsc --noEmit -p tsconfig.json"
+    "validate": "tsc --noEmit -p tsconfig.json",
+    "dev:native": "TEST_METRO=1 ONE_SKIP_EXPO_SDK_CHECK=1 one dev"
   },
   "dependencies": {
     "@callstack/liquid-glass": "^0.8.1",
@@ -24,6 +25,8 @@
     "@nanostores/react": "^2.0.1",
     "@react-navigation/native": "7.3.18",
     "expo": "58.0.0-canary-20260909-ea7a89a",
+    "expo-linking": "58.0.0-canary-20260909-ea7a89a",
+    "expo-sqlite": "58.0.0-canary-20260909-ea7a89a",
     "maplibre-gl": "^5.6.0",
     "nanostores": "^1.5.5",
     "one": "^1.27.1",
@@ -31,8 +34,9 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.87.1",
+    "react-native-get-random-values": "^2.0.0",
     "react-native-reanimated": "~4.6.0",
-    "react-native-safe-area-context": "~5.7.0",
+    "react-native-safe-area-context": "~5.10.1",
     "react-native-screens": "~4.27.0",
     "react-native-web": "^0.21.2",
     "react-native-worklets": "~0.12.2",
@@ -42,6 +46,7 @@
   },
   "devDependencies": {
     "@react-native-community/cli": "^20.2.0",
+    "@react-native/codegen": "^0.87.1",
     "@types/node": "^24.19.1",
     "@types/react": "^19.2.2",
     "babel-plugin-react-compiler": "^1.0.0",

@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { useStore } from "@nanostores/react";
 import { useRouter } from "one";
+import { Platform } from "react-native";
 import { Button, ScrollView, Text, XStack, YStack } from "tamagui";
 import { $circles, $events, $identity, $rsvps, circleColor } from "@klk/core";
 import { createAndConnect } from "./boot.ts";
@@ -13,6 +14,7 @@ import type { DayRange, DiscoveryPin } from "@klk/ui";
 import { MAX_RANGE_DAYS } from "./config.ts";
 
 const TAB_BAR = 56;
+const isWeb = Platform.OS === "web";
 
 export const Discover = () => {
   const circles = useStore($circles);
@@ -74,8 +76,15 @@ export const Discover = () => {
   };
 
   return (
-    <YStack position="fixed" top={0} left={0} right={0} bottom={TAB_BAR}>
-      <DiscoveryMap pins={pins} onOpen={(e) => openEvent(e)} />
+    <YStack
+      position={isWeb ? "fixed" : "absolute"}
+      top={0}
+      left={0}
+      right={0}
+      bottom={isWeb ? TAB_BAR : 0}
+    >
+      {/* the map is web-only — native v0 keeps the list below */}
+      {isWeb ? <DiscoveryMap pins={pins} onOpen={(e) => openEvent(e)} /> : null}
 
       {/* filter popover */}
       {filterOpen ? (
@@ -137,7 +146,7 @@ export const Discover = () => {
         left={0}
         right={0}
         bottom={0}
-        height={expanded ? "88%" : "52%"}
+        height={isWeb ? (expanded ? "88%" : "52%") : "100%"}
         backgroundColor={palette.surface}
         borderTopWidth={1}
         borderColor={palette.border}
