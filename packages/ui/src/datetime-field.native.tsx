@@ -7,13 +7,12 @@ import { palette } from "./palette.ts";
 const DATE_RE = /^\d{0,4}-?\d{0,2}-?\d{0,2}$/;
 const TIME_RE = /^\d{0,2}:?\d{0,2}$/;
 
-export const DateTimeField = ({
-  value,
-  onChange,
-}: {
+export interface DateTimeFieldProps {
   value: string;
   onChange: (v: string) => void;
-}) => {
+}
+
+export const DateTimeField = ({ value, onChange }: DateTimeFieldProps) => {
   const [date = "", time = ""] = value.split("T");
   const emit = (d: string, t: string) => onChange(`${d}T${t}`);
   return (

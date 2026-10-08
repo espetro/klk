@@ -5,13 +5,12 @@ import { palette } from "./palette.ts";
  * control. Web: <input type="datetime-local">. Native: date + time text
  * fields (datetime-field.native.tsx).
  */
-export const DateTimeField = ({
-  value,
-  onChange,
-}: {
+export interface DateTimeFieldProps {
   value: string;
   onChange: (v: string) => void;
-}) => (
+}
+
+export const DateTimeField = ({ value, onChange }: DateTimeFieldProps) => (
   <input
     type="datetime-local"
     value={value}
