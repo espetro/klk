@@ -1,0 +1,69 @@
+name: mobile-android
+
+# Fast PR signal for the native Android surface: regenerates the
+# gitignored apps/pwa/android/ project (`one prebuild`) and builds the
+# debug APK. Needs no secrets — the release/signed pipeline lives in
+# mobile-android-release.yml. See docs/ci-mobile.md §2/§4.
+
+on:
+  pull_request:
+    paths:
+      - "apps/pwa/**"
+      - "packages/**"
+      - "patches/**"
+      - ".github/workflows/mobile-android.yml"
+  push:
+    branches: [main]
+    paths:
+      - "apps/pwa/**"
+      - "packages/**"
+      - "patches/**"
+      - ".github/workflows/mobile-android.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: mobile-android-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ONE_SKIP_EXPO_SDK_CHECK: "1"
+
+jobs:
+  debug-apk:
+    name: build debug apk
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+        with:
+          run_install: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: pnpm
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Install dependencies
+        run: corepack pnpm install --frozen-lockfile
+
+      - name: Generate android/ (one prebuild)
+        run: CI=1 corepack pnpm --filter @klk/pwa prebuild:native
+
+      - name: Assemble debug APK
+        working-directory: apps/pwa/android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: pinya-debug-apk
+          path: apps/pwa/android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 14
+          if-no-files-found: error
