@@ -139,6 +139,14 @@ jobs:
       - name: Maestro smoke — launch + Discover renders
         run: |
           export PATH="$HOME/.maestro/bin:$PATH"
-          maestro start-device --platform ios
-          xcrun simctl install booted apps/pwa/ios/build/Pinya.app
+          # `maestro start-device` hardcodes iPhone-11/iOS 17.5, which the
+          # macos image no longer ships — create a sim on the newest
+          # available runtime ourselves, then `maestro test` uses the
+          # booted device.
+          RUNTIME=$(xcrun simctl list runtimes available -j | python3 -c "import sys,json; print(sorted([r for r in json.load(sys.stdin)['runtimes'] if r['platform']=='iOS'], key=lambda r: tuple(int(x) for x in r['version'].split('.')))[-1]['identifier'])")
+          DEVICE=$(xcrun simctl list devicetypes available -j | python3 -c "import sys,json; print(sorted([d for d in json.load(sys.stdin)['devicetypes'] if 'iPhone' in d['name']], key=lambda d: d['name'])[-1]['identifier'])")
+          xcrun simctl create klk-ci "$DEVICE" "$RUNTIME"
+          xcrun simctl boot klk-ci
+          xcrun simctl bootstatus klk-ci -b
+          xcrun simctl install klk-ci apps/pwa/ios/build/Pinya.app
           maestro test apps/pwa/maestro/smoke.yaml
