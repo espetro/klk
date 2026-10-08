@@ -38,7 +38,8 @@ export const Discover = () => {
       const k = dayKey(new Date(e.starts * 1000));
       return k >= range.from && k <= range.to;
     })
-    .toSorted((a, b) => a.starts - b.starts);
+    .slice()
+    .sort((a, b) => a.starts - b.starts);
 
   // day → circle accents for the calendar dots
   const dots = new Map<string, string[]>();
