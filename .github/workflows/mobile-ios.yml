@@ -83,6 +83,9 @@ jobs:
         working-directory: apps/pwa/ios
         run: bundle exec pod install
 
+      # No CONFIGURATION_BUILD_DIR/-derivedDataPath overrides: CocoaPods
+      # bakes default DerivedData paths into RCTSwiftUI dependents' module
+      # map flags, so redirecting products breaks RCTSwiftUIWrapper.
       - name: Build Pinya for iOS Simulator (unsigned)
         working-directory: apps/pwa/ios
         run: |
@@ -91,8 +94,13 @@ jobs:
             -scheme Pinya \
             -configuration Debug \
             -destination 'generic/platform=iOS Simulator' \
-            CODE_SIGNING_ALLOWED=NO \
-            CONFIGURATION_BUILD_DIR="$PWD/build"
+            CODE_SIGNING_ALLOWED=NO
+          mkdir -p build
+          APP_PATH=$(find "$HOME/Library/Developer/Xcode/DerivedData" \
+            -name "Pinya.app" -path "*Debug-iphonesimulator*" | head -1)
+          test -n "$APP_PATH" || { echo "::error::Pinya.app not found in DerivedData"; exit 1; }
+          cp -R "$APP_PATH" build/Pinya.app
+          echo "Copied $APP_PATH -> build/Pinya.app"
 
       - uses: actions/upload-artifact@v7
         with:
