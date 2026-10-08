@@ -1,6 +1,7 @@
 import "../src/setup";
 import { Slot } from "one";
 import { Platform } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Toaster } from "../src/toaster";
 import { KlkProvider } from "@klk/ui";
 import { AppShell } from "../src/shell.tsx";
@@ -8,13 +9,15 @@ import { CohortGate } from "../src/cohort-gate";
 
 export default function Layout() {
   const inner = (
-    <KlkProvider>
-      <CohortGate>
-        <AppShell>
-          <Slot />
-        </AppShell>
-      </CohortGate>
-    </KlkProvider>
+    <SafeAreaProvider>
+      <KlkProvider>
+        <CohortGate>
+          <AppShell>
+            <Slot />
+          </AppShell>
+        </CohortGate>
+      </KlkProvider>
+    </SafeAreaProvider>
   );
 
   if (Platform.OS === "web") {

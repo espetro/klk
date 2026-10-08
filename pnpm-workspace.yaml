@@ -6,3 +6,4 @@ packages:
 patchedDependencies:
   vxrn@1.27.1: patches/vxrn@1.27.1.patch
   "@vxrn/vite-plugin-metro@1.27.1": patches/@vxrn__vite-plugin-metro@1.27.1.patch
+  "react-native-get-random-values@2.0.0": patches/react-native-get-random-values@2.0.0.patch

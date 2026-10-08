@@ -1,0 +1,26 @@
+diff --git a/index.js b/index.js
+index ea95358483259a3a44a12c9f6072dc6fe62e3f77..2fc2ba893b3d106c07091d8b2ff1c96ba32f3dda 100644
+--- a/index.js
++++ b/index.js
+@@ -19,17 +19,17 @@ function insecureRandomValues (array) {
+   return array
+ }
+ 
+-let module = null
++let nativeModule = null
+ /**
+  * @param {number} byteLength
+  * @returns {string}
+  */
+ function getRandomBase64 (byteLength) {
+-  if (module == null) {
+-    module = TurboModuleRegistry.getEnforcing('RNGetRandomValues')
++  if (nativeModule == null) {
++    nativeModule = TurboModuleRegistry.getEnforcing('RNGetRandomValues')
+   }
+ 
+-  return module.getRandomBase64(byteLength)
++  return nativeModule.getRandomBase64(byteLength)
+ }
+ 
+ /**

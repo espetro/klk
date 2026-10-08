@@ -8,6 +8,9 @@ patchedDependencies:
   '@vxrn/vite-plugin-metro@1.27.1':
     hash: 99b05d738218cde795c5efa0fd4b219e3a1a087ad467c6260ce2c9c3f317e55e
     path: patches/@vxrn__vite-plugin-metro@1.27.1.patch
+  react-native-get-random-values@2.0.0:
+    hash: eafe60b44b9f40844e1106a37174bf12f8f130dbea4ea92b35f30df340d4ae65
+    path: patches/react-native-get-random-values@2.0.0.patch
   vxrn@1.27.1:
     hash: 4db633bb7bbdb7f41fd1975f7285f2ed4ee2d418638567f22bc40633b0805908
     path: patches/vxrn@1.27.1.patch
@@ -55,6 +58,9 @@ importers:
       expo-linking:
         specifier: 58.0.0-canary-20260909-ea7a89a
         version: 58.0.0-canary-20260909-ea7a89a(expo@58.0.0-canary-20260909-ea7a89a)(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3))(react@19.2.3)
+      expo-modules-jsi:
+        specifier: 58.0.0-canary-20260909-ea7a89a
+        version: 58.0.0-canary-20260909-ea7a89a(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3))
       expo-sqlite:
         specifier: 58.0.0-canary-20260909-ea7a89a
         version: 58.0.0-canary-20260909-ea7a89a(expo@58.0.0-canary-20260909-ea7a89a)(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3))(react@19.2.3)
@@ -81,7 +87,7 @@ importers:
         version: 0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3)
       react-native-get-random-values:
         specifier: ^2.0.0
-        version: 2.0.0(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3))
+        version: 2.0.0(patch_hash=eafe60b44b9f40844e1106a37174bf12f8f130dbea4ea92b35f30df340d4ae65)(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3))
       react-native-reanimated:
         specifier: ~4.6.0
         version: 4.6.0(react-native-worklets@0.12.2(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3))(react@19.2.3))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3))(react@19.2.3)
@@ -122,6 +128,9 @@ importers:
       babel-plugin-react-compiler:
         specifier: ^1.0.0
         version: 1.0.0
+      react-refresh:
+        specifier: ^0.14.2
+        version: 0.14.2
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -191,29 +200,32 @@ importers:
         version: link:../proto
       '@tamagui/config-default':
         specifier: ^2.7.7
-        version: 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tamagui/core':
         specifier: ^2.7.7
-        version: 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       maplibre-gl:
         specifier: ^5.6.0
         version: 5.24.0
       qrcode.react:
         specifier: ^4.1.0
-        version: 4.2.0(react@19.3.0)
+        version: 4.2.0(react@19.2.3)
       react:
-        specifier: ^19.3.0
-        version: 19.3.0
+        specifier: 19.2.3
+        version: 19.2.3
+      react-dom:
+        specifier: 19.2.3
+        version: 19.2.3(react@19.2.3)
       tamagui:
         specifier: ^2.7.7
-        version: 2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+        version: 2.7.7(react-dom@19.2.3(react@19.2.3))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3))(react@19.2.3)
     devDependencies:
       '@types/react':
-        specifier: ^19.3.0
+        specifier: ^19.2.2
         version: 19.3.0
       react-native:
         specifier: ^0.87.1
-        version: 0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0)
+        version: 0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3)
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -6304,11 +6316,6 @@ packages:
     peerDependencies:
       react: ^19.2.3
 
-  react-dom@19.3.0:
-    resolution: {integrity: sha512-JDk8dgif51OjFoDE70+OT9ICyYr+69HlmihNwp1+Nsfbna3t5sIiCa9ZJktDmQ4/1b/rn26hIAR2uYXDMr5r0Q==}
-    peerDependencies:
-      react: ^19.3.0
-
   react-freeze@1.0.4:
     resolution: {integrity: sha512-r4F0Sec0BLxWicc7HEyo2x3/2icUTrRmDjaaRyzzn+7aDyFZliszMDOgLVwSnQnYENOlL1o569Ze2HZefk8clA==}
     engines: {node: '>=10'}
@@ -6398,10 +6405,6 @@ packages:
 
   react@19.2.3:
     resolution: {integrity: sha512-Ku/hhYbVjOQnXDZFv2+RibmLFGwFdeeKHFcOTlrt7xplBnya5OGn/hIRDsqDiSUcfORsDC7MPxwork8jBwsIWA==}
-    engines: {node: '>=0.10.0'}
-
-  react@19.3.0:
-    resolution: {integrity: sha512-E8LUcbtBWt20bbl2YoHfx4ZDBdxVTfOKtCZn9cDSJ4l6/nuoApcpIBcj47t2wZoVX8g2ZHuMHbiShgCR1T5Sog==}
     engines: {node: '>=0.10.0'}
 
   read-cache@1.0.2:
@@ -6546,9 +6549,6 @@ packages:
 
   scheduler@0.27.0:
     resolution: {integrity: sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==}
-
-  scheduler@0.28.0:
-    resolution: {integrity: sha512-juorfCmIkIw8tT+p5BXSm6PJjQF/ycEYmKyzURCIt/RaZIhL+PulbQ9Yu2z1HdOJDdqDTlxA1+xKBmHXJsczAw==}
 
   semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
@@ -9019,23 +9019,11 @@ snapshots:
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
 
-  '@floating-ui/react-dom@2.1.9(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@floating-ui/dom': 1.8.0
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
-
   '@floating-ui/react-native@0.10.10(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@floating-ui/core': 1.8.0
       react: 19.2.3
       react-native: 0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3)
-
-  '@floating-ui/react-native@0.10.10(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@floating-ui/core': 1.8.0
-      react: 19.3.0
-      react-native: 0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0)
 
   '@floating-ui/utils@0.2.12': {}
 
@@ -9986,15 +9974,6 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.3.0
 
-  '@react-native/virtualized-lists@0.87.1(@types/react@19.3.0)(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      invariant: 2.2.4
-      nullthrows: 1.1.1
-      react: 19.3.0
-      react-native: 0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0)
-    optionalDependencies:
-      '@types/react': 19.3.0
-
   '@react-navigation/bottom-tabs@7.18.18(95283f4cbb0b65fa3839697d1ff01705)':
     dependencies:
       '@react-navigation/elements': 2.9.44(@react-native-masked-view/masked-view@0.3.2(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3))(react@19.2.3))(@react-navigation/native@7.3.18(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3))(react@19.2.3))(react-native-safe-area-context@5.10.1(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3))(react@19.2.3))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3))(react@19.2.3)
@@ -10271,24 +10250,6 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/accordion@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/collapsible': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/collection': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/polyfill-dev': 2.7.7
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/text': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      '@tamagui/use-direction': 2.7.7(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/adapt@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/constants': 2.7.7(react@19.2.3)
@@ -10297,17 +10258,6 @@ snapshots:
       '@tamagui/portal': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tamagui/z-index-stack': 2.7.7(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/adapt@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/portal': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/z-index-stack': 2.7.7(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -10332,27 +10282,6 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/alert-dialog@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/animate-presence': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/dialog': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/dismissable': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/focus-scope': 2.7.7(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/polyfill-dev': 2.7.7
-      '@tamagui/portal': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/remove-scroll': 2.7.7(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/text': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/animate-presence@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/constants': 2.7.7(react@19.2.3)
@@ -10365,29 +10294,10 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/animate-presence@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/use-constant': 2.7.7(react@19.3.0)
-      '@tamagui/use-force-update': 2.7.7(react@19.3.0)
-      '@tamagui/use-presence': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/animate@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/animate-presence': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/animate@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/animate-presence': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -10403,16 +10313,6 @@ snapshots:
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
 
-  '@tamagui/animations-css@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/animation-helpers': 2.7.7
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/cubic-bezier-animator': 2.7.7
-      '@tamagui/use-presence': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
-
   '@tamagui/animations-react-native@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/animation-helpers': 2.7.7
@@ -10420,16 +10320,6 @@ snapshots:
       '@tamagui/use-presence': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tamagui/web': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/animations-react-native@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/animation-helpers': 2.7.7
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/use-presence': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -10443,19 +10333,6 @@ snapshots:
       '@tamagui/stacks': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tamagui/text': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/avatar@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/image': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/shapes': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/text': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -10475,22 +10352,6 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/button@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/config-default': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/font-size': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/get-button-sized': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/helpers-tamagui': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/spacer': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/text': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/card@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/create-context': 2.7.7(react@19.2.3)
@@ -10498,16 +10359,6 @@ snapshots:
       '@tamagui/stacks': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tamagui/web': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/card@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -10523,21 +10374,6 @@ snapshots:
       '@tamagui/use-previous': 2.7.7(react@19.2.3)
       '@tamagui/web': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/checkbox-headless@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/focusable': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/label': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      '@tamagui/use-previous': 2.7.7(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -10561,26 +10397,6 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/checkbox@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/checkbox-headless': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/focusable': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/font-size': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/get-token': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/helpers-tamagui': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/label': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      '@tamagui/use-previous': 2.7.7(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/collapsible@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/animate-presence': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -10593,21 +10409,6 @@ snapshots:
       '@tamagui/use-controllable-state': 2.7.7(react@19.2.3)
       '@tamagui/web': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/collapsible@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/animate-presence': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/polyfill-dev': 2.7.7
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -10624,26 +10425,9 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/collection@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/polyfill-dev': 2.7.7
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/compose-refs@2.7.7(react@19.2.3)':
     dependencies:
       react: 19.2.3
-
-  '@tamagui/compose-refs@2.7.7(react@19.3.0)':
-    dependencies:
-      react: 19.3.0
 
   '@tamagui/config-default@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
@@ -10656,24 +10440,9 @@ snapshots:
       - react
       - react-dom
 
-  '@tamagui/config-default@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/animations-css': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/animations-react-native': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/shorthands': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-    transitivePeerDependencies:
-      - react
-      - react-dom
-
   '@tamagui/constants@2.7.7(react@19.2.3)':
     dependencies:
       react: 19.2.3
-
-  '@tamagui/constants@2.7.7(react@19.3.0)':
-    dependencies:
-      react: 19.3.0
 
   '@tamagui/context-menu@2.7.7(react-dom@19.2.3(react@19.2.3))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3))(react@19.2.3)':
     dependencies:
@@ -10683,18 +10452,6 @@ snapshots:
       '@tamagui/use-controllable-state': 2.7.7(react@19.2.3)
       '@tamagui/web': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-      - react-native
-
-  '@tamagui/context-menu@2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/create-menu': 2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@tamagui/popover': 2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-callback-ref': 2.7.7(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
       - react-native
@@ -10711,25 +10468,9 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/core@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/react-native-media-driver': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/react-native-use-pressable': 2.7.7(react@19.3.0)
-      '@tamagui/use-element-layout': 2.7.7(react@19.3.0)
-      '@tamagui/use-event': 2.7.7(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/create-context@2.7.7(react@19.2.3)':
     dependencies:
       react: 19.2.3
-
-  '@tamagui/create-context@2.7.7(react@19.3.0)':
-    dependencies:
-      react: 19.3.0
 
   '@tamagui/create-menu@2.7.7(react-dom@19.2.3(react@19.2.3))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3))(react@19.2.3)':
     dependencies:
@@ -10753,32 +10494,6 @@ snapshots:
       '@tamagui/use-direction': 2.7.7(react@19.2.3)
       '@tamagui/web': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-      - react-native
-
-  '@tamagui/create-menu@2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/animate': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/animate-presence': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/collection': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/dismissable': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/focus-guard': 2.7.7(react@19.3.0)
-      '@tamagui/focus-scope': 2.7.7(react@19.3.0)
-      '@tamagui/get-token': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/image': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/native': 2.7.7(react@19.3.0)
-      '@tamagui/popover': 2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@tamagui/popper': 2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@tamagui/portal': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/remove-scroll': 2.7.7(react@19.3.0)
-      '@tamagui/roving-focus': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/text': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-callback-ref': 2.7.7(react@19.3.0)
-      '@tamagui/use-direction': 2.7.7(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
       - react-native
@@ -10809,30 +10524,6 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/dialog@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/adapt': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/animate': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/animate-presence': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/dismissable': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/focus-scope': 2.7.7(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/polyfill-dev': 2.7.7
-      '@tamagui/portal': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/remove-scroll': 2.7.7(react@19.3.0)
-      '@tamagui/sheet': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/text': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      '@tamagui/z-index-stack': 2.7.7(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/dismissable@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/compose-refs': 2.7.7(react@19.2.3)
@@ -10843,37 +10534,15 @@ snapshots:
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
 
-  '@tamagui/dismissable@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/use-escape-keydown': 2.7.7(react@19.3.0)
-      '@tamagui/use-event': 2.7.7(react@19.3.0)
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
-
   '@tamagui/element@2.7.7(react@19.2.3)':
     dependencies:
       '@tamagui/compose-refs': 2.7.7(react@19.2.3)
       react: 19.2.3
 
-  '@tamagui/element@2.7.7(react@19.3.0)':
-    dependencies:
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      react: 19.3.0
-
   '@tamagui/elements@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/core': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/elements@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -10889,27 +10558,11 @@ snapshots:
       - react-dom
       - react-native
 
-  '@tamagui/floating@2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@floating-ui/react-dom': 2.1.9(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@floating-ui/react-native': 0.10.10(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-event': 2.7.7(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-      - react-native
-
   '@tamagui/focus-guard@2.7.7(react@19.2.3)':
     dependencies:
       '@tamagui/compose-refs': 2.7.7(react@19.2.3)
       '@tamagui/use-event': 2.7.7(react@19.2.3)
       react: 19.2.3
-
-  '@tamagui/focus-guard@2.7.7(react@19.3.0)':
-    dependencies:
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/use-event': 2.7.7(react@19.3.0)
-      react: 19.3.0
 
   '@tamagui/focus-scope@2.7.7(react@19.2.3)':
     dependencies:
@@ -10921,16 +10574,6 @@ snapshots:
       '@tamagui/use-event': 2.7.7(react@19.2.3)
       react: 19.2.3
 
-  '@tamagui/focus-scope@2.7.7(react@19.3.0)':
-    dependencies:
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/start-transition': 2.7.7(react@19.3.0)
-      '@tamagui/use-async': 2.7.7(react@19.3.0)
-      '@tamagui/use-event': 2.7.7(react@19.3.0)
-      react: 19.3.0
-
   '@tamagui/focusable@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/compose-refs': 2.7.7(react@19.2.3)
@@ -10939,25 +10582,10 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/focusable@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/font-size@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/core': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/font-size@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -10969,27 +10597,11 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/form@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/get-button-sized@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/get-token': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tamagui/web': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/get-button-sized@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/get-token': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -11001,25 +10613,10 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/get-font-sized@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/get-token@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/web': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/get-token@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -11035,31 +10632,11 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/group@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/spacer': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/helpers-tamagui@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/helpers': 2.7.7(react@19.2.3)
       '@tamagui/web': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/helpers-tamagui@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -11069,27 +10646,12 @@ snapshots:
       '@tamagui/simple-hash': 2.7.7
       react: 19.2.3
 
-  '@tamagui/helpers@2.7.7(react@19.3.0)':
-    dependencies:
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/simple-hash': 2.7.7
-      react: 19.3.0
-
   '@tamagui/image@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/constants': 2.7.7(react@19.2.3)
       '@tamagui/core': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tamagui/web': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/image@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -11111,31 +10673,9 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/input@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/element': 2.7.7(react@19.3.0)
-      '@tamagui/focusable': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/font-size': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/get-button-sized': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/get-font-sized': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/get-token': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/helpers-tamagui': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/text': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/is-equal-shallow@2.7.7(react@19.2.3)':
     dependencies:
       react: 19.2.3
-
-  '@tamagui/is-equal-shallow@2.7.7(react@19.3.0)':
-    dependencies:
-      react: 19.3.0
 
   '@tamagui/label@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
@@ -11151,35 +10691,12 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/label@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/focusable': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/get-button-sized': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/get-font-sized': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/text': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/linear-gradient@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/core': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tamagui/native': 2.7.7(react@19.2.3)
       '@tamagui/stacks': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/linear-gradient@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/native': 2.7.7(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -11194,20 +10711,6 @@ snapshots:
       '@tamagui/text': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tamagui/web': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/list-item@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/font-size': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/get-font-sized': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/get-token': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/helpers-tamagui': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/text': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -11226,28 +10729,9 @@ snapshots:
       - react-dom
       - react-native
 
-  '@tamagui/menu@2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/create-menu': 2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/popover': 2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@tamagui/popper': 2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@tamagui/scroll-view': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-      - react-native
-
   '@tamagui/native@2.7.7(react@19.2.3)':
     dependencies:
       react: 19.2.3
-
-  '@tamagui/native@2.7.7(react@19.3.0)':
-    dependencies:
-      react: 19.3.0
 
   '@tamagui/normalize-css-color@2.7.7':
     dependencies:
@@ -11282,33 +10766,6 @@ snapshots:
       - react-dom
       - react-native
 
-  '@tamagui/popover@2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/adapt': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/animate': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/animate-presence': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/dismissable': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/floating': 2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@tamagui/focus-scope': 2.7.7(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/polyfill-dev': 2.7.7
-      '@tamagui/popper': 2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@tamagui/portal': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/remove-scroll': 2.7.7(react@19.3.0)
-      '@tamagui/scroll-view': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/sheet': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      '@tamagui/z-index-stack': 2.7.7(react@19.3.0)
-      react: 19.3.0
-      react-freeze: 1.0.4(react@19.3.0)
-    transitivePeerDependencies:
-      - react-dom
-      - react-native
-
   '@tamagui/popper@2.7.7(react-dom@19.2.3(react@19.2.3))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/compose-refs': 2.7.7(react@19.2.3)
@@ -11320,21 +10777,6 @@ snapshots:
       '@tamagui/start-transition': 2.7.7(react@19.2.3)
       '@tamagui/use-controllable-state': 2.7.7(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-      - react-native
-
-  '@tamagui/popper@2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/floating': 2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@tamagui/get-token': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/start-transition': 2.7.7(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
       - react-native
@@ -11351,18 +10793,6 @@ snapshots:
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
 
-  '@tamagui/portal@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/native': 2.7.7(react@19.3.0)
-      '@tamagui/start-transition': 2.7.7(react@19.3.0)
-      '@tamagui/use-event': 2.7.7(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/z-index-stack': 2.7.7(react@19.3.0)
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
-
   '@tamagui/progress@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/compose-refs': 2.7.7(react@19.2.3)
@@ -11372,18 +10802,6 @@ snapshots:
       '@tamagui/helpers': 2.7.7(react@19.2.3)
       '@tamagui/stacks': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/progress@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/get-token': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -11406,25 +10824,6 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/radio-group@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/focusable': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/get-token': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/label': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/radio-headless': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/roving-focus': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      '@tamagui/use-previous': 2.7.7(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/radio-headless@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/compose-refs': 2.7.7(react@19.2.3)
@@ -11440,31 +10839,9 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/radio-headless@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/focusable': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/label': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      '@tamagui/use-previous': 2.7.7(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/react-native-media-driver@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/web': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-    transitivePeerDependencies:
-      - react
-      - react-dom
-
-  '@tamagui/react-native-media-driver@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
     transitivePeerDependencies:
       - react
       - react-dom
@@ -11473,17 +10850,9 @@ snapshots:
     dependencies:
       react: 19.2.3
 
-  '@tamagui/react-native-use-pressable@2.7.7(react@19.3.0)':
-    dependencies:
-      react: 19.3.0
-
   '@tamagui/remove-scroll@2.7.7(react@19.2.3)':
     dependencies:
       react: 19.2.3
-
-  '@tamagui/remove-scroll@2.7.7(react@19.3.0)':
-    dependencies:
-      react: 19.3.0
 
   '@tamagui/roving-focus@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
@@ -11500,34 +10869,11 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/roving-focus@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/collection': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      '@tamagui/use-direction': 2.7.7(react@19.3.0)
-      '@tamagui/use-event': 2.7.7(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/scroll-view@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/stacks': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tamagui/web': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/scroll-view@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -11563,38 +10909,6 @@ snapshots:
     transitivePeerDependencies:
       - react-native
 
-  '@tamagui/select@2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/adapt': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/animate-presence': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/dismissable': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/floating': 2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@tamagui/focus-scope': 2.7.7(react@19.3.0)
-      '@tamagui/focusable': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/get-token': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/list-item': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/native': 2.7.7(react@19.3.0)
-      '@tamagui/portal': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/remove-scroll': 2.7.7(react@19.3.0)
-      '@tamagui/separator': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/sheet': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/text': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      '@tamagui/use-debounce': 2.7.7(react@19.3.0)
-      '@tamagui/use-event': 2.7.7(react@19.3.0)
-      '@tamagui/use-previous': 2.7.7(react@19.3.0)
-      '@tamagui/z-index-stack': 2.7.7(react@19.3.0)
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
-    transitivePeerDependencies:
-      - react-native
-
   '@tamagui/separator@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/constants': 2.7.7(react@19.2.3)
@@ -11603,27 +10917,11 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/separator@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/shapes@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/stacks': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tamagui/web': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/shapes@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -11651,40 +10949,9 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/sheet@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/adapt': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/animate-presence': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/animations-react-native': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/native': 2.7.7(react@19.3.0)
-      '@tamagui/portal': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/remove-scroll': 2.7.7(react@19.3.0)
-      '@tamagui/scroll-view': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-constant': 2.7.7(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      '@tamagui/use-did-finish-ssr': 2.7.7(react@19.3.0)
-      '@tamagui/use-keyboard-visible': 2.7.7(react@19.3.0)
-      '@tamagui/z-index-stack': 2.7.7(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/shorthands@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/web': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-    transitivePeerDependencies:
-      - react
-      - react-dom
-
-  '@tamagui/shorthands@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
     transitivePeerDependencies:
       - react
       - react-dom
@@ -11695,13 +10962,6 @@ snapshots:
     dependencies:
       '@tamagui/core': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/sizable-context@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -11721,33 +10981,10 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/slider@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/get-token': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      '@tamagui/use-debounce': 2.7.7(react@19.3.0)
-      '@tamagui/use-direction': 2.7.7(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/spacer@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/web': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/spacer@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -11756,14 +10993,6 @@ snapshots:
       '@tamagui/core': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tamagui/stacks': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/spinner@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -11776,22 +11005,9 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/stacks@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/get-button-sized': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/start-transition@2.7.7(react@19.2.3)':
     dependencies:
       react: 19.2.3
-
-  '@tamagui/start-transition@2.7.7(react@19.3.0)':
-    dependencies:
-      react: 19.3.0
 
   '@tamagui/switch-headless@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
@@ -11801,17 +11017,6 @@ snapshots:
       '@tamagui/label': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tamagui/use-previous': 2.7.7(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/switch-headless@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/label': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-previous': 2.7.7(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -11829,23 +11034,6 @@ snapshots:
       '@tamagui/use-controllable-state': 2.7.7(react@19.2.3)
       '@tamagui/use-previous': 2.7.7(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/switch@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/focusable': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/get-token': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/label': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/switch-headless': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      '@tamagui/use-previous': 2.7.7(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -11869,26 +11057,6 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/tabs@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/element': 2.7.7(react@19.3.0)
-      '@tamagui/get-button-sized': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/group': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/roving-focus': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/sizable-context': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      '@tamagui/use-direction': 2.7.7(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/text@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/get-font-sized': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -11898,30 +11066,12 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/text@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/get-font-sized': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/helpers-tamagui': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/theme@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/constants': 2.7.7(react@19.2.3)
       '@tamagui/start-transition': 2.7.7(react@19.2.3)
       '@tamagui/web': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/theme@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/start-transition': 2.7.7(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -11949,28 +11099,6 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/toast@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/animate-presence': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/collection': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/dismissable': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/native': 2.7.7(react@19.3.0)
-      '@tamagui/polyfill-dev': 2.7.7
-      '@tamagui/portal': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/start-transition': 2.7.7(react@19.3.0)
-      '@tamagui/text': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      '@tamagui/visually-hidden': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/toggle-group@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/constants': 2.7.7(react@19.2.3)
@@ -11987,25 +11115,6 @@ snapshots:
       '@tamagui/use-direction': 2.7.7(react@19.2.3)
       '@tamagui/web': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/toggle-group@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/focusable': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/font-size': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/get-token': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/helpers-tamagui': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/roving-focus': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/sizable-context': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      '@tamagui/use-direction': 2.7.7(react@19.3.0)
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -12028,50 +11137,19 @@ snapshots:
       - react-dom
       - react-native
 
-  '@tamagui/tooltip@2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/floating': 2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@tamagui/get-token': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/polyfill-dev': 2.7.7
-      '@tamagui/popover': 2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@tamagui/popper': 2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/text': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-      - react-native
-
   '@tamagui/types@2.7.7': {}
 
   '@tamagui/use-async@2.7.7(react@19.2.3)':
     dependencies:
       react: 19.2.3
 
-  '@tamagui/use-async@2.7.7(react@19.3.0)':
-    dependencies:
-      react: 19.3.0
-
   '@tamagui/use-callback-ref@2.7.7(react@19.2.3)':
     dependencies:
       react: 19.2.3
 
-  '@tamagui/use-callback-ref@2.7.7(react@19.3.0)':
-    dependencies:
-      react: 19.3.0
-
   '@tamagui/use-constant@2.7.7(react@19.2.3)':
     dependencies:
       react: 19.2.3
-
-  '@tamagui/use-constant@2.7.7(react@19.3.0)':
-    dependencies:
-      react: 19.3.0
 
   '@tamagui/use-controllable-state@2.7.7(react@19.2.3)':
     dependencies:
@@ -12079,35 +11157,17 @@ snapshots:
       '@tamagui/use-event': 2.7.7(react@19.2.3)
       react: 19.2.3
 
-  '@tamagui/use-controllable-state@2.7.7(react@19.3.0)':
-    dependencies:
-      '@tamagui/start-transition': 2.7.7(react@19.3.0)
-      '@tamagui/use-event': 2.7.7(react@19.3.0)
-      react: 19.3.0
-
   '@tamagui/use-debounce@2.7.7(react@19.2.3)':
     dependencies:
       react: 19.2.3
-
-  '@tamagui/use-debounce@2.7.7(react@19.3.0)':
-    dependencies:
-      react: 19.3.0
 
   '@tamagui/use-did-finish-ssr@2.7.7(react@19.2.3)':
     dependencies:
       react: 19.2.3
 
-  '@tamagui/use-did-finish-ssr@2.7.7(react@19.3.0)':
-    dependencies:
-      react: 19.3.0
-
   '@tamagui/use-direction@2.7.7(react@19.2.3)':
     dependencies:
       react: 19.2.3
-
-  '@tamagui/use-direction@2.7.7(react@19.3.0)':
-    dependencies:
-      react: 19.3.0
 
   '@tamagui/use-element-layout@2.7.7(react@19.2.3)':
     dependencies:
@@ -12115,45 +11175,22 @@ snapshots:
       '@tamagui/is-equal-shallow': 2.7.7(react@19.2.3)
       react: 19.2.3
 
-  '@tamagui/use-element-layout@2.7.7(react@19.3.0)':
-    dependencies:
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/is-equal-shallow': 2.7.7(react@19.3.0)
-      react: 19.3.0
-
   '@tamagui/use-escape-keydown@2.7.7(react@19.2.3)':
     dependencies:
       '@tamagui/use-callback-ref': 2.7.7(react@19.2.3)
       react: 19.2.3
 
-  '@tamagui/use-escape-keydown@2.7.7(react@19.3.0)':
-    dependencies:
-      '@tamagui/use-callback-ref': 2.7.7(react@19.3.0)
-      react: 19.3.0
-
   '@tamagui/use-event@2.7.7(react@19.2.3)':
     dependencies:
       react: 19.2.3
-
-  '@tamagui/use-event@2.7.7(react@19.3.0)':
-    dependencies:
-      react: 19.3.0
 
   '@tamagui/use-force-update@2.7.7(react@19.2.3)':
     dependencies:
       react: 19.2.3
 
-  '@tamagui/use-force-update@2.7.7(react@19.3.0)':
-    dependencies:
-      react: 19.3.0
-
   '@tamagui/use-keyboard-visible@2.7.7(react@19.2.3)':
     dependencies:
       react: 19.2.3
-
-  '@tamagui/use-keyboard-visible@2.7.7(react@19.3.0)':
-    dependencies:
-      react: 19.3.0
 
   '@tamagui/use-presence@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
@@ -12162,42 +11199,19 @@ snapshots:
     transitivePeerDependencies:
       - react-dom
 
-  '@tamagui/use-presence@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-dom
-
   '@tamagui/use-previous@2.7.7(react@19.2.3)':
     dependencies:
       react: 19.2.3
-
-  '@tamagui/use-previous@2.7.7(react@19.3.0)':
-    dependencies:
-      react: 19.3.0
 
   '@tamagui/use-window-dimensions@2.7.7(react@19.2.3)':
     dependencies:
       '@tamagui/constants': 2.7.7(react@19.2.3)
       react: 19.2.3
 
-  '@tamagui/use-window-dimensions@2.7.7(react@19.3.0)':
-    dependencies:
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      react: 19.3.0
-
   '@tamagui/visually-hidden@2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tamagui/web': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-
-  '@tamagui/visually-hidden@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/web': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
 
@@ -12217,29 +11231,9 @@ snapshots:
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
 
-  '@tamagui/web@2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
-    dependencies:
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/helpers': 2.7.7(react@19.3.0)
-      '@tamagui/is-equal-shallow': 2.7.7(react@19.3.0)
-      '@tamagui/native': 2.7.7(react@19.3.0)
-      '@tamagui/normalize-css-color': 2.7.7
-      '@tamagui/timer': 2.7.7
-      '@tamagui/types': 2.7.7
-      '@tamagui/use-did-finish-ssr': 2.7.7(react@19.3.0)
-      '@tamagui/use-event': 2.7.7(react@19.3.0)
-      '@tamagui/use-force-update': 2.7.7(react@19.3.0)
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
-
   '@tamagui/z-index-stack@2.7.7(react@19.2.3)':
     dependencies:
       react: 19.2.3
-
-  '@tamagui/z-index-stack@2.7.7(react@19.3.0)':
-    dependencies:
-      react: 19.3.0
 
   '@trickfilm400/rollup-plugin-off-main-thread@3.0.0-pre1':
     dependencies:
@@ -15513,9 +14507,9 @@ snapshots:
 
   protocol-buffers-schema@3.6.1: {}
 
-  qrcode.react@4.2.0(react@19.3.0):
+  qrcode.react@4.2.0(react@19.2.3):
     dependencies:
-      react: 19.3.0
+      react: 19.2.3
 
   qs@6.16.0:
     dependencies:
@@ -15566,18 +14560,9 @@ snapshots:
       react: 19.2.3
       scheduler: 0.27.0
 
-  react-dom@19.3.0(react@19.3.0):
-    dependencies:
-      react: 19.3.0
-      scheduler: 0.28.0
-
   react-freeze@1.0.4(react@19.2.3):
     dependencies:
       react: 19.2.3
-
-  react-freeze@1.0.4(react@19.3.0):
-    dependencies:
-      react: 19.3.0
 
   react-is@18.3.1: {}
 
@@ -15600,7 +14585,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  react-native-get-random-values@2.0.0(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3)):
+  react-native-get-random-values@2.0.0(patch_hash=eafe60b44b9f40844e1106a37174bf12f8f130dbea4ea92b35f30df340d4ae65)(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3)):
     dependencies:
       fast-base64-decode: 1.0.0
       react-native: 0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3)
@@ -15711,54 +14696,9 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0):
-    dependencies:
-      '@react-native/asset-utils': 0.87.1
-      '@react-native/codegen': 0.87.1(@babel/core@7.29.7)
-      '@react-native/community-cli-plugin': 0.87.1(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))
-      '@react-native/gradle-plugin': 0.87.1
-      '@react-native/normalize-colors': 0.87.1
-      '@react-native/virtualized-lists': 0.87.1(@types/react@19.3.0)(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      anser: 1.4.10
-      ansi-regex: 5.0.1
-      babel-plugin-syntax-hermes-parser: 0.36.1
-      base64-js: 1.5.1
-      commander: 12.1.0
-      flow-enums-runtime: 0.0.6
-      hermes-compiler: 250829098.0.17
-      invariant: 2.2.4
-      memoize-one: 5.2.1
-      metro-runtime: 0.87.1
-      metro-source-map: 0.87.1
-      nullthrows: 1.1.1
-      pretty-format: 29.7.0
-      promise: 8.3.0
-      react: 19.3.0
-      react-devtools-core: 6.1.5
-      react-refresh: 0.14.2
-      regenerator-runtime: 0.13.11
-      scheduler: 0.27.0
-      semver: 7.8.5
-      stacktrace-parser: 0.1.11
-      tinyglobby: 0.2.17
-      whatwg-fetch: 3.6.20
-      ws: 7.5.13
-      yargs: 17.7.3
-    optionalDependencies:
-      '@types/react': 19.3.0
-    transitivePeerDependencies:
-      - '@babel/core'
-      - '@react-native-community/cli'
-      - '@react-native/metro-config'
-      - bufferutil
-      - supports-color
-      - utf-8-validate
-
   react-refresh@0.14.2: {}
 
   react@19.2.3: {}
-
-  react@19.3.0: {}
 
   read-cache@1.0.2: {}
 
@@ -15950,8 +14890,6 @@ snapshots:
   sax@1.6.1: {}
 
   scheduler@0.27.0: {}
-
-  scheduler@0.28.0: {}
 
   semver@6.3.1: {}
 
@@ -16383,76 +15321,6 @@ snapshots:
       '@tamagui/visually-hidden': 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tamagui/z-index-stack': 2.7.7(react@19.2.3)
       react: 19.2.3
-    transitivePeerDependencies:
-      - react-dom
-      - react-native
-
-  tamagui@2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0):
-    dependencies:
-      '@tamagui/accordion': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/adapt': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/alert-dialog': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/animate': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/animate-presence': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/avatar': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/button': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/card': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/checkbox': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/collapsible': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/compose-refs': 2.7.7(react@19.3.0)
-      '@tamagui/constants': 2.7.7(react@19.3.0)
-      '@tamagui/context-menu': 2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@tamagui/core': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/create-context': 2.7.7(react@19.3.0)
-      '@tamagui/create-menu': 2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@tamagui/dialog': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/element': 2.7.7(react@19.3.0)
-      '@tamagui/elements': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/fake-react-native': 2.7.7
-      '@tamagui/focusable': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/font-size': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/form': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/get-button-sized': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/get-font-sized': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/get-token': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/group': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/helpers-tamagui': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/image': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/input': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/label': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/linear-gradient': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/list-item': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/menu': 2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@tamagui/polyfill-dev': 2.7.7
-      '@tamagui/popover': 2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@tamagui/popper': 2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@tamagui/portal': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/progress': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/radio-group': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/react-native-media-driver': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/scroll-view': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/select': 2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@tamagui/separator': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/shapes': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/sheet': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/slider': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/spacer': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/spinner': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/stacks': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/switch': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/tabs': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/text': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/theme': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/toast': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/toggle-group': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/tooltip': 2.7.7(react-dom@19.3.0(react@19.3.0))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
-      '@tamagui/use-controllable-state': 2.7.7(react@19.3.0)
-      '@tamagui/use-debounce': 2.7.7(react@19.3.0)
-      '@tamagui/use-force-update': 2.7.7(react@19.3.0)
-      '@tamagui/use-window-dimensions': 2.7.7(react@19.3.0)
-      '@tamagui/visually-hidden': 2.7.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@tamagui/z-index-stack': 2.7.7(react@19.3.0)
-      react: 19.3.0
     transitivePeerDependencies:
       - react-dom
       - react-native

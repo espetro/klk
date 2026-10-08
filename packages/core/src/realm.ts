@@ -334,7 +334,7 @@ export function createRealm(): Realm {
         const cal = toCalendarEvent(ev, coord);
         $events.setKey(
           coord,
-          [...list, cal].toSorted((a, b) => a.starts - b.starts),
+          [...list, cal].sort((a, b) => a.starts - b.starts),
         );
         break;
       }
@@ -651,7 +651,7 @@ export function createRealm(): Realm {
     const kp = requireIdentity();
     const r = requireRelay();
     const events = await r.query([{ kinds: [KIND_CONTACTS], authors: [kp.pubkey], limit: 1 }]);
-    const latest = events.toSorted((a, b) => b.created_at - a.created_at)[0];
+    const latest = events.slice().sort((a, b) => b.created_at - a.created_at)[0];
     if (latest === undefined) return;
     const list = latest.tags.filter((t) => t[0] === "p" && t[1] !== undefined).map((t) => t[1]!);
     $contacts.set(list);

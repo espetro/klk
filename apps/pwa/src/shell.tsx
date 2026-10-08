@@ -2,6 +2,7 @@
 import type { ReactNode } from "react";
 import { Link } from "one";
 import { Platform } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text, XStack, YStack } from "tamagui";
 import { palette, useMountEffect } from "@klk/ui";
 import { boot } from "./boot.ts";
@@ -19,6 +20,7 @@ const Tab = ({ href, label }: { href: string; label: string }) => (
 );
 
 export const AppShell = ({ children }: { children: ReactNode }) => {
+  const insets = useSafeAreaInsets();
   // boot() is idempotent and must run on every document realm — fresh
   // loads of any route (F5, deep links, invite links) mount this shell.
   useMountEffect(function bootShell() {
@@ -28,6 +30,7 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
     <YStack
       flex={1}
       backgroundColor={palette.canvas}
+      paddingTop={insets.top}
       {...(Platform.OS === "web" ? { minHeight: "100vh" } : {})}
     >
       <YStack
@@ -36,7 +39,7 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
         maxWidth={520}
         alignSelf="center"
         paddingHorizontal="$4"
-        paddingBottom={72}
+        paddingBottom={72 + insets.bottom}
       >
         {children}
       </YStack>
@@ -45,7 +48,8 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
         bottom={0}
         left={0}
         right={0}
-        height={56}
+        height={56 + insets.bottom}
+        paddingBottom={insets.bottom}
         backgroundColor={palette.surface}
         borderTopWidth={1}
         borderTopColor={palette.border}
