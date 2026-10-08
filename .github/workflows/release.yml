@@ -1,0 +1,90 @@
+name: release
+
+# Builds the klk-relay binary + PWA dist into a versioned GitHub release.
+# Tag push `relay-v*` (or `v*`) cuts a named release; pushes to main that
+# touch apps/relay or apps/pwa refresh the moving `latest` prerelease, so
+# the VPS can always fetch a "latest" artifact.
+
+on:
+  push:
+    tags: ["v*", "relay-v*"]
+    branches: [main]
+    paths:
+      - "apps/relay/**"
+      - "apps/pwa/**"
+      - "packages/**"
+      - ".github/workflows/release.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: build linux/${{ matrix.arch }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [amd64, arm64]
+    env:
+      VITE_APP_ORIGIN: https://app.pinya.club
+      VITE_API_ORIGIN: https://api.pinya.club
+      VITE_RELAY_URL: wss://api.pinya.club
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: apps/relay/go.mod
+
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: pnpm
+
+      - name: Build PWA
+        env:
+          ONE_SKIP_EXPO_SDK_CHECK: "1"
+        run: |
+          corepack pnpm install --frozen-lockfile
+          corepack pnpm --filter @klk/pwa build
+
+      - name: Build klk-relay
+        working-directory: apps/relay
+        env:
+          CGO_ENABLED: "0"
+          GOOS: linux
+          GOARCH: ${{ matrix.arch }}
+        run: |
+          go build -trimpath -ldflags "-s -w -X main.version=${GITHUB_REF_NAME}" \
+            -o ../../dist/klk-relay-linux-${{ matrix.arch }} ./cmd/klk-relay
+
+      - name: Pack artifact
+        run: |
+          cd dist
+          tar -czf klk-linux-${{ matrix.arch }}.tar.gz \
+            --transform 's|apps/pwa/dist/client|pwa|' \
+            klk-relay-linux-${{ matrix.arch }} -C .. apps/pwa/dist/client
+
+      - name: Upload release asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ startsWith(github.ref, 'refs/tags/') }}" = "true" ]; then
+            gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1 || \
+              gh release create "${GITHUB_REF_NAME}" --generate-notes
+            gh release upload "${GITHUB_REF_NAME}" "dist/klk-linux-${{ matrix.arch }}.tar.gz" --clobber
+          else
+            gh release view latest >/dev/null 2>&1 || \
+              gh release create latest --title "latest" --notes "Continuous build of \`main\` — moving tag." --prerelease
+            gh release upload latest "dist/klk-linux-${{ matrix.arch }}.tar.gz" --clobber
+          fi

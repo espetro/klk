@@ -1,107 +1,116 @@
-# Deploy — <1GB VPS, systemd + Caddy
+# Deploy — CF Pages + VPS behind cloudflared
 
-The app is a single Go binary serving both the Nostr relay (WS) and the
-built PWA. BoltDB lives on a data volume. No Postgres, no Redis.
+Topology: the PWA is a static site on **Cloudflare Pages**
+(`app.pinya.club`); the relay is a single Go binary on a small VPS
+(`api.pinya.club`) reachable only through a **cloudflared tunnel** — the
+VPS keeps every inbound port closed, so its IP is never exposed. BoltDB
+lives on the VPS disk. No Postgres, no Redis, no Caddy, no TLS cert on
+the box (the tunnel terminates at Cloudflare).
 
-## Build
+## 1. PWA → Cloudflare Pages (`app.pinya.club`)
+
+Pages project settings (dashboard → Workers & Pages → Create → Connect
+to Git → `espetro/klk`):
+
+| Setting        | Value                                          |
+| -------------- | ---------------------------------------------- |
+| Build command  | `pnpm install && pnpm --filter @klk/pwa build` |
+| Build output   | `apps/pwa/dist/client`                         |
+| Root directory | _(repo root)_                                  |
+| Node version   | 24 (set `NODE_VERSION=24` env var)             |
+
+Environment variables (Production):
+
+| Var               | Value                    |
+| ----------------- | ------------------------ |
+| `VITE_APP_ORIGIN` | `https://app.pinya.club` |
+| `VITE_API_ORIGIN` | `https://api.pinya.club` |
+| `VITE_RELAY_URL`  | `wss://api.pinya.club`   |
+| `NODE_VERSION`    | `24`                     |
+
+`VITE_COHORT_GATE`, `VITE_POSTHOG_*`, `VITE_MAX_RANGE_DAYS` have working
+defaults — only set to override. `public/_redirects` ships a SPA
+fallback (`/* /index.html 200`) so deep links like `/circle/<coord>`
+resolve.
+
+Custom domain: Pages → `app.pinya.club` (CNAME auto-added since DNS is
+on Cloudflare). Apex `pinya.club` can redirect-rule → `app.pinya.club`.
+
+## 2. Relay build → GitHub Release (CI)
+
+`.github/workflows/release.yml` builds `klk-relay` + the PWA dist into a
+versioned tarball per arch (`klk-linux-amd64.tar.gz`,
+`klk-linux-arm64.tar.gz`):
+
+- push to `main` touching `apps/relay|apps/pwa|packages` → refreshes the
+  moving `latest` prerelease;
+- tag `v*` / `relay-v*` → cuts a named release with generated notes.
+
+## 3. VPS install (`api.pinya.club` target)
+
+Repo is private → auth once: `gh auth login` as root, **or** export a
+fine-grained PAT (`contents:read`) as `GH_TOKEN`.
 
 ```sh
-# on the VPS (or CI): produce the binary + PWA dist
-docker build -t klk:latest .
-# or cross-build locally and ship the artifacts
+git clone https://github.com/espetro/klk.git /srv/klk-src   # for deploy/
+sudo bash /srv/klk-src/deploy/install.sh                   # latest release
+sudo bash /srv/klk-src/deploy/install.sh v0.2.0            # or a pinned tag
 ```
 
-Or without Docker on the host:
+The script fetches the right arch tarball, installs
+`/usr/local/bin/klk-relay`, the `pwa/` statics into `/var/lib/klk/pwa`,
+writes the `klk.service` unit (`127.0.0.1:3334`, `MemoryMax=384M`,
+`ProtectSystem=strict`), and health-checks. Re-run anytime to upgrade.
+
+## 4. cloudflared tunnel (`api.pinya.club` → `127.0.0.1:3334`)
 
 ```sh
-cd apps/relay && go build -o /usr/local/bin/klk-relay ./cmd/klk-relay
-cd apps/pwa && pnpm build            # produces dist/client
+# install: https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/
+cloudflared tunnel create klk-api          # prints a UUID + writes ~/.cloudflared/<UUID>.json
+sudo mkdir -p /etc/cloudflared
+sudo mv ~/.cloudflared/<UUID>.json /etc/cloudflared/
+sudo cp /srv/klk-src/deploy/cloudflared.yml /etc/cloudflared/config.yml
+sudo sed -i "s/<TUNNEL_UUID>/<UUID>/g" /etc/cloudflared/config.yml
+cloudflared tunnel route dns klk-api api.pinya.club   # CNAME → <UUID>.cfargotunnel.com
+sudo cloudflared service install            # systemd unit, starts on boot
+sudo systemctl enable --now cloudflared
 ```
 
-## PWA build-time env (`apps/pwa`)
+`api.pinya.club` then proxies to the local relay — WS upgrades included.
+`app.` on Pages and `api.` on the tunnel can diverge freely; auth is
+NIP-42 over the socket itself, no cookies.
 
-All optional — defaults keep local dev working with zero config.
+### Close every inbound port
 
-| Var                                      | Purpose                                  | Prod example                         |
-| ---------------------------------------- | ---------------------------------------- | ------------------------------------ |
-| `VITE_APP_ORIGIN`                        | absolute origin for share/invite links   | `https://app.pinya.club`             |
-| `VITE_API_ORIGIN`                        | origin for API calls (cohort, ICS feeds) | `https://api.pinya.club`             |
-| `VITE_RELAY_URL`                         | WebSocket relay URL                      | `wss://api.pinya.club`               |
-| `VITE_COHORT_GATE`                       | `0` disables the email gate              | unset (on)                           |
-| `VITE_POSTHOG_KEY` / `VITE_POSTHOG_HOST` | PostHog EU analytics                     | `phc_…` / `https://eu.i.posthog.com` |
-| `VITE_MAX_RANGE_DAYS`                    | calendar range cap                       | `21`                                 |
+cloudflared is outbound-only, so nothing else must listen:
 
-Note: split `app.`/`api.` origins break same-origin WS cookies — none used,
-auth is NIP-42 over the socket itself, so a separate `api.` host is fine.
+```sh
+sudo ufw default deny incoming
+sudo ufw allow outgoing
+# SSH: prefer Tailscale/`cloudflared access` short-lived certs; if you
+# keep plain SSH, restrict it:  sudo ufw allow in proto tcp from <office-ip> to any port 22
+sudo ufw enable
+```
+
+After that, the VPS answers nothing on the public internet except
+through the tunnel.
 
 ## Cohort emails
 
-`POST /api/cohort` appends `{email,ts,ua}` to `$DATA_DIR/cohort.jsonl`
-(mode 0600, per-IP 5s throttle). Nothing else to run.
-
-## systemd
-
-`/etc/systemd/system/klk.service`:
-
-```ini
-[Unit]
-Description=klk relay + PWA
-After=network.target
-
-[Service]
-User=klk
-Group=klk
-Environment=ADDR=127.0.0.1:3334
-Environment=DATA_DIR=/var/lib/klk
-Environment=STATIC_DIR=/var/lib/klk/pwa
-ExecStart=/usr/local/bin/klk-relay
-Restart=on-failure
-RestartSec=3
-# resource budget: fits the <1GB VPS alongside Caddy + sshd
-MemoryMax=384M
-ProtectSystem=strict
-ReadWritePaths=/var/lib/klk
-NoNewPrivileges=true
-
-[Install]
-WantedBy=multi-user.target
-```
-
-```sh
-sudo useradd -r -m -d /var/lib/klk klk
-sudo cp -r apps/pwa/dist/client /var/lib/klk/pwa
-sudo chown -R klk:klk /var/lib/klk
-sudo systemctl enable --now klk
-```
-
-## Caddy
-
-`/etc/caddy/Caddyfile`:
-
-```caddyfile
-api.pinya.club {
-	reverse_proxy 127.0.0.1:3334
-}
-
-app.pinya.club {
-	reverse_proxy 127.0.0.1:3334
-}
-```
-
-Caddy terminates TLS (ACME automatic). One binary serves relay WS, API
-(`/api/*`), and static/SPA on the same port; `app.` and `api.` can share
-the target — set `VITE_APP_ORIGIN`/`VITE_API_ORIGIN`/`VITE_RELAY_URL` at
-PWA build time to match. For a single-domain deploy, leave them unset:
-the defaults resolve everything same-origin.
+`POST /api/cohort` appends `{email,ts,ua}` to `/var/lib/klk/cohort.jsonl`
+(mode 0600, per-IP 5s throttle). Reach it at `api.pinya.club` through
+the tunnel.
 
 ## Verify
 
 ```sh
 curl https://api.pinya.club/healthz        # ok
-curl -I https://app.pinya.club/            # 200, the PWA
+curl -I https://app.pinya.club/            # 200, the PWA from Pages
 curl -X POST https://api.pinya.club/api/cohort \
   -H 'Content-Type: application/json' -d '{"email":"test@pinya.club"}'  # 204
 cat /var/lib/klk/cohort.jsonl            # the collected email
+# relay WS
+websocat wss://api.pinya.club -1 <<< '[ "REQ", "x", {"kinds":[31950], "limit":1} ]' || true
 ```
 
 ## Local E2E

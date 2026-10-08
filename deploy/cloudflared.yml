@@ -1,0 +1,21 @@
+# cloudflared config for the klk relay on the VPS.
+# Lives at /etc/cloudflared/config.yml (after `cloudflared tunnel create klk-api`).
+#
+# cloudflared only makes OUTBOUND connections to Cloudflare's edge — the VPS
+# can have every inbound port closed (relay, SSH can move behind tunnel or
+# Tailscale too), so the origin IP is never exposed.
+
+tunnel: <TUNNEL_UUID>
+credentials-file: /etc/cloudflared/<TUNNEL_UUID>.json
+
+ingress:
+  # relay WS + /api/* (cohort, ICS) — one binary, one port
+  - hostname: api.pinya.club
+    service: http://127.0.0.1:3334
+    originRequest:
+      noTLSVerify: false
+      connectTimeout: 10s
+      # required for the nostr WS upgrade to pass through cleanly
+      http2Origin: false
+      keepAliveTimeout: 90s
+  - service: http_status:404
