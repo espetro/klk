@@ -3,6 +3,14 @@ import { one } from "one/vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
+  ssr: {
+    optimizeDeps: {
+      // expo-asset is pulled into SSR dep-scan via expo-constants/
+      // expo-linking and dies on a react-native-web asset-registry
+      // subpath — it's native-only, so keep it out of the SSR bundle.
+      exclude: ["expo-asset"],
+    },
+  },
   plugins: [
     one({
       web: {
@@ -30,6 +38,17 @@ export default defineConfig({
       ...(process.env.TEST_METRO && {
         native: {
           bundler: "metro",
+          bundlerOptions: {
+            // expo's metro default config drops "native" from resolver
+            // platforms, so foo.native.ts never wins; restore it.
+            defaultConfigOverrides: (dc) => {
+              const platforms = new Set([...(dc?.resolver?.platforms ?? []), "native"]);
+              return {
+                ...dc,
+                resolver: { ...dc?.resolver, platforms: [...platforms] },
+              };
+            },
+          },
         },
       }),
     }),

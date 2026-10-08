@@ -55,17 +55,48 @@ function hexEncode(b: Uint8Array): string {
   return Array.from(b, (x) => x.toString(16).padStart(2, "0")).join("");
 }
 
-function b64encode(b: Uint8Array): string {
-  if (typeof Buffer !== "undefined") return Buffer.from(b).toString("base64");
-  let s = "";
-  for (const x of b) s += String.fromCharCode(x);
-  return btoa(s);
+const B64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+// portable base64 — no btoa/Buffer so it runs on web, node, and RN
+export function bytesToBase64(b: Uint8Array): string {
+  let out = "";
+  for (let i = 0; i < b.length; i += 3) {
+    const n = ((b[i] ?? 0) << 16) | ((b[i + 1] ?? 0) << 8) | (b[i + 2] ?? 0);
+    out += B64[n >> 18];
+    out += B64[(n >> 12) & 63];
+    out += i + 1 < b.length ? B64[(n >> 6) & 63] : "=";
+    out += i + 2 < b.length ? B64[n & 63] : "=";
+  }
+  return out;
 }
 
-function b64decode(s: string): Uint8Array {
-  if (typeof Buffer !== "undefined") return new Uint8Array(Buffer.from(s, "base64"));
-  const bin = atob(s);
-  const b = new Uint8Array(bin.length);
-  for (let i = 0; i < bin.length; i++) b[i] = bin.charCodeAt(i);
-  return b;
+export function base64ToBytes(s: string): Uint8Array {
+  const clean = s.replace(/=+$/, "");
+  const out = new Uint8Array((clean.length * 3) >> 2);
+  let buf = 0;
+  let bits = 0;
+  let o = 0;
+  for (const c of clean) {
+    const v = B64.indexOf(c);
+    if (v < 0) continue;
+    buf = (buf << 6) | v;
+    bits += 6;
+    if (bits === 24) {
+      out[o++] = (buf >> 16) & 255;
+      out[o++] = (buf >> 8) & 255;
+      out[o++] = buf & 255;
+      buf = 0;
+      bits = 0;
+    }
+  }
+  if (bits === 12) {
+    out[o++] = (buf >> 4) & 255;
+  } else if (bits === 18) {
+    out[o++] = (buf >> 10) & 255;
+    out[o++] = (buf >> 2) & 255;
+  }
+  return out.subarray(0, o);
 }
+
+const b64encode = bytesToBase64;
+const b64decode = base64ToBytes;

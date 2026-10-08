@@ -1,0 +1,43 @@
+diff --git a/dist/cjs/transformer/metroNativeWorker.cjs b/dist/cjs/transformer/metroNativeWorker.cjs
+index 522a004ec609ae9bc4ad1f8d92995022258f4cbc..413a3c4f8dcafe8f8e75febb8d1544dedb377f6d 100644
+--- a/dist/cjs/transformer/metroNativeWorker.cjs
++++ b/dist/cjs/transformer/metroNativeWorker.cjs
+@@ -1331,7 +1331,37 @@ export const env = !dotEnvModules.keys().length ? process.env : { ...process.env
+         }
+       }
+     } catch (err) {
+-      throw new Error(`[vxrn/metro] Flow transform failed for ${filename}: ${err.message || err}`);
++      // react-native >= 0.87 Flow grammar (component<out T>, variance
++      // sigils) is beyond fast-flow-transform — degrade to babel +
++      // @react-native/babel-preset, the transform stock Metro runs on
++      // these same files.
++      try {
++        const req = (0, import_node_module.createRequire)(import_node_path.default.join(projectRoot, "package.json"));
++        const rnPkg = req.resolve("react-native/package.json", { paths: [projectRoot] });
++        const preset = req.resolve("@react-native/babel-preset", { paths: [import_node_path.default.dirname(rnPkg)] });
++        const babel = req(req.resolve("@babel/core", { paths: [import_node_path.default.dirname(rnPkg)] }));
++        const out = babel.transformSync(code, {
++          filename,
++          presets: [[preset, {
++            // vxrn's own codegen transform already ran upstream of the
++            // flow strip; re-validating 'Commands' exports here would
++            // reject every RN spec file.
++            disableStaticViewConfigsCodegen: true
++          }]],
++          sourceMaps: true,
++          babelrc: false,
++          configFile: false,
++          caller: { name: "metro", platform: options.platform, engine: "hermes" }
++        });
++        if (out?.code) {
++          code = out.code;
++          if (out.map) {
++            intermediateMaps.push(out.map);
++          }
++        }
++      } catch (babelErr) {
++        throw new Error(`[vxrn/metro] Flow transform failed for ${filename}: ${err.message || err} (babel fallback: ${babelErr.message || babelErr})`);
++      }
+     }
+   }
+   const asyncRequirePath = config.asyncRequireModulePath || "metro-runtime/src/modules/asyncRequire";

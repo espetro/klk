@@ -1,6 +1,7 @@
 // App chrome: mobile-first single column + bottom tab bar (spec §3.2).
 import type { ReactNode } from "react";
 import { Link } from "one";
+import { Platform } from "react-native";
 import { Text, XStack, YStack } from "tamagui";
 import { palette, useMountEffect } from "@klk/ui";
 import { boot } from "./boot.ts";
@@ -24,7 +25,11 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
     void boot();
   });
   return (
-    <YStack flex={1} backgroundColor={palette.canvas} minHeight="100vh">
+    <YStack
+      flex={1}
+      backgroundColor={palette.canvas}
+      {...(Platform.OS === "web" ? { minHeight: "100vh" } : {})}
+    >
       <YStack
         flex={1}
         width="100%"
@@ -36,7 +41,7 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
         {children}
       </YStack>
       <XStack
-        position="fixed"
+        position={Platform.OS === "web" ? "fixed" : "absolute"}
         bottom={0}
         left={0}
         right={0}

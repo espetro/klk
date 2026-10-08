@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useStore } from "@nanostores/react";
 import { Link } from "one";
 import { Button, Input, Spinner, Text, XStack, YStack } from "tamagui";
-import { $identity, publishProfile, usernameFor } from "@klk/core";
+import { $identity, publishProfile, storage, usernameFor } from "@klk/core";
 import { Field, lookupCity, palette } from "@klk/ui";
-import { notify } from "../src/notify.ts";
+import { notify } from "../src/notify";
 import { $bootError, $bootState, $unlockMode, unlock } from "../src/boot.ts";
 import { Discover } from "../src/discover.tsx";
 
@@ -135,14 +135,14 @@ export default function Home() {
   // profile-setup welcome shows once, right after first identity creation
   const [welcomed, setWelcomed] = useState(() => {
     try {
-      return localStorage.getItem(WELCOMED) === "1";
+      return storage.getItem(WELCOMED) === "1";
     } catch {
       return true;
     }
   });
   const done = () => {
     try {
-      localStorage.setItem(WELCOMED, "1");
+      storage.setItem(WELCOMED, "1");
     } catch {
       /* private mode — just move on */
     }

@@ -34,6 +34,7 @@ import type { CircleKey, Filter, Keypair } from "@klk/proto";
 import type { CalendarEvent, Circle, Profile, RSVP, Suggestion } from "./domain.ts";
 import { circleFromDef } from "./domain.ts";
 import { getLogger } from "./log.ts";
+import { storage } from "./storage";
 import { usernameFor } from "./username.ts";
 
 const log = getLogger(["klk", "realm"]);
@@ -140,17 +141,17 @@ export function createRealm(): Realm {
   let relay: KlkRelay | null = null;
   const unsubscribers: (() => void)[] = [];
   const watched = new Set<string>();
-  // sealed-circle keys: in-memory map backed by localStorage so a reload
-  // keeps decryption. Device-scoped, like the identity wrap key — a new
-  // device needs a fresh invite link.
+  // sealed-circle keys: in-memory map backed by sync KV storage so a
+  // reload keeps decryption. Device-scoped, like the identity wrap key —
+  // a new device needs a fresh invite link.
   const circleKeys = new Map<string, CircleKey>();
 
   function setCircleKey(coord: string, key: CircleKey): void {
     circleKeys.set(coord, key);
     try {
-      localStorage.setItem(`klk.circlekey.${coord}`, circleKeyToHex(key));
+      storage.setItem(`klk.circlekey.${coord}`, circleKeyToHex(key));
     } catch {
-      // non-DOM (tests, agents): memory only
+      // storage unavailable (tests, agents): memory only
     }
   }
 
@@ -158,7 +159,7 @@ export function createRealm(): Realm {
     const hit = circleKeys.get(coord);
     if (hit !== undefined) return hit;
     try {
-      const hex = localStorage.getItem(`klk.circlekey.${coord}`);
+      const hex = storage.getItem(`klk.circlekey.${coord}`);
       if (hex === null) return undefined;
       const key = circleKeyFromHex(hex);
       circleKeys.set(coord, key);

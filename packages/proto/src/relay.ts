@@ -1,6 +1,6 @@
 import { Relay, finalizeEvent } from "nostr-tools";
-import { useWebSocketImplementation } from "nostr-tools/pool";
 import type { Event, EventTemplate, Filter } from "nostr-tools";
+import { ensureWebSocket } from "./websocket";
 
 export type { Event, EventTemplate, Filter } from "nostr-tools";
 
@@ -27,11 +27,7 @@ export class KlkRelay {
   ) {}
 
   static async connect(url: string, secretKey: Uint8Array): Promise<KlkRelay> {
-    // Node 18-21 lacks a global WebSocket; nostr-tools wants the impl set
-    if (typeof WebSocket === "undefined") {
-      const { WebSocket: WSImpl } = await import("ws");
-      useWebSocketImplementation(WSImpl as unknown as typeof WebSocket);
-    }
+    await ensureWebSocket();
     const relay = new Relay(url, {
       enablePing: true,
       enableReconnect: true,

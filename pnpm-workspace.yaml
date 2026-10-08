@@ -2,3 +2,7 @@ packages:
   - "apps/*"
   - "packages/*"
   - "tools/*"
+
+patchedDependencies:
+  vxrn@1.27.1: patches/vxrn@1.27.1.patch
+  "@vxrn/vite-plugin-metro@1.27.1": patches/@vxrn__vite-plugin-metro@1.27.1.patch

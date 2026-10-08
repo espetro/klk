@@ -1,0 +1,101 @@
+diff --git a/dist/utils/createNativeDevEngine.mjs b/dist/utils/createNativeDevEngine.mjs
+index 52c15f2bf529315d760302b65e13eff05ab1b2d1..8b249bb98ac6b9bd2cc2a2f084de1962b21566ed 100644
+--- a/dist/utils/createNativeDevEngine.mjs
++++ b/dist/utils/createNativeDevEngine.mjs
+@@ -121,7 +121,7 @@ function getNativePlugins(root, platform, viteImportGlobPlugin, dev, assetsDest,
+     root
+   }), vxrnCompilerPlugin(platform, dev, root, sourceMaps), rnCodegenPlugin({
+     projectRoot: root
+-  }), flowStripPlugin(), nativeAnimatedGuardPlugin(), assetPlugin({
++  }), rnPrivateSrcPlugin(root), flowStripPlugin(root, platform), nativeAnimatedGuardPlugin(), assetPlugin({
+     root,
+     platform,
+     assetsDest,
+@@ -915,23 +915,75 @@ if (import.meta.hot) {
+     }
+   };
+ }
+-function flowStripPlugin() {
++// RN 0.87's package exports map doesn't expose ./src/private/*, yet
++// RN packages (@react-native/virtualized-lists etc.) deep-import it.
++// Metro resolves it anyway; rolldown honors exports and refuses.
++function rnPrivateSrcPlugin(root) {
++  return {
++    name: "vxrn:rn-private-src",
++    resolveId: {
++      async handler(source) {
++        if (!source.startsWith("react-native/src/private/")) return;
++        const { createRequire } = await import("node:module");
++        const req = createRequire(root + "/package.json");
++        const rnDir = dirname(req.resolve("react-native/package.json"));
++        const base = join(rnDir, source.slice("react-native/".length));
++        for (const cand of [base, base + ".js", join(base, "index.js")]) {
++          if (existsSync(cand)) return cand;
++        }
++        return null;
++      }
++    }
++  };
++}
++// react-native >= 0.87 uses Flow grammar that fast-flow-transform
++// cannot parse (component<out T>, variance sigils, ...). fall back to
++// babel + @react-native/babel-preset — the transform stock Metro runs
++// on these same files.
++async function babelFlowFallback(code, id, root, platform) {
++  const { createRequire } = await import("node:module");
++  const req = createRequire(import.meta.url);
++  const rnPkg = req.resolve("react-native/package.json", { paths: [root] });
++  const preset = req.resolve("@react-native/babel-preset", { paths: [dirname(rnPkg)] });
++  const babelCore = req.resolve("@babel/core", { paths: [dirname(rnPkg)] });
++  const babel = await import(babelCore);
++  const t = babel.default || babel;
++  const out = t.transformSync(code, {
++    filename: id,
++    presets: [[preset, {
++      // vxrn's own codegen transform already ran upstream of the
++      // flow strip; re-validating 'Commands' exports here would
++      // reject every RN spec file.
++      disableStaticViewConfigsCodegen: true
++    }]],
++    sourceMaps: true,
++    babelrc: false,
++    configFile: false,
++    caller: { name: "metro", platform, engine: "hermes" }
++  });
++  return { code: out.code, map: out.map };
++}
++function flowStripPlugin(root, platform) {
+   return {
+     name: "vxrn:flow-strip",
+     transform: {
+       async handler(code, id) {
+         if (!shouldStripFlow(id, code)) return;
+-        const result = await (await import("fast-flow-transform")).default({
+-          filename: id,
+-          source: code,
+-          sourcemap: true,
+-          dialect: "flow",
+-          format: "pretty"
+-        });
+-        return {
+-          code: result.code,
+-          map: result.map
+-        };
++        try {
++          const result = await (await import("fast-flow-transform")).default({
++            filename: id,
++            source: code,
++            sourcemap: true,
++            dialect: "flow",
++            format: "pretty"
++          });
++          return {
++            code: result.code,
++            map: result.map
++          };
++        } catch {
++          return babelFlowFallback(code, id, root || process.cwd(), platform);
++        }
+       }
+     }
+   };

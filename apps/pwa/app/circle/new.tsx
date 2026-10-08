@@ -6,7 +6,7 @@ import { $connected, $identity, createCircle } from "@klk/core";
 import { Field, palette } from "@klk/ui";
 import type { CircleTier } from "@klk/proto";
 import { createAndConnect } from "../../src/boot.ts";
-import { notify } from "../../src/notify.ts";
+import { notify } from "../../src/notify";
 
 export default function NewCircle() {
   const [name, setName] = useState("");
