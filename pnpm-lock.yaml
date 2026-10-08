@@ -204,6 +204,9 @@ importers:
       '@tamagui/core':
         specifier: ^2.7.7
         version: 2.7.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@tamagui/native':
+        specifier: ^2.7.7
+        version: 2.7.7(react@19.2.3)
       maplibre-gl:
         specifier: ^5.6.0
         version: 5.24.0
