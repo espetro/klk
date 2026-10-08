@@ -1,0 +1,179 @@
+name: mobile-ios-release
+
+# Signed Pinya archive → TestFlight. Fires on `mobile-v*`/`v*` tags and
+# manual dispatch. The archive job is secrets-gated: without App Store
+# Connect credentials it skips cleanly (unsigned simulator coverage in
+# mobile-ios.yml is the always-green baseline). Secrets: docs/ci-mobile.md.
+
+on:
+  push:
+    tags: ["mobile-v*", "v*"]
+  workflow_dispatch:
+
+concurrency:
+  group: mobile-ios-release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  ONE_SKIP_EXPO_SDK_CHECK: "1"
+  LANG: en_US.UTF-8
+  LC_ALL: en_US.UTF-8
+
+jobs:
+  # Secrets can't be read in a job-level `if`, so a tiny Linux gate job
+  # resolves them into an output first — the macOS job then no-ops for
+  # forks/everyone who hasn't minted signing secrets yet.
+  signing-check:
+    name: Check signing secrets
+    runs-on: ubuntu-latest
+    outputs:
+      signing: ${{ steps.check.outputs.signing }}
+    steps:
+      - id: check
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+        run: |
+          if [ -z "$ASC_KEY_ID" ]; then
+            echo "signing=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::ASC_KEY_ID is not set — iOS archive/TestFlight is secrets-gated and will skip. Mint the secrets per docs/ci-mobile.md §Secrets to enable it."
+          else
+            echo "signing=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  archive-testflight:
+    name: Archive + upload to TestFlight
+    needs: signing-check
+    if: needs.signing-check.outputs.signing == 'true'
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+        with:
+          run_install: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: pnpm
+
+      - run: corepack pnpm install --frozen-lockfile
+
+      - name: Prebuild native projects
+        run: CI=1 corepack pnpm --filter @klk/pwa prebuild:native
+
+      - name: Ensure ios/Gemfile
+        working-directory: apps/pwa/ios
+        run: |
+          if [ ! -f Gemfile ]; then
+            printf "source 'https://rubygems.org'\ngem 'cocoapods'\n" > Gemfile
+          fi
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          # explicit pin — generated ios/ has no .ruby-version file
+          ruby-version: "3.4"
+          bundler-cache: true
+          working-directory: apps/pwa/ios
+
+      - uses: actions/cache@v6
+        with:
+          path: |
+            apps/pwa/ios/Pods
+            ~/Library/Caches/CocoaPods
+          key: pods-${{ runner.os }}-${{ hashFiles('apps/pwa/ios/Podfile.lock') }}
+          restore-keys: |
+            pods-${{ runner.os }}-
+
+      - name: pod install
+        working-directory: apps/pwa/ios
+        run: bundle exec pod install
+
+      - uses: Apple-Actions/import-codesign-certs@v7
+        with:
+          p12-file-base64: ${{ secrets.IOS_BUILD_CERTIFICATE_BASE64 }}
+          p12-password: ${{ secrets.IOS_P12_PASSWORD }}
+
+      # ASC API key written to disk: -authenticationKeyPath covers the
+      # archive/export signing calls, decoded content feeds the uploader.
+      - name: Write App Store Connect API key
+        env:
+          ASC_KEY_BASE64: ${{ secrets.ASC_KEY_BASE64 }}
+        run: |
+          echo "$ASC_KEY_BASE64" | base64 -d > /tmp/AuthKey.p8
+          {
+            echo "ASC_KEY_CONTENTS<<EOF"
+            cat /tmp/AuthKey.p8
+            echo "EOF"
+          } >> "$GITHUB_ENV"
+
+      # Optional but preferred: install the App Store provisioning profile
+      # so automatic signing picks it instead of minting a new one.
+      - name: Install provisioning profile
+        env:
+          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          if [ -z "$IOS_PROVISIONING_PROFILE_BASE64" ]; then
+            echo "No provisioning profile secret — automatic signing will fetch one via the ASC API key"
+            exit 0
+          fi
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          echo "$IOS_PROVISIONING_PROFILE_BASE64" | base64 -d > /tmp/profile.mobileprovision
+          UUID=$(security cms -D -i /tmp/profile.mobileprovision | plutil -extract UUID raw -)
+          TEAM_ID=$(security cms -D -i /tmp/profile.mobileprovision | plutil -extract TeamIdentifier.0 raw -)
+          cp /tmp/profile.mobileprovision "$HOME/Library/MobileDevice/Provisioning Profiles/${UUID}.mobileprovision"
+          echo "Installed provisioning profile ${UUID} (team ${TEAM_ID})"
+          echo "TEAM_ID=${TEAM_ID}" >> "$GITHUB_ENV"
+
+      # -allowProvisioningUpdates + the ASC auth flags make Xcode sign
+      # headlessly: it reuses the installed profile when valid.
+      - name: Archive (Release)
+        working-directory: apps/pwa/ios
+        run: |
+          xcodebuild archive \
+            -workspace Pinya.xcworkspace \
+            -scheme Pinya \
+            -configuration Release \
+            -archivePath "$PWD/build/Pinya.xcarchive" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath /tmp/AuthKey.p8 \
+            -authenticationKeyID "${{ secrets.ASC_KEY_ID }}" \
+            -authenticationKeyIssuerID "${{ secrets.ASC_ISSUER_ID }}"
+
+      - name: Export .ipa
+        working-directory: apps/pwa/ios
+        run: |
+          cat > /tmp/ExportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>export</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>teamID</key><string>${TEAM_ID}</string>
+          </dict>
+          </plist>
+          EOF
+          xcodebuild -exportArchive \
+            -archivePath "$PWD/build/Pinya.xcarchive" \
+            -exportPath "$PWD/build" \
+            -exportOptionsPlist /tmp/ExportOptions.plist \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath /tmp/AuthKey.p8 \
+            -authenticationKeyID "${{ secrets.ASC_KEY_ID }}" \
+            -authenticationKeyIssuerID "${{ secrets.ASC_ISSUER_ID }}"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: pinya-ipa
+          path: apps/pwa/ios/build/Pinya.ipa
+          retention-days: 30
+
+      - uses: Apple-Actions/upload-testflight-build@v5
+        with:
+          app-path: apps/pwa/ios/build/Pinya.ipa
+          app-type: ios
+          issuer-id: ${{ secrets.ASC_ISSUER_ID }}
+          api-key-id: ${{ secrets.ASC_KEY_ID }}
+          api-private-key: ${{ env.ASC_KEY_CONTENTS }}

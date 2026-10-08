@@ -7,6 +7,13 @@ Opinionated: one recommended pipeline, alternatives noted.
 Native bring-up already works locally (Android debug APK on emulator,
 iOS on iPhone 17 sim). This doc covers running the same builds in CI.
 
+**Status:** both platforms are implemented — `.github/workflows/mobile-ios.yml`
+(unsigned simulator build + Maestro smoke on `main`/dispatch) and
+`.github/workflows/mobile-ios-release.yml` (secrets-gated archive →
+TestFlight on `mobile-v*`/`v*` tags, flow in
+`apps/pwa/maestro/smoke.yaml`) on the iOS side; `mobile-android.yml` /
+`mobile-android-release.yml` (§2) on the Android side.
+
 ## The one thing that makes this repo different
 
 `apps/pwa` is a **One** app, not a stock RN app. `apps/pwa/android/` and
@@ -47,6 +54,13 @@ Gradle / `xcodebuild` job — nothing Expo-specific left.
   v4-era majors — bump it when these land).
 
 ## 1. iOS
+
+**Implemented:** `mobile-ios.yml` / `mobile-ios-release.yml` above follow
+this design. Two deltas from the sketches below: the Debug `.app` loads
+JS from Metro (the CI job starts `pnpm dev:native` + a local `klk-relay`
+on `:3334` for the smoke test), and signing uses
+`xcodebuild -allowProvisioningUpdates` with ASC API-key auth flags plus
+an explicitly installed profile, instead of `download-provisioning-profiles`.
 
 **Actions:** `maxim-lobanov/setup-xcode@v1` (v1.7.0, Mar 2026, Node 24 —
 [maintained](https://github.com/maxim-lobanov/setup-xcode/releases))
@@ -167,10 +181,11 @@ from the CLI ([docs](https://docs.maestro.dev/maestro-flows/flow-control-and-log
   Aug 2026 — [maintained](https://github.com/ReactiveCircus/android-emulator-runner/releases))
   boots a KVM emulator on ubuntu and runs your script inside it:
   install the debug APK, `maestro test .maestro/`.
-- **iOS:** run on the macOS job — `maestro start-device --platform ios`
-  (or `xcrun simctl boot`), `maestro test`. Maestro's own CI does
-  exactly this on `macos-26` runners
-  ([test-e2e.yaml](https://github.com/mobile-dev-inc/Maestro/blob/main/.github/workflows/test-e2e.yaml)).
+- **iOS:** run on the macOS job — `maestro test` against a booted sim.
+  `maestro start-device --platform ios` hardcodes iPhone-11/iOS 17.5,
+  which `macos-26` images no longer ship — the workflow instead
+  `xcrun simctl create`s on the newest available runtime, boots, and
+  installs the `.app`; `maestro test` attaches to it.
 - **Paid alternative:** `mobile-dev-inc/action-maestro-cloud@v3` —
   managed devices, `MAESTRO_CLOUD_API_KEY` + project id
   ([docs](https://docs.maestro.dev/maestro-cloud/ci-cd-integration/github-actions)).
@@ -184,13 +199,16 @@ Flows go in `.maestro/`; none exist yet — writing smoke flows
 Two workflows. Builds on PR stay on Linux; macOS only on
 `main`/nightly/dispatch; signed builds only on tags.
 
-> **Status:** the Android half is live — `android-debug` landed as
-> [`mobile-android.yml`](../../.github/workflows/mobile-android.yml)
-> (PR/main only; the `android-e2e` nightly job below is not yet wired)
-> and `android-release` as
-> [`mobile-android-release.yml`](../../.github/workflows/mobile-android-release.yml)
+> **Status:** both halves are live, split per-platform —
+> `android-debug` as [`mobile-android.yml`](../../.github/workflows/mobile-android.yml)
+> (PR/main only; the `android-e2e` nightly job below is not yet wired),
+> `android-release` as [`mobile-android-release.yml`](../../.github/workflows/mobile-android-release.yml)
 > (tags `mobile-v*`/`v*` + dispatch, `mobile-latest` moving prerelease,
-> gated Play upload). iOS jobs below remain the plan.
+> gated Play upload), `ios-sim` as
+> [`mobile-ios.yml`](../../.github/workflows/mobile-ios.yml) (main/dispatch
+> — Maestro wired, not the `if:` placeholder below), and `ios-release` as
+> [`mobile-ios-release.yml`](../../.github/workflows/mobile-ios-release.yml)
+> (`mobile-v*`/`v*` tags, secrets-gated).
 
 ### `.github/workflows/mobile.yml`
 
@@ -371,16 +389,27 @@ jobs:
           app-type: ios
 ```
 
-### Secrets inventory
+### Secrets
 
-| Secret                                                                                              | Job                            | Notes                                             |
-| --------------------------------------------------------------------------------------------------- | ------------------------------ | ------------------------------------------------- |
-| _(none)_                                                                                            | all debug/sim/artifact jobs    | `GITHUB_TOKEN` only                               |
-| `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` | `android-release`              | base64 upload keystore (mint guide in §2 Secrets) |
-| `GP_SERVICE_ACCOUNT_JSON`                                                                           | `publish-play` → Play internal | service account JSON; job skipped when unset      |
-| `IOS_DIST_CERT_P12_BASE64`, `IOS_DIST_CERT_PASSWORD`                                                | `ios-release`                  | distribution cert                                 |
-| `APP_STORE_CONNECT_API_KEY_ID`, `APP_STORE_CONNECT_ISSUER_ID`, `APP_STORE_CONNECT_API_KEY` (`.p8`)  | `ios-release` + profile fetch  | role App Manager                                  |
-| `FIREBASE_APP_ID_*`, service-account JSON                                                           | Firebase alt                   | skip if GH artifacts suffice                      |
+iOS secrets are minted via App Store Connect / Apple Developer below;
+the Android set has its own mint guide in §2 Secrets.
+
+| Secret | Job | How to mint |
+| --- | --- | --- |
+| _(none)_ | all debug/sim/artifact jobs | `GITHUB_TOKEN` only |
+| `ASC_KEY_ID` | `ios-release` (gate + signing + upload) | App Store Connect → Users and Access → Integrations → App Store Connect API → **+** (role: **App Manager**) → the key's ID column |
+| `ASC_ISSUER_ID` | `ios-release` | Same page — Issuer ID shown above the key table |
+| `ASC_KEY_BASE64` | `ios-release` | Download `AuthKey_<KEY_ID>.p8` when creating the key (**one-time download**) → `base64 -i AuthKey_*.p8 \| pbcopy` |
+| `IOS_BUILD_CERTIFICATE_BASE64` | `ios-release` | developer.apple.com → Certificates → **+** → *Apple Distribution* (CSR from Keychain Access → Certificate Assistant) → import the `.cer`, then Keychain Access → My Certificates → export cert **with its private key** as `.p12` → `base64 -i dist.p12` |
+| `IOS_P12_PASSWORD` | `ios-release` | The password chosen at `.p12` export |
+| `IOS_PROVISIONING_PROFILE_BASE64` | `ios-release` (optional but preferred) | developer.apple.com → Profiles → **+** → *App Store Connect* → App ID `club.pinya.app` → select the distribution cert → download `.mobileprovision` → `base64 -i profile.mobileprovision`. If unset, `-allowProvisioningUpdates` lets Xcode fetch/create one via the ASC key. |
+| `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` | `android-release` | base64 upload keystore — mint guide in §2 Secrets |
+| `GP_SERVICE_ACCOUNT_JSON` | `publish-play` → Play internal | service account JSON; job skipped when unset — mint guide in §2 Secrets |
+| `FIREBASE_APP_ID_*`, service-account JSON | Firebase alt | skip if GH artifacts suffice |
+
+`signing-check` gates on `ASC_KEY_ID` only — it is the cheapest secret to
+mint and the whole job is useless without it — but the archive needs the
+full set (or `ASC_*` + cert, letting Xcode mint the profile).
 
 ### Minute budget (private repo, 2,000 free min/mo)
 
@@ -438,3 +467,98 @@ before we have more testers than a GH release link can serve.
 | `mercuretechnologies/xprem`                    | rolling          | Oct 2026                                        |
 | `wzieba/Firebase-Distribution-Github-Action`   | v1.7.1           | **stale (Mar 2025) — use `firebase-tools` CLI** |
 | `fastlane` / `match`                           | 2.237 on runners | maintained; only `template_name` deprecated     |
+| `cirruslabs/tart`                              | rolling          | Oct 2026                                        |
+| `cirruslabs/orchard`                           | rolling          | Oct 2026                                        |
+| `expo/eas-cli`                                 | rolling          | Oct 2026                                        |
+| `callstack/repack`                             | rolling          | Oct 2026                                        |
+| `@react-native-feel/deploy`                    | 0.3.0            | Oct 2026 — days old                             |
+| `MobAI-App/ios-builder`                        | rolling          | Oct 2026                                        |
+
+## Alternative build/publish substrates
+
+Evaluated as replacements or additions to the GitHub-hosted macOS layer
+(the runner, not the Xcode steps — those are ours either way).
+
+### tart + orchard — self-hosted Apple Silicon (**recommended upgrade path**)
+
+[cirruslabs/tart](https://github.com/cirruslabs/tart) (7.4k★, commits
+Oct 2026) runs disposable macOS/Linux VMs on Apple Silicon through
+Virtualization.framework; [cirruslabs/orchard](https://github.com/cirruslabs/orchard)
+(~560★, active) orchestrates a cluster of tart hosts. Both are Cirrus
+Labs projects — the same stack their hosted CI runs on. (The list that
+prompted this eval cited `openai/tart`/`openai/orchard` — those repos
+don't exist; the Cirrus Labs ones are the real projects.)
+
+We already own the hardware: the Mac mini that did the PR #20 iOS
+bring-up. The path is: install tart + orchard on it, bake a golden VM
+image (Xcode + CocoaPods + pnpm + this repo's toolchain — the blueprint
+for it is a maintenance chore we take on), register a GitHub
+self-hosted runner per ephemeral VM, then change one line in each
+workflow — `runs-on: macos-latest` → `runs-on: [self-hosted, macos]`.
+Every step above `actions/checkout` runs unchanged.
+
+**When to switch:** when iOS CI becomes routine — the private-repo minute
+budget caps hosted macOS at ~8 builds/month, while the mini is idle
+capacity. Doing it before then buys ops work (image updates, runner
+lifecycle, keeping the mini patched) for minutes we aren't spending.
+
+### expo/eas-cli — hosted build service (fallback if DIY breaks)
+
+[eas-cli](https://github.com/expo/eas-cli) (1.4k★, commits daily) is
+`eas build`/`submit`/`update` on Expo's infra: managed signing
+credentials, build queue, TestFlight/Play submit. Nothing in our stack
+blocks it (`expo` is already a dep; prebuild is the same code path).
+
+**When to switch:** if the DIY YAML starts failing faster than we can
+maintain it — canary-expo skew, pnpm-patch drift, a signing change we
+can't debug without a paid EAS seat's support. Middle option:
+`eas build --local` runs the same pipeline *on the Mac mini* — EAS
+machinery, our hardware, no hosted dependency or per-build cost.
+Watch the free tier: EAS caps build minutes; our volume is small enough
+to fit until it isn't.
+
+### callstack/repack — bundler, not distribution
+
+[repack](https://github.com/callstack/repack) (1.9k★, active) swaps
+Metro for webpack — Module Federation, mature code splitting, the whole
+webpack plugin surface. It changes how JS is bundled, not where or how
+the native app builds/ships. **Irrelevant today** — our bundling lives
+in One/vxrn + Metro and is already patched to work; revisit only if we
+need micro-frontend-style lazy loading or Metro hits a wall vxrn can't
+patch around. Would be an app change, not a CI change.
+
+### reactnativefeel.com/deploy — EAS-compatible facade over GH Actions
+
+[`@react-native-feel/deploy`](https://reactnativefeel.com/deploy) is a
+CLI (`rnd build`/`rnd submit`) that reads `eas.json` verbatim and emits
+GitHub Actions workflows in *your* repo — i.e. the same hosted macOS
+runners at the same 10× billing, with EAS's command surface instead of
+hand-written YAML. Signing stays in repo secrets; nothing leaves for
+their infra.
+
+Trust/cost read: published Oct 2026, v0.3.0, days old, single author
+(bidah), and the linked source repo isn't publicly browsable — so the
+codegen can't be audited ahead of time. What it emits is reviewable YAML
+in your own tree, which bounds the risk, but it solves a problem we
+don't have: the workflows above are already written and reviewed.
+**When:** only if we later adopt `eas.json` as a config format without
+adopting EAS's infra.
+
+### MobAI-App/ios-builder — dispatch wrapper, same substrate
+
+[MobAI-App/ios-builder](https://github.com/MobAI-App/ios-builder)
+(1.1k★, active) markets "iOS builds without a Mac" — but the builds still
+run on GitHub Actions macOS runners (or Codemagic/Bitrise): the CLI
+scaffolds a workflow, triggers it, and downloads the IPA artifact back
+to a Windows/Linux workstation. Its real value-add is the MobAI app's
+simulator streaming for devs who own no Mac. We own a Mac and already
+wrote the workflow by hand — it's a dispatch indirection with zero
+capability gain for us. **Skip.**
+
+### Stance
+
+GH hosted runners now — green, zero ops, ~8 iOS builds/month fits the
+current cadence. **tart + orchard on the Mac mini is the upgrade path**
+the moment volume makes 10× billing hurt or we want per-PR iOS builds.
+EAS is the fallback if DIY maintenance ever costs more than a
+subscription; repack/rnd/ios-builder don't map onto our problems.
