@@ -1,0 +1,142 @@
+name: mobile-android-release
+
+# Signed Android release: tag push `mobile-v*` (or `v*`) cuts a named
+# release; every run also refreshes the moving `mobile-latest`
+# prerelease so a sideloadable APK is always one link away.
+# Play internal-track upload is a separate job, gated on
+# GP_SERVICE_ACCOUNT_JSON — builds stay shareable without Play creds.
+# See docs/ci-mobile.md §2/§4 + ### Secrets.
+
+on:
+  push:
+    tags: ["mobile-v*", "v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mobile-release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  ONE_SKIP_EXPO_SDK_CHECK: "1"
+
+jobs:
+  build:
+    name: release apk + aab
+    runs-on: ubuntu-latest
+    env:
+      HAS_KEYSTORE: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+        with:
+          run_install: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: pnpm
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v6
+
+      - name: Install dependencies
+        run: corepack pnpm install --frozen-lockfile
+
+      - name: Generate android/ (one prebuild)
+        run: CI=1 corepack pnpm --filter @klk/pwa prebuild:native
+
+      # Injects PINYA_UPLOAD_* props consumed by the signingConfigs.release
+      # block that apps/pwa/plugins/with-android-release-signing.cjs writes
+      # into the generated app/build.gradle. Without secrets the release
+      # buildType falls back to the debug keystore — still a shareable APK.
+      - name: Configure upload signing
+        if: env.HAS_KEYSTORE == 'true'
+        working-directory: apps/pwa/android
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > app/pinya-upload.keystore
+          {
+            echo "PINYA_UPLOAD_STORE_FILE=pinya-upload.keystore"
+            echo "PINYA_UPLOAD_STORE_PASSWORD=$ANDROID_KEYSTORE_PASSWORD"
+            echo "PINYA_UPLOAD_KEY_ALIAS=$ANDROID_KEY_ALIAS"
+            echo "PINYA_UPLOAD_KEY_PASSWORD=$ANDROID_KEY_PASSWORD"
+          } >> gradle.properties
+
+      - name: Assemble release APK + AAB
+        working-directory: apps/pwa/android
+        run: ./gradlew assembleRelease bundleRelease --no-daemon
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: pinya-release-android
+          path: |
+            apps/pwa/android/app/build/outputs/apk/release/app-release.apk
+            apps/pwa/android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 14
+          if-no-files-found: error
+
+      - name: Upload to GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        working-directory: apps/pwa/android/app/build/outputs
+        run: |
+          APK=apk/release/app-release.apk
+          AAB=bundle/release/app-release.aab
+          if [ "${{ startsWith(github.ref, 'refs/tags/') }}" = "true" ]; then
+            # release.yml also creates `v*` releases — create may race and
+            # lose; `|| true` so the upload below is the real gate.
+            gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || \
+              gh release create "$GITHUB_REF_NAME" --generate-notes || true
+            gh release upload "$GITHUB_REF_NAME" "$APK" "$AAB" --clobber
+          fi
+          gh release view mobile-latest >/dev/null 2>&1 || \
+            gh release create mobile-latest --title "mobile-latest" \
+              --notes "Continuous Android builds — moving tag. APK is sideloadable; AAB is for Play upload." \
+              --prerelease
+          gh release upload mobile-latest "$APK" "$AAB" --clobber
+
+  vars:
+    name: resolve optional inputs
+    runs-on: ubuntu-latest
+    outputs:
+      gp_service_account: ${{ steps.check.outputs.configured }}
+    steps:
+      - id: check
+        env:
+          GP_SERVICE_ACCOUNT_JSON: ${{ secrets.GP_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -n "$GP_SERVICE_ACCOUNT_JSON" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  publish-play:
+    name: play internal track
+    needs: [vars, build]
+    if: needs.vars.outputs.gp_service_account == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: pinya-release-android
+          path: dist
+
+      - uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GP_SERVICE_ACCOUNT_JSON }}
+          packageName: club.pinya.app
+          releaseFiles: dist/app-release.aab
+          track: internal

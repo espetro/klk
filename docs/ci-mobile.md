@@ -95,7 +95,7 @@ Two tiers of build:
 store. DerivedData caching (`~/Library/Developer/Xcode/DerivedData`)
 exists but pays off little on from-clean sim builds — skip it initially.
 
-## 2. Android
+## 2. Android — implemented
 
 `ubuntu-latest`, JDK 17 (temurin, `actions/setup-java@v6`), Gradle via
 `gradle/actions/setup-gradle@v6` (v6.4.0 —
@@ -107,8 +107,38 @@ cd apps/pwa/android && ./gradlew assembleDebug    # PR check / e2e feed
 cd apps/pwa/android && ./gradlew bundleRelease    # signed AAB, tags
 ```
 
+**Live now:**
+
+- [`../../.github/workflows/mobile-android.yml`](../../.github/workflows/mobile-android.yml)
+  — every PR + main push touching `apps/pwa|packages|patches`: prebuild →
+  `assembleDebug` → `pinya-debug-apk` artifact (14d). No secrets.
+- [`../../.github/workflows/mobile-android-release.yml`](../../.github/workflows/mobile-android-release.yml)
+  — tags `mobile-v*`/`v*` + dispatch: `assembleRelease` + `bundleRelease`
+  → signed APK + AAB → `mobile-latest` moving prerelease (and the tag
+  release). Play internal upload is a separate job gated on
+  `GP_SERVICE_ACCOUNT_JSON`.
+
 Release signing: base64 keystore + passwords in secrets, injected via
-env/`gradle.properties`. Distribution, cheapest → real:
+`gradle.properties`. The generated `app/build.gradle` has no release
+signingConfig, so `apps/pwa/plugins/with-android-release-signing.cjs`
+(an Expo config plugin registered in `app.json`) injects one that reads
+`PINYA_UPLOAD_*` properties — it survives every `one prebuild`
+regeneration and falls back to the debug keystore when no credentials
+are set (workflow_dispatch stays shareable without secrets).
+
+### Secrets
+
+Mint each in the repo's **Settings → Secrets and variables → Actions**:
+
+| Secret                      | How to mint                                                                                                                                                                                                                                                                                                                                                                             |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ANDROID_KEYSTORE_BASE64`   | `keytool -genkeypair -v -keystore pinya-upload.keystore -alias pinya -keyalg RSA -keysize 2048 -validity 10000` then `base64 -w0 pinya-upload.keystore \| pbcopy` — paste the base64. Keep the `.keystore` file backed up outside the repo (never commit it).                                                                                                                           |
+| `ANDROID_KEYSTORE_PASSWORD` | The store password you gave `keytool`. Avoid `\`, leading spaces, and `#` — it lands unquoted in `gradle.properties`.                                                                                                                                                                                                                                                                   |
+| `ANDROID_KEY_ALIAS`         | `pinya` (whatever `-alias` you used above).                                                                                                                                                                                                                                                                                                                                             |
+| `ANDROID_KEY_PASSWORD`      | The key password (same as store password if you pressed enter at the prompt).                                                                                                                                                                                                                                                                                                           |
+| `GP_SERVICE_ACCOUNT_JSON`   | Play Console → **Setup → API access** → link/create a Google Cloud project → **Service accounts** → create → **View Players/permissions** → grant the app access with _Release to testing tracks_ → in Google Cloud create a JSON key for that service account → paste the whole JSON blob. Optional: without it the `publish-play` job is skipped and releases still upload to GitHub. |
+
+Distribution, cheapest → real:
 
 1. **`actions/upload-artifact`** / attach to the moving `latest`
    prerelease (same pattern as `release.yml`). Zero cost, zero secrets.
@@ -151,6 +181,14 @@ Flows go in `.maestro/`; none exist yet — writing smoke flows
 Two workflows. Builds on PR stay on Linux; macOS only on
 `main`/nightly/dispatch; signed builds only on tags.
 
+> **Status:** the Android half is live — `android-debug` landed as
+> [`mobile-android.yml`](../../.github/workflows/mobile-android.yml)
+> (PR/main only; the `android-e2e` nightly job below is not yet wired)
+> and `android-release` as
+> [`mobile-android-release.yml`](../../.github/workflows/mobile-android-release.yml)
+> (tags `mobile-v*`/`v*` + dispatch, `mobile-latest` moving prerelease,
+> gated Play upload). iOS jobs below remain the plan.
+
 ### `.github/workflows/mobile.yml`
 
 ```yaml
@@ -161,7 +199,7 @@ on:
     paths: ["apps/pwa/**", "packages/**", "patches/**"]
   pull_request:
     paths: ["apps/pwa/**", "packages/**", "patches/**"]
-  schedule: [{ cron: "17 3 * * *" }]   # nightly e2e
+  schedule: [{ cron: "17 3 * * *" }] # nightly e2e
   workflow_dispatch:
 
 concurrency:
@@ -172,7 +210,7 @@ env:
   ONE_SKIP_EXPO_SDK_CHECK: "1"
 
 jobs:
-  android-debug:                       # every PR — Linux minutes are 1×
+  android-debug: # every PR — Linux minutes are 1×
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -192,7 +230,7 @@ jobs:
           name: pinya-debug-apk
           path: apps/pwa/android/app/build/outputs/apk/debug/*.apk
 
-  android-e2e:                         # nightly + manual only
+  android-e2e: # nightly + manual only
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
@@ -225,7 +263,7 @@ jobs:
             adb install apps/pwa/android/app/build/outputs/apk/debug/app-debug.apk
             maestro test .maestro/
 
-  ios-sim:                             # macOS minutes are 10× — gate it
+  ios-sim: # macOS minutes are 10× — gate it
     if: github.event_name != 'pull_request'
     runs-on: macos-latest
     steps:
@@ -275,7 +313,7 @@ on:
 permissions: { contents: write }
 
 jobs:
-  android-release:                     # tag android-v* → AAB on release
+  android-release: # tag android-v* → AAB on release
     if: startsWith(github.ref, 'refs/tags/android-v')
     runs-on: ubuntu-latest
     steps:
@@ -283,14 +321,14 @@ jobs:
       # pnpm/node/java/gradle/prebuild same as android-debug, then:
       - run: base64 -d <<< "$ANDROID_KEYSTORE_B64" > app/keystore.jks
         working-directory: apps/pwa/android
-        env: { ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }} }
+        env: { ANDROID_KEYSTORE_B64: $, { { secrets.ANDROID_KEYSTORE_BASE64 } } }
       # the prebuild'd app/build.gradle needs a signingConfigs.release
       # block (env-driven keystore path/passwords) — inject via an Expo
       # config plugin so it survives each regeneration
       - run: ./gradlew bundleRelease
         working-directory: apps/pwa/android
       - run: gh release upload "$GITHUB_REF_NAME" apps/pwa/android/app/build/outputs/bundle/release/*.aab --clobber
-        env: { GH_TOKEN: ${{ github.token }} }
+        env: { GH_TOKEN: $, { { github.token } } }
       # Play internal track when ready:
       # - uses: r0adkll/upload-google-play@v1
       #   with:
@@ -299,7 +337,7 @@ jobs:
       #     releaseFiles: apps/pwa/android/app/build/outputs/bundle/release/*.aab
       #     track: internal
 
-  ios-release:                         # tag ios-v* → TestFlight
+  ios-release: # tag ios-v* → TestFlight
     if: startsWith(github.ref, 'refs/tags/ios-v')
     runs-on: macos-latest
     steps:
@@ -332,24 +370,24 @@ jobs:
 
 ### Secrets inventory
 
-| Secret | Job | Notes |
-| --- | --- | --- |
-| _(none)_ | all debug/sim/artifact jobs | `GITHUB_TOKEN` only |
-| `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` | `android-release` | base64 upload keystore |
-| `PLAY_SERVICE_ACCOUNT_JSON` | `android-release` → Play | release-manager service account |
-| `IOS_DIST_CERT_P12_BASE64`, `IOS_DIST_CERT_PASSWORD` | `ios-release` | distribution cert |
-| `APP_STORE_CONNECT_API_KEY_ID`, `APP_STORE_CONNECT_ISSUER_ID`, `APP_STORE_CONNECT_API_KEY` (`.p8`) | `ios-release` + profile fetch | role App Manager |
-| `FIREBASE_APP_ID_*`, service-account JSON | Firebase alt | skip if GH artifacts suffice |
+| Secret                                                                                              | Job                            | Notes                                             |
+| --------------------------------------------------------------------------------------------------- | ------------------------------ | ------------------------------------------------- |
+| _(none)_                                                                                            | all debug/sim/artifact jobs    | `GITHUB_TOKEN` only                               |
+| `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` | `android-release`              | base64 upload keystore (mint guide in §2 Secrets) |
+| `GP_SERVICE_ACCOUNT_JSON`                                                                           | `publish-play` → Play internal | service account JSON; job skipped when unset      |
+| `IOS_DIST_CERT_P12_BASE64`, `IOS_DIST_CERT_PASSWORD`                                                | `ios-release`                  | distribution cert                                 |
+| `APP_STORE_CONNECT_API_KEY_ID`, `APP_STORE_CONNECT_ISSUER_ID`, `APP_STORE_CONNECT_API_KEY` (`.p8`)  | `ios-release` + profile fetch  | role App Manager                                  |
+| `FIREBASE_APP_ID_*`, service-account JSON                                                           | Firebase alt                   | skip if GH artifacts suffice                      |
 
 ### Minute budget (private repo, 2,000 free min/mo)
 
-| Job | Runner | ~wall time | Billed | When |
-| --- | --- | --- | --- | --- |
-| `android-debug` | ubuntu | ~15 min | 15 | every PR |
-| `android-e2e` | ubuntu | ~25 min | 25 | nightly |
-| `ios-sim` (+maestro) | macos | ~25 min | ~250 | main/nightly |
-| `android-release` | ubuntu | ~20 min | 20 | tag |
-| `ios-release` | macos | ~30 min | ~300 | tag |
+| Job                  | Runner | ~wall time | Billed | When         |
+| -------------------- | ------ | ---------- | ------ | ------------ |
+| `android-debug`      | ubuntu | ~15 min    | 15     | every PR     |
+| `android-e2e`        | ubuntu | ~25 min    | 25     | nightly      |
+| `ios-sim` (+maestro) | macos  | ~25 min    | ~250   | main/nightly |
+| `android-release`    | ubuntu | ~20 min    | 20     | tag          |
+| `ios-release`        | macos  | ~30 min    | ~300   | tag          |
 
 → Roughly **8 iOS builds or 130 Linux builds/month** on the free tier.
 That is why iOS is not a PR gate. Upgrade to a paid plan or restrict
@@ -383,17 +421,17 @@ before we have more testers than a GH release link can serve.
 
 ## Verified-maintained checklist (Oct 2026)
 
-| Action/tool | Latest | Last activity |
-| --- | --- | --- |
-| `maxim-lobanov/setup-xcode` | v1.7.0 | Mar 2026, Node 24 |
-| `gradle/actions/setup-gradle` | v6.4.0 | Sep 2026 |
-| `ReactiveCircus/android-emulator-runner` | v2.38.0 | Aug 2026 |
-| `Apple-Actions/import-codesign-certs` | v7.0.0 | current |
-| `Apple-Actions/download-provisioning-profiles` | v6.1.0 | Sep 2026 |
-| `Apple-Actions/upload-testflight-build` | v5.5.1 | Oct 2026 |
-| `mobile-dev-inc/Maestro` (CLI) | rolling | commits daily |
-| `mobile-dev-inc/action-maestro-cloud` | v3.0.1 | current |
-| `r0adkll/upload-google-play` | v1.1.5 | Sep 2026 |
-| `mercuretechnologies/xprem` | rolling | Oct 2026 |
-| `wzieba/Firebase-Distribution-Github-Action` | v1.7.1 | **stale (Mar 2025) — use `firebase-tools` CLI** |
-| `fastlane` / `match` | 2.237 on runners | maintained; only `template_name` deprecated |
+| Action/tool                                    | Latest           | Last activity                                   |
+| ---------------------------------------------- | ---------------- | ----------------------------------------------- |
+| `maxim-lobanov/setup-xcode`                    | v1.7.0           | Mar 2026, Node 24                               |
+| `gradle/actions/setup-gradle`                  | v6.4.0           | Sep 2026                                        |
+| `ReactiveCircus/android-emulator-runner`       | v2.38.0          | Aug 2026                                        |
+| `Apple-Actions/import-codesign-certs`          | v7.0.0           | current                                         |
+| `Apple-Actions/download-provisioning-profiles` | v6.1.0           | Sep 2026                                        |
+| `Apple-Actions/upload-testflight-build`        | v5.5.1           | Oct 2026                                        |
+| `mobile-dev-inc/Maestro` (CLI)                 | rolling          | commits daily                                   |
+| `mobile-dev-inc/action-maestro-cloud`          | v3.0.1           | current                                         |
+| `r0adkll/upload-google-play`                   | v1.1.5           | Sep 2026                                        |
+| `mercuretechnologies/xprem`                    | rolling          | Oct 2026                                        |
+| `wzieba/Firebase-Distribution-Github-Action`   | v1.7.1           | **stale (Mar 2025) — use `firebase-tools` CLI** |
+| `fastlane` / `match`                           | 2.237 on runners | maintained; only `template_name` deprecated     |
