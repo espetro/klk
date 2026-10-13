@@ -25,9 +25,6 @@ concurrency:
   group: mobile-android-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  ONE_SKIP_EXPO_SDK_CHECK: "1"
-
 jobs:
   debug-apk:
     name: build debug apk

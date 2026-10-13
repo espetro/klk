@@ -19,9 +19,6 @@ concurrency:
   group: mobile-release-${{ github.ref }}
   cancel-in-progress: false
 
-env:
-  ONE_SKIP_EXPO_SDK_CHECK: "1"
-
 jobs:
   build:
     name: release apk + aab

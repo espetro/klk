@@ -19,8 +19,6 @@ concurrency:
   group: mobile-ios-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  ONE_SKIP_EXPO_SDK_CHECK: "1"
   # brew Ruby / CocoaPods crash without a UTF-8 locale (Mac mini bring-up).
   LANG: en_US.UTF-8
   LC_ALL: en_US.UTF-8

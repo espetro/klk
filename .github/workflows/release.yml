@@ -53,8 +53,6 @@ jobs:
           cache: pnpm
 
       - name: Build PWA
-        env:
-          ONE_SKIP_EXPO_SDK_CHECK: "1"
         run: |
           corepack pnpm install --frozen-lockfile
           corepack pnpm --filter @klk/pwa build

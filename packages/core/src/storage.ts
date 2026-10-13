@@ -1,6 +1,6 @@
 // Sync key-value storage shared by identity keys, sealed-circle keys, and
 // small UI flags. Web builds resolve this file (localStorage); native
-// builds resolve ./storage.native.ts (SQLite via expo-sqlite/kv-store) so
+// builds resolve ./storage.native.ts (One.Storage sync KV) so
 // domain code stays platform-free and synchronous.
 export interface KvStorage {
   getItem(key: string): string | null;
