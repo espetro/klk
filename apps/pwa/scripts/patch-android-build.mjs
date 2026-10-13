@@ -92,14 +92,16 @@ writeFileSync(gradlePropsPath, props);
 let settings = readFileSync(settingsGradlePath, "utf8");
 const mirrorRepo = `maven { url '${MAVEN_CENTRAL_MIRROR}' }`;
 if (!settings.includes(MAVEN_CENTRAL_MIRROR)) {
+  // Mirror first in plugin resolution (the path that 429s on shared IPs).
+  // Multi-line insertion: the generated pluginManagement block is one
+  // line, and same-line `repositories {}`/`includeBuild()` statements get
+  // Groovy-chained onto each other's (null) return values.
   if (!settings.includes("pluginManagement {")) {
     throw new Error("patch-android-build: no pluginManagement block in generated settings.gradle");
   }
-  // Mirror first in plugin resolution (the path that 429s on shared IPs);
-  // generated template has no repositories block of its own.
   settings = settings.replace(
     "pluginManagement {",
-    `pluginManagement { repositories { ${mirrorRepo}; gradlePluginPortal(); google(); mavenCentral() }`,
+    `pluginManagement {\n    repositories { ${mirrorRepo}; gradlePluginPortal(); google(); mavenCentral() }\n`,
   );
   // Same for dependency resolution across all subprojects, without
   // overriding project-declared repos (RN modules legitimately add some).
