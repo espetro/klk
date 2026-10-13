@@ -17,12 +17,22 @@
 // 2. ABI trim: drops legacy armeabi-v7a + x86 so native compile covers
 //    only modern devices (arm64) and emulators (x86_64) — the largest
 //    single build-time win for CI.
+//
+// 3. Maven mirror: shared-egress IPs get HTTP 429s from Maven Central and
+//    Gradle aborts (plugins.gradle.org redirects there for non-plugin
+//    artifacts). Google's GCS mirror of Central is prepended to the
+//    pluginManagement + dependencyResolutionManagement repo lists —
+//    resolution falls through to real Central/google() when the mirror
+//    lacks an artifact.
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const androidDir = join(import.meta.dirname, "..", "android");
 const buildGradlePath = join(androidDir, "app", "build.gradle");
 const gradlePropsPath = join(androidDir, "gradle.properties");
+const settingsGradlePath = join(androidDir, "settings.gradle");
+
+const MAVEN_CENTRAL_MIRROR = "https://maven-central.storage-download.googleapis.com/maven2";
 
 if (!existsSync(buildGradlePath)) {
   console.log("patch-android-build: no android/ project — skipping");
@@ -51,7 +61,9 @@ if (!gradle.includes("signingConfigs {")) {
     "patch-android-build: no `signingConfigs {` block in generated app/build.gradle — template changed?",
   );
 }
-if (
+if (gradle.includes(RELEASE_SIGNING_LINE)) {
+  console.log("patch-android-build: release signing already applied — skipping");
+} else if (
   !gradle.includes(
     "signingConfig signingConfigs.debug\n            minifyEnabled enableProguardInReleaseBuilds",
   )
@@ -59,14 +71,14 @@ if (
   throw new Error(
     "patch-android-build: release buildType layout changed — cannot inject release signingConfig",
   );
+} else {
+  gradle = gradle.replace("signingConfigs {", `signingConfigs {\n${RELEASE_SIGNING}`);
+  gradle = gradle.replace(
+    "signingConfig signingConfigs.debug\n            minifyEnabled enableProguardInReleaseBuilds",
+    `${RELEASE_SIGNING_LINE}\n            minifyEnabled enableProguardInReleaseBuilds`,
+  );
+  writeFileSync(buildGradlePath, gradle);
 }
-
-gradle = gradle.replace("signingConfigs {", `signingConfigs {\n${RELEASE_SIGNING}`);
-gradle = gradle.replace(
-  "signingConfig signingConfigs.debug\n            minifyEnabled enableProguardInReleaseBuilds",
-  `${RELEASE_SIGNING_LINE}\n            minifyEnabled enableProguardInReleaseBuilds`,
-);
-writeFileSync(buildGradlePath, gradle);
 
 let props = readFileSync(gradlePropsPath, "utf8");
 if (!props.includes("reactNativeArchitectures")) {
@@ -77,4 +89,22 @@ if (!props.includes("reactNativeArchitectures")) {
 props = props.replace(/reactNativeArchitectures=.*/g, "reactNativeArchitectures=arm64-v8a,x86_64");
 writeFileSync(gradlePropsPath, props);
 
-console.log("patch-android-build: release signing + ABI trim applied");
+let settings = readFileSync(settingsGradlePath, "utf8");
+const mirrorRepo = `maven { url '${MAVEN_CENTRAL_MIRROR}' }`;
+if (!settings.includes(MAVEN_CENTRAL_MIRROR)) {
+  if (!settings.includes("pluginManagement {")) {
+    throw new Error("patch-android-build: no pluginManagement block in generated settings.gradle");
+  }
+  // Mirror first in plugin resolution (the path that 429s on shared IPs);
+  // generated template has no repositories block of its own.
+  settings = settings.replace(
+    "pluginManagement {",
+    `pluginManagement { repositories { ${mirrorRepo}; gradlePluginPortal(); google(); mavenCentral() }`,
+  );
+  // Same for dependency resolution across all subprojects, without
+  // overriding project-declared repos (RN modules legitimately add some).
+  settings += `\ndependencyResolutionManagement { repositories { ${mirrorRepo} } }\n`;
+  writeFileSync(settingsGradlePath, settings);
+}
+
+console.log("patch-android-build: release signing + ABI trim + maven mirror applied");
