@@ -1,16 +1,16 @@
-// Native storage: expo-sqlite's kv-store gives synchronous KV persistence
-// (SQLite-backed), which the domain layer needs — circle keys decrypt
-// inline during event ingest, so an async API won't fit. Falls back to
-// memory when the native module isn't linked (e.g. a stale dev binary).
+// Native storage: One.Storage (One v2's Nitro KV store) gives synchronous KV
+// persistence, which the domain layer needs — circle keys decrypt inline
+// during event ingest, so an async API won't fit. Falls back to memory when
+// the native module isn't linked (e.g. a stale dev binary).
 import type { KvStorage } from "./storage.ts";
 
 declare const require: (id: string) => unknown;
 
-interface SqliteKv {
-  getItemSync(key: string): string | null;
-  setItemSync(key: string, value: string): void;
-  removeItemSync(key: string): void;
-  getAllKeysSync(): string[];
+interface OneStorage {
+  getItem(key: string): string | null;
+  setItem(key: string, value: string): void;
+  removeItem(key: string): void;
+  getAllKeys(): string[];
 }
 
 const memoryStorage = (): KvStorage => {
@@ -23,18 +23,20 @@ const memoryStorage = (): KvStorage => {
   };
 };
 
-const sqlite = (): KvStorage | null => {
+const one = (): KvStorage | null => {
   try {
     // conditional native module — falls back when not linked
-    const mod = require("expo-sqlite/kv-store") as { default?: SqliteKv } & SqliteKv;
-    const kv = mod.default ?? mod;
-    if (typeof kv.getItemSync !== "function") return null;
+    const mod = require("one") as { One?: { Storage?: OneStorage } };
+    const kv = mod.One?.Storage;
+    if (typeof kv?.getItem !== "function") return null;
+    // Nitro throws at call time when the module isn't linked — probe once.
+    kv.getItem("__probe__");
     return {
-      getItem: (k) => kv.getItemSync(k),
-      setItem: (k, v) => kv.setItemSync(k, v),
-      removeItem: (k) => kv.removeItemSync(k),
+      getItem: (k) => kv.getItem(k),
+      setItem: (k, v) => kv.setItem(k, v),
+      removeItem: (k) => kv.removeItem(k),
       clear: () => {
-        for (const k of kv.getAllKeysSync()) kv.removeItemSync(k);
+        for (const k of kv.getAllKeys()) kv.removeItem(k);
       },
     };
   } catch {
@@ -42,4 +44,4 @@ const sqlite = (): KvStorage | null => {
   }
 };
 
-export const storage: KvStorage = sqlite() ?? memoryStorage();
+export const storage: KvStorage = one() ?? memoryStorage();

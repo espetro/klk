@@ -2,15 +2,38 @@ import { defineConfig } from "vite";
 import { one } from "one/vite";
 import { VitePWA } from "vite-plugin-pwa";
 
+type OnePluginOptions = NonNullable<Parameters<typeof one>[0]>;
+type OneNativeOptions = NonNullable<Exclude<OnePluginOptions["native"], false>>;
+
+const appManifest: NonNullable<OneNativeOptions["app"]> = {
+  // v2 app manifest — replaces the expo-shaped app.json.
+  name: "Pinya",
+  scheme: "club.pinya.app",
+  icon: { source: "./public/app-icon.png", backgroundColor: "#000000" },
+  splash: { source: "./public/splash.png", resizeMode: "contain", backgroundColor: "#000000" },
+  ios: { bundleId: "club.pinya.app", deploymentTarget: "17.0" },
+  android: { applicationId: "club.pinya.app" },
+};
+
+const nativeOptions: OneNativeOptions = process.env.TEST_METRO
+  ? {
+      app: appManifest,
+      bundler: "metro",
+      bundlerOptions: {
+        // the default metro config drops "native" from resolver
+        // platforms, so foo.native.ts never wins; restore it.
+        defaultConfigOverrides: (dc) => {
+          const platforms = new Set([...(dc?.resolver?.platforms ?? []), "native"]);
+          return {
+            ...dc,
+            resolver: { ...dc?.resolver, platforms: [...platforms] },
+          };
+        },
+      },
+    }
+  : { app: appManifest };
+
 export default defineConfig({
-  ssr: {
-    optimizeDeps: {
-      // expo-asset is pulled into SSR dep-scan via expo-constants/
-      // expo-linking and dies on a react-native-web asset-registry
-      // subpath — it's native-only, so keep it out of the SSR bundle.
-      exclude: ["expo-asset"],
-    },
-  },
   plugins: [
     one({
       web: {
@@ -19,38 +42,13 @@ export default defineConfig({
         experimentalBundledDev: !!process.env.BUNDLED_DEV,
       },
 
-      // unified build mode — pages, api routes, and middlewares all build
-      // against the same SSR server config (same defines, same plugins, same
-      // externalization rules) and drops the blanket `ssr.noExternal: true`.
-      // this is the direction One is moving; in the next major it becomes the
-      // default and `build.api` / `build.middleware` lose their separate
-      // config surfaces.
-      build: {
-        server: { unified: true },
-      },
-
       react: {
-        // React Compiler (babel-plugin-react-compiler) — auto-memoized
-        // renders; keep components compiler-clean (no Date() in render, etc.)
+        // React Compiler — auto-memoized renders; keep components
+        // compiler-clean (no Date() in render, etc.). Runs via Oxc.
         compiler: true,
       },
 
-      ...(process.env.TEST_METRO && {
-        native: {
-          bundler: "metro",
-          bundlerOptions: {
-            // expo's metro default config drops "native" from resolver
-            // platforms, so foo.native.ts never wins; restore it.
-            defaultConfigOverrides: (dc) => {
-              const platforms = new Set([...(dc?.resolver?.platforms ?? []), "native"]);
-              return {
-                ...dc,
-                resolver: { ...dc?.resolver, platforms: [...platforms] },
-              };
-            },
-          },
-        },
-      }),
+      native: nativeOptions,
     }),
     VitePWA({
       registerType: "autoUpdate",

@@ -3,7 +3,13 @@ packages:
   - "packages/*"
   - "tools/*"
 
+# Metro (native dev bundle) only resolves the app + workspace-root
+# node_modules — it does not walk .pnpm sibling dirs. Hoist the native
+# runtime deps the tamagui/one meta-packages pull in transitively.
+publicHoistPattern:
+  - "@tamagui/*"
+  - "@react-navigation/*"
+  - "react-native-*"
+
 patchedDependencies:
-  vxrn@1.27.1: patches/vxrn@1.27.1.patch
-  "@vxrn/vite-plugin-metro@1.27.1": patches/@vxrn__vite-plugin-metro@1.27.1.patch
   "react-native-get-random-values@2.0.0": patches/react-native-get-random-values@2.0.0.patch
