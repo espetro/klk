@@ -115,6 +115,9 @@ importers:
       vite-plugin-pwa:
         specifier: ^1.1.0
         version: 1.3.0(vite@8.3.3(@types/node@24.19.1)(esbuild@0.28.2)(jiti@1.21.7)(terser@5.51.2)(yaml@2.9.1))(workbox-build@7.4.1)(workbox-window@7.4.1)
+      vxrn:
+        specifier: ^2.6.11
+        version: 2.6.11(16bc315c5d86d3b52efd3c3374304017)
     devDependencies:
       '@react-native-community/cli':
         specifier: ^20.2.0
