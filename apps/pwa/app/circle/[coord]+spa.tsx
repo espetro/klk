@@ -8,12 +8,15 @@ import {
   $events,
   $identity,
   $rsvps,
+  $suggestions,
   circleColor,
   displayName,
   inviteLinkFor,
   storage,
 } from "@klk/core";
-import { Badge, EmptyState, EventCard, EventMap, ShareActions, palette } from "@klk/ui";
+import { recapCircle } from "@klk/ai";
+import { Badge, EmptyState, EventCard, EventMap, RecapCard, ShareActions, palette } from "@klk/ui";
+import { assistState } from "../../src/assist.ts";
 import { $bootState } from "../../src/boot.ts";
 import { API_ORIGIN, APP_ORIGIN } from "../../src/config.ts";
 import { notify } from "../../src/notify";
@@ -24,6 +27,7 @@ export default function CircleDetail() {
   const circle = useStore($circles)[coord];
   const events = useStore($events)[coord] ?? [];
   const rsvps = useStore($rsvps);
+  const suggestions = useStore($suggestions);
   const me = useStore($identity);
   const bootState = useStore($bootState);
   const router = useRouter();
@@ -77,6 +81,27 @@ export default function CircleDetail() {
 
   // already sorted by start time (see core client ingest)
   const upcoming = events;
+  const assist = assistState(me, coord, circle.tier);
+
+  const generateRecap = async (): Promise<string> => {
+    if (assist.transport === null) throw new Error("AI isn't available here");
+    const now = Math.floor(Date.now() / 1000);
+    const input = upcoming
+      .filter((e) => e.starts >= now - 86400)
+      .slice(0, 10)
+      .map((e) => {
+        const key = `${coord}:${e.id}`;
+        return {
+          title: e.title,
+          starts: e.starts,
+          ...(e.location !== undefined ? { location: e.location } : {}),
+          going: (rsvps[key] ?? []).filter((r) => r.status === "yes").length,
+          maybe: (rsvps[key] ?? []).filter((r) => r.status === "maybe").length,
+          openSuggestions: (suggestions[key] ?? []).length,
+        };
+      });
+    return recapCircle(assist.transport, circle.name !== "" ? circle.name : circle.slug, input);
+  };
 
   return (
     <YStack gap="$4" paddingTop="$6">
@@ -156,6 +181,12 @@ export default function CircleDetail() {
           Add to your calendar
         </Button>
       ) : null}
+
+      <RecapCard
+        available={assist.transport !== null}
+        sealedNotice={assist.sealedNotice}
+        onGenerate={generateRecap}
+      />
 
       <XStack justifyContent="space-between" alignItems="baseline">
         <Text fontSize={17} fontWeight="600" color={palette.ink}>

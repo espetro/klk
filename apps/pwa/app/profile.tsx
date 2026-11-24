@@ -14,6 +14,7 @@ import {
   storedUnlockMode,
 } from "@klk/core";
 import { npubDecode, npubEncode } from "@klk/proto";
+import { loadAiSettings, probeModels, saveAiSettings } from "@klk/ai";
 import { Field, ShareActions, lookupCity, palette } from "@klk/ui";
 import { createAndConnect, signOut } from "../src/boot.ts";
 import { reportBug } from "../src/analytics";
@@ -33,6 +34,13 @@ export default function Profile() {
   const [addInput, setAddInput] = useState("");
   const [bug, setBug] = useState("");
   const [busy, setBusy] = useState(false);
+  // AI helper settings — device-scoped (localStorage klk.ai), custom
+  // endpoint is the only path on sealed circles (spec §3.2/§4)
+  const [aiMode, setAiMode] = useState<"managed" | "custom">(() => loadAiSettings().mode);
+  const [aiBaseUrl, setAiBaseUrl] = useState(() => loadAiSettings().baseUrl);
+  const [aiKey, setAiKey] = useState(() => loadAiSettings().apiKey);
+  const [aiModel, setAiModel] = useState(() => loadAiSettings().model);
+  const [aiStatus, setAiStatus] = useState<string>();
   // PWA notifications probe: OS-level push needs a push service we don't
   // run yet — this captures the permission state honestly.
   const [perm, setPerm] = useState<NotificationPermission | "unsupported">(() =>
@@ -315,6 +323,137 @@ export default function Profile() {
             </YStack>
           )}
         </Field>
+
+        <YStack gap="$2">
+          <Text fontSize={13} color={palette.muted}>
+            AI helper
+          </Text>
+          <Text fontSize={12} color={palette.muted} lineHeight={17}>
+            {aiMode === "managed"
+              ? "Automatic — drafts and recaps just work on connected circles, nothing to set up."
+              : "Your own endpoint — required on sealed circles, where nothing may leave your device."}
+          </Text>
+          <XStack gap="$2">
+            <Button
+              size="$3"
+              borderRadius={6}
+              borderWidth={1}
+              borderColor={aiMode === "managed" ? palette.ink : palette.border}
+              backgroundColor={aiMode === "managed" ? palette.ink : palette.surface}
+              color={aiMode === "managed" ? "#FFFFFF" : palette.ink}
+              onPress={() => setAiMode("managed")}
+            >
+              Automatic
+            </Button>
+            <Button
+              size="$3"
+              borderRadius={6}
+              borderWidth={1}
+              borderColor={aiMode === "custom" ? palette.ink : palette.border}
+              backgroundColor={aiMode === "custom" ? palette.ink : palette.surface}
+              color={aiMode === "custom" ? "#FFFFFF" : palette.ink}
+              onPress={() => setAiMode("custom")}
+            >
+              My own endpoint
+            </Button>
+          </XStack>
+          {aiMode === "custom" ? (
+            <YStack gap="$2">
+              <Input
+                value={aiBaseUrl}
+                onChangeText={setAiBaseUrl}
+                placeholder="Endpoint URL — e.g. http://localhost:1234/v1"
+                autoCapitalize="none"
+                borderColor={palette.border}
+                backgroundColor={palette.surface}
+              />
+              <Input
+                value={aiKey}
+                onChangeText={setAiKey}
+                placeholder="API key (if your endpoint needs one)"
+                autoCapitalize="none"
+                secureTextEntry
+                borderColor={palette.border}
+                backgroundColor={palette.surface}
+              />
+              <Input
+                value={aiModel}
+                onChangeText={setAiModel}
+                placeholder="Model — e.g. llama-3.3-70b"
+                autoCapitalize="none"
+                borderColor={palette.border}
+                backgroundColor={palette.surface}
+              />
+              {aiStatus !== undefined ? (
+                <Text fontSize={12} color={palette.muted}>
+                  {aiStatus}
+                </Text>
+              ) : null}
+              <XStack gap="$2">
+                <Button
+                  size="$3"
+                  borderRadius={6}
+                  borderWidth={1}
+                  borderColor={palette.border}
+                  backgroundColor={palette.surface}
+                  color={palette.ink}
+                  disabled={aiBaseUrl.trim() === ""}
+                  onPress={() => {
+                    setAiStatus("Checking…");
+                    probeModels(aiBaseUrl.trim(), aiKey.trim())
+                      .then((models) =>
+                        setAiStatus(
+                          models.length === 0
+                            ? "Endpoint answers, but lists no models"
+                            : `Connected — ${models.length} models (${models.slice(0, 3).join(", ")}${models.length > 3 ? ", …" : ""})`,
+                        ),
+                      )
+                      .catch((e: unknown) =>
+                        setAiStatus(
+                          `Couldn't reach it — ${e instanceof Error ? e.message : String(e)}. Some providers block browser calls; a local endpoint or OpenRouter works.`,
+                        ),
+                      );
+                  }}
+                >
+                  Test connection
+                </Button>
+                <Button
+                  size="$3"
+                  borderRadius={6}
+                  backgroundColor={palette.ink}
+                  color="#FFFFFF"
+                  disabled={aiBaseUrl.trim() === "" || aiModel.trim() === ""}
+                  onPress={() => {
+                    saveAiSettings({
+                      mode: aiMode,
+                      baseUrl: aiBaseUrl.trim(),
+                      apiKey: aiKey.trim(),
+                      model: aiModel.trim(),
+                    });
+                    notify("AI settings saved");
+                  }}
+                >
+                  Save
+                </Button>
+              </XStack>
+            </YStack>
+          ) : (
+            <Button
+              size="$3"
+              borderRadius={6}
+              borderWidth={1}
+              borderColor={palette.border}
+              backgroundColor={palette.surface}
+              color={palette.ink}
+              onPress={() => {
+                saveAiSettings({ mode: "managed", baseUrl: "", apiKey: "", model: "" });
+                notify("AI helper set to automatic");
+              }}
+            >
+              Use automatic
+            </Button>
+          )}
+        </YStack>
 
         <YStack gap="$2">
           <Text fontSize={13} color={palette.muted}>
