@@ -28,6 +28,7 @@ func main() {
 		Enabled:     os.Getenv("AI_ENABLED") != "false",
 		UpstreamURL: os.Getenv("AI_UPSTREAM_URL"),
 		UpstreamKey: os.Getenv("AI_UPSTREAM_KEY"),
+		Model:       os.Getenv("AI_MODEL"),
 	}
 
 	handler, cleanup, err := server.New(dbPath, staticDir, aiCfg)

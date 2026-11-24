@@ -33,6 +33,9 @@ type AIConfig struct {
 	Enabled     bool
 	UpstreamURL string
 	UpstreamKey string
+	// Model is injected when the client sends none — model selection is
+	// a server-side decision (spec §3.1); empty leaves the body as-is.
+	Model string
 }
 
 const (
@@ -293,6 +296,12 @@ func aiHandler(store policy.Store, cfg AIConfig, budget *aiBudget) http.HandlerF
 			return
 		}
 		delete(raw, "circle")
+		if cfg.Model != "" {
+			if _, has := raw["model"]; !has {
+				m, _ := json.Marshal(cfg.Model)
+				raw["model"] = m
+			}
+		}
 		maxTokens := in.MaxTokens
 		if maxTokens <= 0 || maxTokens > aiMaxTokens {
 			maxTokens = aiMaxTokens
