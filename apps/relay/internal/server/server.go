@@ -17,13 +17,20 @@ import (
 
 // New returns an http.Handler for the relay + app endpoints, plus a
 // cleanup func. dbPath is the BoltDB file; staticDir serves the PWA
-// dist (empty = relay only).
-func New(dbPath, staticDir string) (http.Handler, func(), error) {
+// dist (empty = relay only). aiCfg wires the managed assistant proxy
+// (POST /api/ai/chat); the per-member budget lives in ai.bolt beside
+// the event store.
+func New(dbPath, staticDir string, aiCfg AIConfig) (http.Handler, func(), error) {
 	db := &boltdb.BoltBackend{Path: dbPath, MapSize: 1 << 30}
 	if err := db.Init(); err != nil {
 		return nil, nil, err
 	}
 
+	budget, err := openAIBudget(filepath.Join(filepath.Dir(dbPath), "ai.bolt"))
+	if err != nil {
+		db.Close()
+		return nil, nil, err
+	}
 	store := &lookup.Store{ES: db}
 	rl := khatru.NewRelay()
 	rl.Info.Name = "pinya"
@@ -58,9 +65,13 @@ func New(dbPath, staticDir string) (http.Handler, func(), error) {
 	})
 	mux.HandleFunc("GET /ics/{owner}/{slug}", icsFeed(store))
 	mux.HandleFunc("POST /api/cohort", cohortHandler(filepath.Dir(dbPath)))
+	mux.HandleFunc("POST /api/ai/chat", aiHandler(store, aiCfg, budget))
 	if staticDir != "" {
 		mux.Handle("/", spaHandler(staticDir))
 	}
 
-	return rl, func() { db.Close() }, nil
+	return rl, func() {
+		db.Close()
+		budget.Close()
+	}, nil
 }

@@ -65,6 +65,7 @@ Group=klk
 Environment=ADDR=127.0.0.1:3334
 Environment=DATA_DIR=/var/lib/klk
 Environment=STATIC_DIR=/var/lib/klk/pwa
+EnvironmentFile=-/etc/klk/klk.env
 ExecStart=/usr/local/bin/klk-relay
 Restart=on-failure
 RestartSec=3

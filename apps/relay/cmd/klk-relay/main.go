@@ -24,7 +24,13 @@ func main() {
 	dbPath := dataDir + "/events.bolt"
 	staticDir := os.Getenv("STATIC_DIR") // empty = relay only (dev)
 
-	handler, cleanup, err := server.New(dbPath, staticDir)
+	aiCfg := server.AIConfig{
+		Enabled:     os.Getenv("AI_ENABLED") != "false",
+		UpstreamURL: os.Getenv("AI_UPSTREAM_URL"),
+		UpstreamKey: os.Getenv("AI_UPSTREAM_KEY"),
+	}
+
+	handler, cleanup, err := server.New(dbPath, staticDir, aiCfg)
 	if err != nil {
 		log.Fatalf("open store %s: %v", dbPath, err)
 	}

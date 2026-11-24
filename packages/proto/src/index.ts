@@ -4,3 +4,4 @@ export * from "./crypto.ts";
 export * from "./events.ts";
 export * from "./relay.ts";
 export * from "./invite.ts";
+export * from "./http-auth.ts";
