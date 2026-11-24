@@ -1,5 +1,16 @@
 import type { ChatMessage } from "./transport.ts";
 
+// small models resolve relative dates much better with the weekday
+// spelled out; local time (not UTC) because "saturday morning" means
+// the member's own clock
+const withWeekday = (d: Date) => {
+  const weekday = d.toLocaleDateString("en-US", { weekday: "long" });
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const local = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  const offset = -d.getTimezoneOffset() / 60;
+  return `${local} (${weekday}, UTC${offset >= 0 ? "+" : ""}${offset})`;
+};
+
 // Prompt builders + parsers per feature (spec §2/§3.3). Draft features
 // get JSON-mode instructions and a field-by-field hand-rolled guard —
 // the repo has no zod dep, validate like toSuggestion does. The recap
@@ -29,7 +40,7 @@ export function eventDraftMessages(text: string, now: Date = new Date()): ChatMe
     },
     {
       role: "user",
-      content: `Current time: ${now.toISOString()} (local timezone offset ${-now.getTimezoneOffset() / 60}h)\n\nDescription: ${text}`,
+      content: `Current time: ${withWeekday(now)}\n\nDescription: ${text}`,
     },
   ];
 }
@@ -50,7 +61,7 @@ Only include fields the proposal actually changes; copy the current value for th
     },
     {
       role: "user",
-      content: `Current time: ${now.toISOString()}\n\nCurrent event: ${JSON.stringify({
+      content: `Current time: ${withWeekday(now)}\n\nCurrent event: ${JSON.stringify({
         title: event.title,
         start: isoOrNull(event.starts),
         end: isoOrNull(event.ends),
