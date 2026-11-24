@@ -147,7 +147,7 @@ func CheckRequest(ctx context.Context, filter nostr.Filter, st Store) (reject bo
 		return true, "auth-required: subscribe requires NIP-42 authentication"
 	}
 
-	for _, ref := range requestCircles(filter) {
+	for _, ref := range RequestCircles(filter) {
 		if !IsMember(ctx, st, ref, authed) && !readScopeCovers(ctx, st, authed, ref, CapRead) {
 			return true, "restricted: not a member of that circle"
 		}
@@ -172,9 +172,9 @@ func CheckRequest(ctx context.Context, filter nostr.Filter, st Store) (reject bo
 	return false, ""
 }
 
-// requestCircles resolves every circle a filter can touch: explicit `a`
+// RequestCircles resolves every circle a filter can touch: explicit `a`
 // refs plus `d`+`authors` combos when the filter can return circle defs.
-func requestCircles(filter nostr.Filter) []nostr.EntityPointer {
+func RequestCircles(filter nostr.Filter) []nostr.EntityPointer {
 	out := make([]nostr.EntityPointer, 0, 4)
 	for _, coord := range filter.Tags["a"] {
 		if ptr, err := nostr.ParseAddrString(coord); err == nil && ptr.Kind == KindCircle {

@@ -38,11 +38,15 @@ func New(dbPath, staticDir string, aiCfg AIConfig) (http.Handler, func(), error)
 	rl.Info.Software = "fyi.klk/relay"
 	rl.UseEventstore(db, 500)
 
-	// delegated (agent) writes get per-capability quotas on top of the ACL
+	// delegated (agent) writes get per-capability quotas on top of the
+	// ACL — buckets keyed (cap, agent) so a chatty rsvp agent can't
+	// starve its own postEvent quota; reads get their own heavier bucket
+	// that doesn't share the delegated-write window (spec §5)
 	agentWrites := policy.NewCapLimiter(map[string]int{
 		policy.CapPostEvent: 60,
 		policy.CapSetRsvp:   120,
 	}, time.Hour)
+	agentReads := policy.NewRateLimiter(240, time.Hour)
 	rl.OnEvent = func(ctx context.Context, ev nostr.Event) (bool, string) {
 		if reject, msg := policy.CheckStore(ctx, ev, store); reject {
 			return reject, msg
@@ -53,7 +57,22 @@ func New(dbPath, staticDir string, aiCfg AIConfig) (http.Handler, func(), error)
 		return false, ""
 	}
 	rl.OnRequest = func(ctx context.Context, f nostr.Filter) (bool, string) {
-		return policy.CheckRequest(ctx, f, store)
+		if reject, msg := policy.CheckRequest(ctx, f, store); reject {
+			return reject, msg
+		}
+		// any circle the requester reads without being a member is a
+		// delegated read — quota it separately (and heavily)
+		if authed, ok := khatru.GetAuthed(ctx); ok {
+			for _, ref := range policy.RequestCircles(f) {
+				if !policy.IsMember(ctx, store, ref, authed) {
+					if !agentReads.Allow(authed) {
+						return true, "rate-limited: delegated read quota exceeded"
+					}
+					break
+				}
+			}
+		}
+		return false, ""
 	}
 	// reads need auth → trigger the NIP-42 challenge on connect
 	rl.OnConnect = func(ctx context.Context) { khatru.RequestAuth(ctx) }

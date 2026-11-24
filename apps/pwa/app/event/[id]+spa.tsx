@@ -242,6 +242,7 @@ export default function EventDetail() {
               <YStack flex={1} gap={2}>
                 <Text fontSize={14} fontWeight="500" color={palette.ink}>
                   {s.title ?? event.title}
+                  {s.delegatedBy !== undefined ? " · agent" : ""}
                 </Text>
                 <Text fontSize={12} color={palette.muted}>
                   {fmt(s.starts ?? event.starts)}

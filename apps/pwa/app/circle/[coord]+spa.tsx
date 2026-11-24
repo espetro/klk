@@ -5,6 +5,7 @@ import { Share } from "react-native";
 import { Button, Text, XStack, YStack } from "tamagui";
 import {
   $circles,
+  $connected,
   $events,
   $identity,
   $rsvps,
@@ -16,6 +17,7 @@ import {
 } from "@klk/core";
 import { recapCircle } from "@klk/ai";
 import { Badge, EmptyState, EventCard, EventMap, RecapCard, ShareActions, palette } from "@klk/ui";
+import { AgentPanel } from "../../src/agent-panel.tsx";
 import { assistState } from "../../src/assist.ts";
 import { $bootState } from "../../src/boot.ts";
 import { API_ORIGIN, APP_ORIGIN } from "../../src/config.ts";
@@ -29,6 +31,7 @@ export default function CircleDetail() {
   const rsvps = useStore($rsvps);
   const suggestions = useStore($suggestions);
   const me = useStore($identity);
+  const connected = useStore($connected);
   const bootState = useStore($bootState);
   const router = useRouter();
   // agent-capability intro — shown once after the user's first successful
@@ -187,6 +190,8 @@ export default function CircleDetail() {
         sealedNotice={assist.sealedNotice}
         onGenerate={generateRecap}
       />
+
+      {me !== null ? <AgentPanel coord={coord} tier={circle.tier} connected={connected} /> : null}
 
       <XStack justifyContent="space-between" alignItems="baseline">
         <Text fontSize={17} fontWeight="600" color={palette.ink}>
