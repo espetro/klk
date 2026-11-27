@@ -9,6 +9,10 @@ services:
       - "3334:3334"
     volumes:
       - klk-data:/data
+    environment:
+      AI_UPSTREAM_URL: ${AI_UPSTREAM_URL:-}
+      AI_UPSTREAM_KEY: ${AI_UPSTREAM_KEY:-}
+      AI_ENABLED: ${AI_ENABLED:-true}
     mem_limit: 384m
     restart: unless-stopped
     healthcheck:

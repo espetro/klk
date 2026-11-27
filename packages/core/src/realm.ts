@@ -1,6 +1,7 @@
 import { atom, map } from "nanostores";
 import type { MapStore, WritableAtom } from "nanostores";
 import {
+  KIND_AGENT_SCOPE,
   KIND_CALENDAR_EVENT,
   KIND_CIRCLE,
   KIND_CIRCLE_MEMBER,
@@ -76,6 +77,16 @@ export interface AgentScopeInput {
   comment?: string;
 }
 
+export interface AgentScopeInfo {
+  scopeId: string; // `d` tag
+  agent: string; // agent pubkey hex
+  circles: string[]; // circle coords
+  caps: string[];
+  expiration?: number; // unix seconds; past = revoked/expired
+  comment?: string;
+  createdAt: number;
+}
+
 export interface ProfileInput {
   name?: string;
   username?: string;
@@ -117,6 +128,7 @@ export interface Realm {
   suggestChange(input: SuggestChangeInput): Promise<void>;
   applySuggestion(event: CalendarEvent, suggestion: Suggestion): Promise<CalendarEvent>;
   grantAgentScope(input: AgentScopeInput): Promise<string>;
+  listAgentScopes(): Promise<AgentScopeInfo[]>;
   toICS(events: CalendarEvent[], name: string): string;
   sealFor(coord: string, plaintext: string): string | null;
   openFor(coord: string, packed: string): string | null;
@@ -375,6 +387,8 @@ export function createRealm(): Realm {
     };
     const note = openFor(coord, ev.content) ?? ev.content;
     if (note !== "") out.note = note;
+    const delegator = delegatorOf(ev.tags);
+    if (delegator !== undefined) out.delegatedBy = delegator;
     const t = tag("title");
     if (t !== undefined) out.title = t;
     const st = tag("start");
@@ -541,20 +555,30 @@ export function createRealm(): Realm {
     event: CalendarEvent,
     suggestion: Suggestion,
   ): Promise<CalendarEvent> {
+    const starts = suggestion.starts ?? event.starts;
+    let ends = suggestion.ends ?? event.ends;
+    // a moved start can push past the retained end — carry the original
+    // duration forward instead of saving an inverted interval
+    if (ends !== undefined && ends <= starts) {
+      const duration =
+        event.ends !== undefined && event.ends > event.starts ? event.ends - event.starts : 3600;
+      ends = starts + duration;
+    }
+    // a renamed venue invalidates the old pin — drop it unless the
+    // suggestion carries replacement coordinates
+    const venueChanged =
+      suggestion.location !== undefined && suggestion.location !== event.location;
+    const geo = suggestion.geo ?? (venueChanged ? undefined : event.geo);
     const updated = await postEvent({
       coord: event.coord,
       id: event.id,
       title: suggestion.title ?? event.title,
-      starts: suggestion.starts ?? event.starts,
-      ...(suggestion.ends !== undefined || event.ends !== undefined
-        ? { ends: suggestion.ends ?? event.ends }
-        : {}),
+      starts,
+      ...(ends !== undefined ? { ends } : {}),
       ...(suggestion.location !== undefined || event.location !== undefined
         ? { location: suggestion.location ?? event.location }
         : {}),
-      ...(suggestion.geo !== undefined || event.geo !== undefined
-        ? { geo: suggestion.geo ?? event.geo }
-        : {}),
+      ...(geo !== undefined ? { geo } : {}),
       ...(event.summary !== undefined ? { summary: event.summary } : {}),
       ...(event.image !== undefined ? { image: event.image } : {}),
       ...(event.suggestable === true ? { suggestable: true } : {}),
@@ -585,6 +609,40 @@ export function createRealm(): Realm {
     const res = await r.publish(buildAgentScope({ ...input, id: input.scopeId }));
     if (!res.ok) throw new Error(`publish scope: ${res.reason}`);
     return scopeCoord(kp.pubkey, input.scopeId);
+  }
+
+  /** My published agent scopes, newest revision per `d` — the grant
+   * UI's source of truth (re-granting replaces; revoking is a re-grant
+   * with a past expiration). */
+  async function listAgentScopes(): Promise<AgentScopeInfo[]> {
+    const kp = requireIdentity();
+    const r = requireRelay();
+    const events = await r.query([{ authors: [kp.pubkey], kinds: [KIND_AGENT_SCOPE] }]);
+    const newest = new Map<string, (typeof events)[number]>();
+    for (const ev of events) {
+      const d = ev.tags.find((t) => t[0] === "d")?.[1] ?? "";
+      if (d === "") continue;
+      const cur = newest.get(d);
+      if (cur === undefined || ev.created_at > cur.created_at) newest.set(d, ev);
+    }
+    const out: AgentScopeInfo[] = [];
+    for (const [d, ev] of newest) {
+      const info: AgentScopeInfo = {
+        scopeId: d,
+        agent: ev.tags.find((t) => t[0] === "p")?.[1] ?? "",
+        circles: ev.tags.filter((t) => t[0] === "a").map((t) => t[1] ?? ""),
+        caps: ev.tags.filter((t) => t[0] === "cap").map((t) => t[1] ?? ""),
+        createdAt: ev.created_at,
+      };
+      const exp = ev.tags.find((t) => t[0] === "expiration")?.[1];
+      if (exp !== undefined) {
+        const n = Number(exp);
+        if (!Number.isNaN(n)) info.expiration = n;
+      }
+      if (ev.content !== "") info.comment = ev.content;
+      out.push(info);
+    }
+    return out.sort((a, b) => b.createdAt - a.createdAt);
   }
 
   // ---------- sealed content ----------
@@ -717,6 +775,7 @@ export function createRealm(): Realm {
     applySuggestion,
     toICS,
     grantAgentScope,
+    listAgentScopes,
     sealFor,
     openFor,
     fetchProfiles,

@@ -38,6 +38,7 @@ export interface Suggestion {
   geo?: readonly [number, number];
   note?: string; // free-text rationale (content)
   suggestedAt: number;
+  delegatedBy?: string; // delegator pubkey when proposed by an agent under a scope
 }
 
 /** Kind-0 profile card — what other users see. */

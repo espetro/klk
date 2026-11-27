@@ -394,18 +394,18 @@ jobs:
 iOS secrets are minted via App Store Connect / Apple Developer below;
 the Android set has its own mint guide in §2 Secrets.
 
-| Secret | Job | How to mint |
-| --- | --- | --- |
-| _(none)_ | all debug/sim/artifact jobs | `GITHUB_TOKEN` only |
-| `ASC_KEY_ID` | `ios-release` (gate + signing + upload) | App Store Connect → Users and Access → Integrations → App Store Connect API → **+** (role: **App Manager**) → the key's ID column |
-| `ASC_ISSUER_ID` | `ios-release` | Same page — Issuer ID shown above the key table |
-| `ASC_KEY_BASE64` | `ios-release` | Download `AuthKey_<KEY_ID>.p8` when creating the key (**one-time download**) → `base64 -i AuthKey_*.p8 \| pbcopy` |
-| `IOS_BUILD_CERTIFICATE_BASE64` | `ios-release` | developer.apple.com → Certificates → **+** → *Apple Distribution* (CSR from Keychain Access → Certificate Assistant) → import the `.cer`, then Keychain Access → My Certificates → export cert **with its private key** as `.p12` → `base64 -i dist.p12` |
-| `IOS_P12_PASSWORD` | `ios-release` | The password chosen at `.p12` export |
-| `IOS_PROVISIONING_PROFILE_BASE64` | `ios-release` (optional but preferred) | developer.apple.com → Profiles → **+** → *App Store Connect* → App ID `club.pinya.app` → select the distribution cert → download `.mobileprovision` → `base64 -i profile.mobileprovision`. If unset, `-allowProvisioningUpdates` lets Xcode fetch/create one via the ASC key. |
-| `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` | `android-release` | base64 upload keystore — mint guide in §2 Secrets |
-| `GP_SERVICE_ACCOUNT_JSON` | `publish-play` → Play internal | service account JSON; job skipped when unset — mint guide in §2 Secrets |
-| `FIREBASE_APP_ID_*`, service-account JSON | Firebase alt | skip if GH artifacts suffice |
+| Secret                                                                                              | Job                                     | How to mint                                                                                                                                                                                                                                                                   |
+| --------------------------------------------------------------------------------------------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| _(none)_                                                                                            | all debug/sim/artifact jobs             | `GITHUB_TOKEN` only                                                                                                                                                                                                                                                           |
+| `ASC_KEY_ID`                                                                                        | `ios-release` (gate + signing + upload) | App Store Connect → Users and Access → Integrations → App Store Connect API → **+** (role: **App Manager**) → the key's ID column                                                                                                                                             |
+| `ASC_ISSUER_ID`                                                                                     | `ios-release`                           | Same page — Issuer ID shown above the key table                                                                                                                                                                                                                               |
+| `ASC_KEY_BASE64`                                                                                    | `ios-release`                           | Download `AuthKey_<KEY_ID>.p8` when creating the key (**one-time download**) → `base64 -i AuthKey_*.p8 \| pbcopy`                                                                                                                                                             |
+| `IOS_BUILD_CERTIFICATE_BASE64`                                                                      | `ios-release`                           | developer.apple.com → Certificates → **+** → _Apple Distribution_ (CSR from Keychain Access → Certificate Assistant) → import the `.cer`, then Keychain Access → My Certificates → export cert **with its private key** as `.p12` → `base64 -i dist.p12`                      |
+| `IOS_P12_PASSWORD`                                                                                  | `ios-release`                           | The password chosen at `.p12` export                                                                                                                                                                                                                                          |
+| `IOS_PROVISIONING_PROFILE_BASE64`                                                                   | `ios-release` (optional but preferred)  | developer.apple.com → Profiles → **+** → _App Store Connect_ → App ID `club.pinya.app` → select the distribution cert → download `.mobileprovision` → `base64 -i profile.mobileprovision`. If unset, `-allowProvisioningUpdates` lets Xcode fetch/create one via the ASC key. |
+| `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` | `android-release`                       | base64 upload keystore — mint guide in §2 Secrets                                                                                                                                                                                                                             |
+| `GP_SERVICE_ACCOUNT_JSON`                                                                           | `publish-play` → Play internal          | service account JSON; job skipped when unset — mint guide in §2 Secrets                                                                                                                                                                                                       |
+| `FIREBASE_APP_ID_*`, service-account JSON                                                           | Firebase alt                            | skip if GH artifacts suffice                                                                                                                                                                                                                                                  |
 
 `signing-check` gates on `ASC_KEY_ID` only — it is the cheapest secret to
 mint and the whole job is useless without it — but the archive needs the
@@ -512,7 +512,7 @@ blocks it (`expo` is already a dep; prebuild is the same code path).
 **When to switch:** if the DIY YAML starts failing faster than we can
 maintain it — canary-expo skew, pnpm-patch drift, a signing change we
 can't debug without a paid EAS seat's support. Middle option:
-`eas build --local` runs the same pipeline *on the Mac mini* — EAS
+`eas build --local` runs the same pipeline _on the Mac mini_ — EAS
 machinery, our hardware, no hosted dependency or per-build cost.
 Watch the free tier: EAS caps build minutes; our volume is small enough
 to fit until it isn't.
@@ -531,7 +531,7 @@ patch around. Would be an app change, not a CI change.
 
 [`@react-native-feel/deploy`](https://reactnativefeel.com/deploy) is a
 CLI (`rnd build`/`rnd submit`) that reads `eas.json` verbatim and emits
-GitHub Actions workflows in *your* repo — i.e. the same hosted macOS
+GitHub Actions workflows in _your_ repo — i.e. the same hosted macOS
 runners at the same 10× billing, with EAS's command surface instead of
 hand-written YAML. Signing stays in repo secrets; nothing leaves for
 their infra.

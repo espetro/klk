@@ -95,6 +95,24 @@ sudo ufw enable
 After that, the VPS answers nothing on the public internet except
 through the tunnel.
 
+## Managed AI (assistant proxy)
+
+`POST /api/ai/chat` proxies OpenAI-compatible upstream for members of
+hosted circles (NIP-98 auth, per-member budgets — spec
+`docs/spec/2026-10-08-ai-integration.md`). Configure via env — on the
+VPS drop them in `/etc/klk/klk.env` (the unit reads it, mode 0600,
+never in the repo):
+
+| Var               | Default                                    | Meaning                        |
+| ----------------- | ------------------------------------------ | ------------------------------ |
+| `AI_ENABLED`      | `true`                                     | `false` → 503 kill switch      |
+| `AI_UPSTREAM_URL` | `https://api.illo.fyi/v1/chat/completions` | OpenAI-compatible endpoint     |
+| `AI_UPSTREAM_KEY` | _(empty)_                                  | server-held client key (`klk`) |
+
+`systemctl restart klk` after editing. Without a key the proxy still
+runs but upstream will reject — members see AI errors, so set the key
+when the `klk` entry lands in the gateway's `CLIENT_KEYS`.
+
 ## Cohort emails
 
 `POST /api/cohort` appends `{email,ts,ua}` to `/var/lib/klk/cohort.jsonl`

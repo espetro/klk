@@ -34,6 +34,9 @@ importers:
       '@callstack/liquid-glass':
         specifier: ^0.8.1
         version: 0.8.2(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3))(react@19.2.3)
+      '@klk/ai':
+        specifier: workspace:*
+        version: link:../../packages/ai
       '@klk/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -142,6 +145,19 @@ importers:
         version: 8.3.3(@types/node@24.19.1)(esbuild@0.28.2)(jiti@1.21.7)(terser@5.51.2)(yaml@2.9.1)
 
   apps/relay: {}
+
+  packages/ai:
+    dependencies:
+      '@klk/proto':
+        specifier: workspace:*
+        version: link:../proto
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.7(@types/node@26.6.4)(jiti@1.21.7)(lightningcss@1.33.0)(terser@5.51.2)(yaml@2.9.1)
 
   packages/core:
     dependencies:

@@ -31,7 +31,7 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
       flex={1}
       backgroundColor={palette.canvas}
       paddingTop={insets.top}
-      {...(Platform.OS === "web" ? { minHeight: "100vh" } : {})}
+      {...(Platform.OS === "web" ? { height: "100vh", overflow: "hidden" } : {})}
     >
       <YStack
         flex={1}
@@ -40,6 +40,10 @@ export const AppShell = ({ children }: { children: ReactNode }) => {
         alignSelf="center"
         paddingHorizontal="$4"
         paddingBottom={72 + insets.bottom}
+        // web: the document itself doesn't scroll (root containers pin
+        // height to the viewport), so the content column is the scroll
+        // region — long forms stay reachable above the fixed tab bar
+        {...(Platform.OS === "web" ? { overflowY: "auto" as never } : {})}
       >
         {children}
       </YStack>

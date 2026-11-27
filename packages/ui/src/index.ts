@@ -6,3 +6,4 @@ export * from "./calendar.tsx";
 export * from "./location-input.tsx";
 export * from "./share";
 export * from "./use-mount-effect.ts";
+export * from "./assistant.tsx";

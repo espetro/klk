@@ -40,7 +40,7 @@ func sign(sk nostr.SecretKey, ev nostr.Event) nostr.Event {
 }
 
 func TestV0Loop(t *testing.T) {
-	handler, cleanup, err := server.New(t.TempDir()+"/events.bolt", "")
+	handler, cleanup, err := server.New(t.TempDir()+"/events.bolt", "", server.AIConfig{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -213,7 +213,7 @@ memberReadDone:
 // identity, never the member's key) reads + writes inside that scope —
 // and only that.
 func TestAgentDelegation(t *testing.T) {
-	handler, cleanup, err := server.New(t.TempDir()+"/events.bolt", "")
+	handler, cleanup, err := server.New(t.TempDir()+"/events.bolt", "", server.AIConfig{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -348,7 +348,7 @@ agentReadDone:
 
 func TestCohortEndpoint(t *testing.T) {
 	dir := t.TempDir()
-	handler, cleanup, err := server.New(dir+"/events.bolt", "")
+	handler, cleanup, err := server.New(dir+"/events.bolt", "", server.AIConfig{})
 	if err != nil {
 		t.Fatal(err)
 	}

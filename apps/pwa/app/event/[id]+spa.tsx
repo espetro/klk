@@ -15,7 +15,18 @@ import {
   setRsvp,
   suggestChange,
 } from "@klk/core";
-import { EmptyState, EventForm, EventMap, RsvpButtons, ShareActions, palette } from "@klk/ui";
+import { draftSuggestion } from "@klk/ai";
+import {
+  AiAssistBox,
+  EmptyState,
+  EventForm,
+  EventMap,
+  RsvpButtons,
+  ShareActions,
+  palette,
+} from "@klk/ui";
+import type { EventFormValues } from "@klk/ui";
+import { assistState } from "../../src/assist.ts";
 import { $bootState, createAndConnect } from "../../src/boot.ts";
 import { APP_ORIGIN } from "../../src/config.ts";
 import { notify } from "../../src/notify";
@@ -42,6 +53,8 @@ export default function EventDetail() {
   const suggestions = useStore($suggestions)[`${coord}:${eventId}`] ?? [];
   const bootState = useStore($bootState);
   const [suggesting, setSuggesting] = useState(false);
+  const [suggestDraft, setSuggestDraft] = useState<Partial<EventFormValues> | undefined>(undefined);
+  const [suggestNonce, setSuggestNonce] = useState(0);
 
   if (event === undefined) {
     return (
@@ -56,6 +69,12 @@ export default function EventDetail() {
 
   const mine = rsvps.find((r) => r.pubkey === me?.pubkey);
   const going = rsvps.filter((r) => r.status === "yes").length;
+  // tier unknown (circle still loading) means no transport at all — never
+  // fall back to hosted, or sealed plaintext could reach the relay proxy
+  const suggestAssist =
+    circle === undefined
+      ? { transport: null, sealedNotice: false }
+      : assistState(me, coord, circle.tier);
 
   return (
     <YStack gap="$4" paddingTop="$6">
@@ -141,7 +160,33 @@ export default function EventDetail() {
             <Text fontSize={15} fontWeight="600" color={palette.ink}>
               Suggest a change
             </Text>
+            <AiAssistBox
+              available={suggestAssist.transport !== null}
+              sealedNotice={suggestAssist.sealedNotice}
+              placeholder="make it an hour later so everyone can make it after work"
+              submitLabel="Draft the change"
+              onRun={async (text) => {
+                if (suggestAssist.transport === null) return;
+                const result = await draftSuggestion(suggestAssist.transport, text, event);
+                if (result === null) {
+                  throw new Error("Couldn't make sense of that — say what should change");
+                }
+                // the form's summary field is what ships as the note to
+                // the organiser in this flow
+                const merged: Partial<EventFormValues> = {
+                  ...(result.title !== undefined ? { title: result.title } : {}),
+                  ...(result.starts !== undefined ? { starts: result.starts } : {}),
+                  ...(result.ends !== undefined ? { ends: result.ends } : {}),
+                  ...(result.location !== undefined ? { location: result.location } : {}),
+                  ...(result.note !== undefined ? { summary: result.note } : {}),
+                };
+                setSuggestDraft(merged);
+                setSuggestNonce((n) => n + 1);
+                notify("Draft filled — check it before sending");
+              }}
+            />
             <EventForm
+              key={suggestNonce}
               hideSuggestable
               submitLabel="Send suggestion"
               initial={{
@@ -150,6 +195,7 @@ export default function EventDetail() {
                 ...(event.ends !== undefined ? { ends: event.ends } : {}),
                 ...(event.location !== undefined ? { location: event.location } : {}),
                 ...(event.geo !== undefined ? { geo: event.geo } : {}),
+                ...suggestDraft,
               }}
               onSubmit={(v) => {
                 void suggestChange({
@@ -163,6 +209,7 @@ export default function EventDetail() {
                   ...(v.summary !== undefined ? { note: v.summary } : {}),
                 }).then(() => {
                   setSuggesting(false);
+                  setSuggestDraft(undefined);
                   notify("Suggestion sent to the organizer");
                 });
               }}
@@ -201,6 +248,7 @@ export default function EventDetail() {
               <YStack flex={1} gap={2}>
                 <Text fontSize={14} fontWeight="500" color={palette.ink}>
                   {s.title ?? event.title}
+                  {s.delegatedBy !== undefined ? " · agent" : ""}
                 </Text>
                 <Text fontSize={12} color={palette.muted}>
                   {fmt(s.starts ?? event.starts)}

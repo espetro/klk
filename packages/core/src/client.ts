@@ -27,6 +27,7 @@ export const setRsvp = realm.setRsvp;
 export const suggestChange = realm.suggestChange;
 export const applySuggestion = realm.applySuggestion;
 export const grantAgentScope = realm.grantAgentScope;
+export const listAgentScopes = realm.listAgentScopes;
 export const sealFor = realm.sealFor;
 export const openFor = realm.openFor;
 export const fetchProfiles = realm.fetchProfiles;

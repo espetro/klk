@@ -2,7 +2,10 @@ module fyi.klk/relay
 
 go 1.25
 
-require fiatjaf.com/nostr v0.0.0-20261005012418-685c38fc6629
+require (
+	fiatjaf.com/nostr v0.0.0-20261005012418-685c38fc6629
+	go.etcd.io/bbolt v1.4.2
+)
 
 require (
 	fiatjaf.com/lib v0.3.7 // indirect
@@ -31,7 +34,6 @@ require (
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.59.0 // indirect
-	go.etcd.io/bbolt v1.4.2 // indirect
 	golang.org/x/exp v0.0.0-20250305212735-054e65f0b394 // indirect
 	golang.org/x/net v0.41.0 // indirect
 	golang.org/x/sync v0.15.0 // indirect
