@@ -555,20 +555,30 @@ export function createRealm(): Realm {
     event: CalendarEvent,
     suggestion: Suggestion,
   ): Promise<CalendarEvent> {
+    const starts = suggestion.starts ?? event.starts;
+    let ends = suggestion.ends ?? event.ends;
+    // a moved start can push past the retained end — carry the original
+    // duration forward instead of saving an inverted interval
+    if (ends !== undefined && ends <= starts) {
+      const duration =
+        event.ends !== undefined && event.ends > event.starts ? event.ends - event.starts : 3600;
+      ends = starts + duration;
+    }
+    // a renamed venue invalidates the old pin — drop it unless the
+    // suggestion carries replacement coordinates
+    const venueChanged =
+      suggestion.location !== undefined && suggestion.location !== event.location;
+    const geo = suggestion.geo ?? (venueChanged ? undefined : event.geo);
     const updated = await postEvent({
       coord: event.coord,
       id: event.id,
       title: suggestion.title ?? event.title,
-      starts: suggestion.starts ?? event.starts,
-      ...(suggestion.ends !== undefined || event.ends !== undefined
-        ? { ends: suggestion.ends ?? event.ends }
-        : {}),
+      starts,
+      ...(ends !== undefined ? { ends } : {}),
       ...(suggestion.location !== undefined || event.location !== undefined
         ? { location: suggestion.location ?? event.location }
         : {}),
-      ...(suggestion.geo !== undefined || event.geo !== undefined
-        ? { geo: suggestion.geo ?? event.geo }
-        : {}),
+      ...(geo !== undefined ? { geo } : {}),
       ...(event.summary !== undefined ? { summary: event.summary } : {}),
       ...(event.image !== undefined ? { image: event.image } : {}),
       ...(event.suggestable === true ? { suggestable: true } : {}),
