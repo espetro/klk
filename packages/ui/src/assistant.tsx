@@ -40,8 +40,8 @@ export const AiAssistBox = ({
         backgroundColor={palette.canvas}
       >
         <Text fontSize={12} color={palette.muted} lineHeight={17}>
-          AI on sealed circles uses your own endpoint — nothing leaves your device. Set one up in
-          Profile → AI helper.
+          AI on sealed circles uses your own endpoint — nothing goes through the relay — prompts
+          travel only to your own endpoint. Set one up in Profile → AI helper.
         </Text>
       </YStack>
     );

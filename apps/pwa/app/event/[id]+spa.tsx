@@ -53,7 +53,7 @@ export default function EventDetail() {
   const suggestions = useStore($suggestions)[`${coord}:${eventId}`] ?? [];
   const bootState = useStore($bootState);
   const [suggesting, setSuggesting] = useState(false);
-  const [suggestDraft, setSuggestDraft] = useState<Partial<EventFormValues>>({});
+  const [suggestDraft, setSuggestDraft] = useState<Partial<EventFormValues> | undefined>(undefined);
   const [suggestNonce, setSuggestNonce] = useState(0);
 
   if (event === undefined) {
@@ -69,7 +69,12 @@ export default function EventDetail() {
 
   const mine = rsvps.find((r) => r.pubkey === me?.pubkey);
   const going = rsvps.filter((r) => r.status === "yes").length;
-  const suggestAssist = assistState(me, coord, circle?.tier ?? "hosted");
+  // tier unknown (circle still loading) means no transport at all — never
+  // fall back to hosted, or sealed plaintext could reach the relay proxy
+  const suggestAssist =
+    circle === undefined
+      ? { transport: null, sealedNotice: false }
+      : assistState(me, coord, circle.tier);
 
   return (
     <YStack gap="$4" paddingTop="$6">
@@ -204,6 +209,7 @@ export default function EventDetail() {
                   ...(v.summary !== undefined ? { note: v.summary } : {}),
                 }).then(() => {
                   setSuggesting(false);
+                  setSuggestDraft(undefined);
                   notify("Suggestion sent to the organizer");
                 });
               }}
