@@ -23,6 +23,8 @@ const BUNDLES = [
 
 const capLabel = (id: string) => CAPS.find((c) => c.id === id)?.label ?? id;
 
+const nowSec = () => Math.floor(Date.now() / 1000);
+
 export const AgentPanel = ({
   coord,
   tier,
@@ -60,7 +62,6 @@ export const AgentPanel = ({
     if (!loaded) load();
   };
 
-  const nowSec = () => Math.floor(Date.now() / 1000);
   const live = scopes;
 
   const selectedCaps = CAPS.filter((c) => caps[c.id] === true).map((c) => c.id);
@@ -89,8 +90,20 @@ export const AgentPanel = ({
     }
     setBusy(true);
     setErr(undefined);
-    const scopeId = editingScope ?? `scope-${Math.random().toString(36).slice(2, 8)}`;
-    void grantAgentScope({ scopeId, agent: pk, circles: [coord], caps: selectedCaps })
+    // replace-not-merge is the wire truth only when the `d` tag matches —
+    // granting the same agent again must reuse its existing scope id, or
+    // the old grant stays live alongside the new one
+    const existing = live.find((sc) => sc.agent === pk);
+    const scopeId =
+      editingScope ?? existing?.scopeId ?? `scope-${Math.random().toString(36).slice(2, 8)}`;
+    const prior = live.find((sc) => sc.scopeId === scopeId);
+    void grantAgentScope({
+      scopeId,
+      agent: pk,
+      circles: [coord],
+      caps: selectedCaps,
+      ...(prior?.expiration !== undefined ? { expiration: prior.expiration } : {}),
+    })
       .then(() => {
         notify(editingScope !== undefined ? "Agent scope updated" : "Agent added");
         setAgentInput("");
@@ -186,6 +199,9 @@ export const AgentPanel = ({
               </Text>
               <Text fontSize={11} color={palette.muted}>
                 {s.caps.map(capLabel).join(" · ")}
+              </Text>
+              <Text fontSize={10} color={palette.muted} fontFamily="monospace" selectable>
+                scope: {s.scopeId}
               </Text>
             </YStack>
             <Button
