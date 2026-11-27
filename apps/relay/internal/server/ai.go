@@ -296,6 +296,11 @@ func aiHandler(store policy.Store, cfg AIConfig, budget *aiBudget) http.HandlerF
 			return
 		}
 		delete(raw, "circle")
+		// the token budget prices one completion per request — strip
+		// options that multiply or inflate generation under the relay's key
+		for _, k := range []string{"n", "best_of", "logprobs", "top_logprobs", "logit_bias"} {
+			delete(raw, k)
+		}
 		if cfg.Model != "" {
 			if _, has := raw["model"]; !has {
 				m, _ := json.Marshal(cfg.Model)
