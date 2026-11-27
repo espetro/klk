@@ -148,6 +148,9 @@ importers:
 
   packages/ai:
     dependencies:
+      '@klk/core':
+        specifier: workspace:*
+        version: link:../core
       '@klk/proto':
         specifier: workspace:*
         version: link:../proto
