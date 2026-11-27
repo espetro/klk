@@ -1,5 +1,7 @@
-// Assistant settings — device-scoped, localStorage under `klk.ai`,
-// exactly like sealed circle keys and the identity wrap key (spec §3.2).
+// Assistant settings — device-scoped, under `klk.ai` in the shared kv
+// storage (localStorage on web, SQLite on native), exactly like sealed
+// circle keys and the identity wrap key (spec §3.2).
+import { storage } from "@klk/core";
 
 const LS_KEY = "klk.ai";
 
@@ -19,7 +21,7 @@ export const defaultAiSettings: AiSettings = {
 
 export function loadAiSettings(): AiSettings {
   try {
-    const raw = globalThis.localStorage?.getItem(LS_KEY);
+    const raw = storage.getItem(LS_KEY);
     if (raw == null || raw === "") return { ...defaultAiSettings };
     const parsed = JSON.parse(raw) as Partial<AiSettings>;
     return {
@@ -34,7 +36,7 @@ export function loadAiSettings(): AiSettings {
 }
 
 export function saveAiSettings(s: AiSettings): void {
-  globalThis.localStorage?.setItem(LS_KEY, JSON.stringify(s));
+  storage.setItem(LS_KEY, JSON.stringify(s));
 }
 
 /** A custom endpoint is usable only when all three fields are set. */
