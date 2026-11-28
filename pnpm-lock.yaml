@@ -214,6 +214,9 @@ importers:
 
   packages/ui:
     dependencies:
+      '@formisch/react':
+        specifier: ^1.2.0
+        version: 1.2.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)(valibot@1.5.0(typescript@5.9.3))
       '@klk/core':
         specifier: workspace:*
         version: link:../core
@@ -244,6 +247,9 @@ importers:
       tamagui:
         specifier: ^2.7.7
         version: 2.7.7(react-dom@19.2.3(react@19.2.3))(react-native@0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3))(react@19.2.3)
+      valibot:
+        specifier: ^1.5.0
+        version: 1.5.0(typescript@5.9.3)
     devDependencies:
       '@types/react':
         specifier: ^19.2.2
@@ -1668,6 +1674,17 @@ packages:
 
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
+
+  '@formisch/react@1.2.0':
+    resolution: {integrity: sha512-UsWPAIEt8DxfJZH9reeUkc6pAyY+YCGWTJDhrJaUEaKEUxhIFcezoBaFYSbuYuSzKlhj6lJVnIo5PMx8EgfJqg==}
+    peerDependencies:
+      react: '>=16.8.0 <20'
+      react-dom: '>=16.8.0 <20'
+      typescript: '>=5 <8'
+      valibot: '>=1.4.1 <2'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   '@hapi/hoek@9.3.0':
     resolution: {integrity: sha512-/c6rf4UJlmHlC9b5BaNvzAcFv7HZ2QHaV0D4/HNlBdvFnvQq8RI4kYdhyPCl7Xj+oWvTWQ8ujhqS53LIgAe6KQ==}
@@ -7092,6 +7109,14 @@ packages:
     deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
+  valibot@1.5.0:
+    resolution: {integrity: sha512-nil6AkP2TChWL43Z5uJ6GTxX01CUA+g8LWUM+N/rB9NBbkUMaUsi9PUNzlUPgoKASgmx9f7eGOYpJ04/fSa6FQ==}
+    peerDependencies:
+      typescript: '>=5'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+
   validate-npm-package-name@3.0.0:
     resolution: {integrity: sha512-M6w37eVCMMouJ9V/sdPGnC5H4uDr73/+xdq0FBLO3TFFX1+7wiUY6Es328NN+y43tmY+doUdN9g9J21vqB7iLw==}
 
@@ -9051,6 +9076,14 @@ snapshots:
       react-native: 0.87.1(@babel/core@7.29.7)(@react-native-community/cli@20.2.0(typescript@5.9.3))(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.2.3)
 
   '@floating-ui/utils@0.2.12': {}
+
+  '@formisch/react@1.2.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(typescript@5.9.3)(valibot@1.5.0(typescript@5.9.3))':
+    dependencies:
+      react: 19.2.3
+      react-dom: 19.2.3(react@19.2.3)
+      valibot: 1.5.0(typescript@5.9.3)
+    optionalDependencies:
+      typescript: 5.9.3
 
   '@hapi/hoek@9.3.0': {}
 
@@ -15542,6 +15575,10 @@ snapshots:
   utils-merge@1.0.1: {}
 
   uuid@7.0.3: {}
+
+  valibot@1.5.0(typescript@5.9.3):
+    optionalDependencies:
+      typescript: 5.9.3
 
   validate-npm-package-name@3.0.0:
     dependencies:

@@ -13,21 +13,21 @@ The handoff mechanism across hourly passes. Rules for the pass session:
 ## Phase 1 — visual polish + forms foundation
 
 - [ ] Tamagui theme polish: typography scale, spacing rhythm, dark-ready
-  palette tokens
+      palette tokens
 - [ ] EventForm migrated to formisch + valibot (the canonical form —
-  everything else copies it)
+      everything else copies it)
 - [ ] Remaining forms migrated (circle create, profile, suggestion,
-  AI settings)
+      AI settings)
 - [ ] URL-state for UI state: active tab, toggles, filters, expanded
-  sections — agents must be able to drive the app by URL alone
+      sections — agents must be able to drive the app by URL alone
 - [ ] Fix known visual residuals: Tamagui font-size warnings (RN dev
-  banner covering tab bar = the `+ New` dead-tap cause on iOS sim)
+      banner covering tab bar = the `+ New` dead-tap cause on iOS sim)
 
 ## Phase 2 — shareable-core
 
 - [ ] P2P/local-first spike → `docs/research/p2p-spike.md`
 - [ ] Local-first cache hardening per spike outcome (outbox, offline
-  reads, reconnect sync)
+      reads, reconnect sync)
 - [ ] tanstack-query over relay reads
 - [ ] No-auth join flow polish: guest joins event via link, zero friction
 - [ ] Multi-relay config: regional default server, user-addable servers
@@ -58,12 +58,15 @@ The handoff mechanism across hourly passes. Rules for the pass session:
 - [ ] React Compiler verification on native babel path
 - [ ] Real-device passkey check (never testable on sims)
 - [ ] Revoked agents keep open subscriptions — relay must re-validate
-  scope liveness at broadcast time (escalated from PR #25 review)
+      scope liveness at broadcast time (escalated from PR #25 review)
 - [ ] EventForm controlled-inputs refactor — AI draft remount wipes
-  unrelated edits (escalated from PR #25 review; subsumed by formisch
-  migration)
+      unrelated edits (escalated from PR #25 review; subsumed by formisch
+      migration)
 
 ## Log
+
+- 2026-11-28 — pass 1 (this session): EventForm on formisch+valibot,
+  per-field errors, cross-field ends>starts check, golden E2E green.
 
 - 2026-11-27 — v1 spec + ledger committed. Automation set to ping the
   working session hourly at :20.

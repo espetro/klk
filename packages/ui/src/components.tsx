@@ -3,6 +3,8 @@
 // monochrome, hairline borders, muted pastel badges, charcoal CTAs.
 import { useState } from "react";
 import type { ReactNode } from "react";
+import { Field as FormField, handleSubmit, useForm } from "@formisch/react";
+import * as v from "valibot";
 import { Button, Card, Image, Input, Text, TextArea, XStack, YStack } from "tamagui";
 import type { CalendarEvent, Circle, RSVP } from "@klk/core";
 import { DateTimeField } from "./datetime-field";
@@ -158,6 +160,53 @@ const fromLocalInput = (v: string) => Math.floor(new Date(v).getTime() / 1000);
 const defaultStart = () => Math.floor(Date.now() / 1000) + 86400;
 
 // THE EventForm — one implementation, used by create + edit surfaces.
+// formisch + valibot: the schema is the single source of validation truth
+// (v1 spec — replaces hand-rolled guards). Inputs are controlled strings;
+// the schema transforms them into domain values on submit.
+const isUrlish = (str: string) => /^https?:\/\/\S+\.\S+/.test(str);
+const emptyToUndef = (str: string) => {
+  const t = str.trim();
+  return t === "" ? undefined : t;
+};
+
+export const eventFormSchema = v.pipe(
+  v.object({
+    title: v.pipe(v.string(), v.trim(), v.minLength(1, "Give the event a title")),
+    starts: v.pipe(
+      v.string(),
+      v.minLength(1, "Pick a start time"),
+      v.transform((str) => fromLocalInput(str)),
+    ),
+    ends: v.pipe(
+      v.string(),
+      v.transform((str) => (str === "" ? undefined : fromLocalInput(str))),
+    ),
+    location: v.pipe(v.string(), v.transform(emptyToUndef)),
+    geo: v.optional(v.tuple([v.number(), v.number()])),
+    summary: v.pipe(v.string(), v.transform(emptyToUndef)),
+    image: v.pipe(
+      v.string(),
+      v.check((str) => str === "" || isUrlish(str), "That doesn't look like a URL"),
+      v.transform((str) => (str === "" ? undefined : str)),
+    ),
+    suggestable: v.boolean(),
+  }),
+  v.forward(
+    v.check(
+      (input) => input.ends === undefined || input.ends > input.starts,
+      "Ends must be after it starts",
+    ),
+    ["ends"],
+  ),
+);
+
+const FieldError = ({ errors }: { errors: [string, ...string[]] | null }) =>
+  errors !== null ? (
+    <Text fontSize={12} color="#9F2F2D">
+      {errors[0]}
+    </Text>
+  ) : null;
+
 export const EventForm = ({
   initial,
   submitLabel,
@@ -170,147 +219,191 @@ export const EventForm = ({
   hideSuggestable?: boolean;
   onSubmit: (values: EventFormValues) => void;
 }) => {
-  const [title, setTitle] = useState(initial?.title ?? "");
-  const [starts, setStarts] = useState(() => toLocalInput(initial?.starts ?? defaultStart()));
-  const [ends, setEnds] = useState(initial?.ends !== undefined ? toLocalInput(initial.ends) : "");
-  const [location, setLocation] = useState(initial?.location ?? "");
-  const [geo, setGeo] = useState<readonly [number, number] | undefined>(initial?.geo);
-  const [summary, setSummary] = useState(initial?.summary ?? "");
-  const [image, setImage] = useState(initial?.image ?? "");
-  const [suggestable, setSuggestable] = useState(initial?.suggestable ?? false);
+  const form = useForm({
+    schema: eventFormSchema,
+    initialInput: {
+      title: initial?.title ?? "",
+      starts: toLocalInput(initial?.starts ?? defaultStart()),
+      ends: initial?.ends !== undefined ? toLocalInput(initial.ends) : "",
+      location: initial?.location ?? "",
+      summary: initial?.summary ?? "",
+      image: initial?.image ?? "",
+      suggestable: initial?.suggestable ?? false,
+      ...(initial?.geo !== undefined
+        ? { geo: [initial.geo[0], initial.geo[1]] as [number, number] }
+        : {}),
+    },
+  });
   const [busy, setBusy] = useState(false);
 
-  const submit = async () => {
-    if (title.trim() === "" || starts === "") return;
+  const onSubmitPress = handleSubmit(form, (output) => {
     setBusy(true);
     try {
-      onSubmit({
-        title: title.trim(),
-        starts: fromLocalInput(starts),
-        ...(ends !== "" ? { ends: fromLocalInput(ends) } : {}),
-        ...(location.trim() !== "" ? { location: location.trim() } : {}),
-        ...(geo !== undefined ? { geo } : {}),
-        ...(summary.trim() !== "" ? { summary: summary.trim() } : {}),
-        ...(image.trim() !== "" ? { image: image.trim() } : {}),
-        suggestable,
-      });
+      // strip undefined-valued keys — exactOptionalPropertyTypes callers
+      // treat absence and undefined differently
+      const clean = Object.fromEntries(
+        Object.entries(output).filter(([, x]) => x !== undefined),
+      ) as unknown as EventFormValues;
+      onSubmit(clean);
     } finally {
       setBusy(false);
     }
-  };
+  });
 
   return (
     <YStack gap="$4">
-      <YStack gap="$1.5">
-        <Text fontSize={13} color={palette.muted}>
-          Title
-        </Text>
-        <Input
-          value={title}
-          onChangeText={setTitle}
-          placeholder="Saturday run"
-          borderColor={palette.border}
-          backgroundColor={palette.surface}
-        />
-      </YStack>
+      <FormField of={form} path={["title"]}>
+        {(field) => (
+          <YStack gap="$1.5">
+            <Text fontSize={13} color={palette.muted}>
+              Title
+            </Text>
+            <Input
+              value={(field.input as string | undefined) ?? ""}
+              onChangeText={field.onChange}
+              placeholder="Saturday run"
+              borderColor={field.errors !== null ? "#9F2F2D" : palette.border}
+              backgroundColor={palette.surface}
+            />
+            <FieldError errors={field.errors} />
+          </YStack>
+        )}
+      </FormField>
       <XStack gap="$3">
-        <YStack gap="$1.5" flex={1}>
-          <Text fontSize={13} color={palette.muted}>
-            Starts
-          </Text>
-          <DateTimeField value={starts} onChange={setStarts} />
-        </YStack>
-        <YStack gap="$1.5" flex={1}>
-          <Text fontSize={13} color={palette.muted}>
-            Ends
-          </Text>
-          <DateTimeField value={ends} onChange={setEnds} />
-        </YStack>
-      </XStack>
-      <YStack gap="$1.5">
-        <Text fontSize={13} color={palette.muted}>
-          Location
-        </Text>
-        <LocationInput
-          value={location}
-          geo={geo}
-          onChange={setLocation}
-          onPick={(label, g) => {
-            setLocation(label);
-            setGeo(g);
-          }}
-        />
-      </YStack>
-      <YStack gap="$1.5">
-        <Text fontSize={13} color={palette.muted}>
-          Details
-        </Text>
-        <TextArea
-          value={summary}
-          onChangeText={setSummary}
-          placeholder="What should everyone know?"
-          borderColor={palette.border}
-          backgroundColor={palette.surface}
-          rows={4}
-        />
-      </YStack>
-      <YStack gap="$1.5">
-        <Text fontSize={13} color={palette.muted}>
-          Cover photo URL <Text color={palette.border}>(optional)</Text>
-        </Text>
-        <Input
-          value={image}
-          onChangeText={setImage}
-          placeholder="https://…"
-          borderColor={palette.border}
-          backgroundColor={palette.surface}
-        />
-      </YStack>
-      {hideSuggestable !== true ? (
-        <XStack
-          justifyContent="space-between"
-          alignItems="center"
-          borderWidth={1}
-          borderColor={palette.border}
-          borderRadius={8}
-          padding="$3"
-          cursor="pointer"
-          pressStyle={{ opacity: 0.8 }}
-          onPress={() => setSuggestable(!suggestable)}
-        >
-          <YStack gap={2} flex={1}>
-            <Text fontSize={14} fontWeight="500" color={palette.ink}>
-              Let others suggest changes
-            </Text>
-            <Text fontSize={12} color={palette.muted}>
-              They can propose a new time, place or name — you approve.
-            </Text>
-          </YStack>
-          <YStack
-            width={20}
-            height={20}
-            borderRadius={4}
-            borderWidth={1}
-            borderColor={suggestable ? palette.ink : palette.border}
-            backgroundColor={suggestable ? palette.ink : "transparent"}
-            alignItems="center"
-            justifyContent="center"
-          >
-            {suggestable ? (
-              <Text fontSize={12} color="#FFF">
-                ✓
+        <FormField of={form} path={["starts"]}>
+          {(field) => (
+            <YStack gap="$1.5" flex={1}>
+              <Text fontSize={13} color={palette.muted}>
+                Starts
               </Text>
-            ) : null}
+              <DateTimeField
+                value={(field.input as string | undefined) ?? ""}
+                onChange={field.onChange}
+              />
+              <FieldError errors={field.errors} />
+            </YStack>
+          )}
+        </FormField>
+        <FormField of={form} path={["ends"]}>
+          {(field) => (
+            <YStack gap="$1.5" flex={1}>
+              <Text fontSize={13} color={palette.muted}>
+                Ends
+              </Text>
+              <DateTimeField
+                value={(field.input as string | undefined) ?? ""}
+                onChange={field.onChange}
+              />
+              <FieldError errors={field.errors} />
+            </YStack>
+          )}
+        </FormField>
+      </XStack>
+      <FormField of={form} path={["location"]}>
+        {(field) => (
+          <YStack gap="$1.5">
+            <Text fontSize={13} color={palette.muted}>
+              Location
+            </Text>
+            <FormField of={form} path={["geo"]}>
+              {(geoField) => (
+                <LocationInput
+                  value={(field.input as string | undefined) ?? ""}
+                  geo={(geoField.input as readonly [number, number] | undefined) ?? undefined}
+                  onChange={field.onChange}
+                  onPick={(label, g) => {
+                    field.onChange(label);
+                    geoField.onChange([g[0], g[1]]);
+                  }}
+                />
+              )}
+            </FormField>
           </YStack>
-        </XStack>
+        )}
+      </FormField>
+      <FormField of={form} path={["summary"]}>
+        {(field) => (
+          <YStack gap="$1.5">
+            <Text fontSize={13} color={palette.muted}>
+              Details
+            </Text>
+            <TextArea
+              value={(field.input as string | undefined) ?? ""}
+              onChangeText={field.onChange}
+              placeholder="What should everyone know?"
+              borderColor={palette.border}
+              backgroundColor={palette.surface}
+              rows={4}
+            />
+          </YStack>
+        )}
+      </FormField>
+      <FormField of={form} path={["image"]}>
+        {(field) => (
+          <YStack gap="$1.5">
+            <Text fontSize={13} color={palette.muted}>
+              Cover photo URL <Text color={palette.border}>(optional)</Text>
+            </Text>
+            <Input
+              value={(field.input as string | undefined) ?? ""}
+              onChangeText={field.onChange}
+              placeholder="https://…"
+              borderColor={field.errors !== null ? "#9F2F2D" : palette.border}
+              backgroundColor={palette.surface}
+            />
+            <FieldError errors={field.errors} />
+          </YStack>
+        )}
+      </FormField>
+      {hideSuggestable !== true ? (
+        <FormField of={form} path={["suggestable"]}>
+          {(field) => (
+            <XStack
+              justifyContent="space-between"
+              alignItems="center"
+              borderWidth={1}
+              borderColor={palette.border}
+              borderRadius={8}
+              padding="$3"
+              cursor="pointer"
+              pressStyle={{ opacity: 0.8 }}
+              onPress={() => field.onChange(field.input !== true)}
+            >
+              <YStack gap={2} flex={1}>
+                <Text fontSize={14} fontWeight="500" color={palette.ink}>
+                  Let others suggest changes
+                </Text>
+                <Text fontSize={12} color={palette.muted}>
+                  They can propose a new time, place or name — you approve.
+                </Text>
+              </YStack>
+              <YStack
+                width={20}
+                height={20}
+                borderRadius={4}
+                borderWidth={1}
+                borderColor={field.input === true ? palette.ink : palette.border}
+                backgroundColor={field.input === true ? palette.ink : "transparent"}
+                alignItems="center"
+                justifyContent="center"
+              >
+                {field.input === true ? (
+                  <Text fontSize={12} color="#FFF">
+                    ✓
+                  </Text>
+                ) : null}
+              </YStack>
+            </XStack>
+          )}
+        </FormField>
       ) : null}
       <Button
         backgroundColor={palette.ink}
         color="#FFFFFF"
         borderRadius={6}
-        disabled={busy || title.trim() === ""}
-        opacity={busy || title.trim() === "" ? 0.6 : 1}
-        onPress={submit}
+        disabled={busy}
+        opacity={busy ? 0.6 : 1}
+        onPress={() => void onSubmitPress()}
       >
         {submitLabel}
       </Button>

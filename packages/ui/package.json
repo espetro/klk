@@ -13,6 +13,7 @@
     "validate": "tsc --noEmit"
   },
   "dependencies": {
+    "@formisch/react": "^1.2.0",
     "@klk/core": "workspace:*",
     "@klk/proto": "workspace:*",
     "@tamagui/config-default": "^2.7.7",
@@ -22,7 +23,8 @@
     "qrcode.react": "^4.1.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "tamagui": "^2.7.7"
+    "tamagui": "^2.7.7",
+    "valibot": "^1.5.0"
   },
   "devDependencies": {
     "@types/react": "^19.2.2",
